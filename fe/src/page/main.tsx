@@ -1,10 +1,10 @@
 import SideBar from "../components/SideBar"
-import SlideBar from "../components/SlideBar"
+import TimeBar from "../components/TimeBar"
 export default function main () {
   return (
     <>
-      <SideBar/>
-      {/* <SlideBar/> */}
+      {/* <SideBar/> */}
+      <TimeBar/>
     </>
   )
 }
