@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from "styled-components"
 import Slider from '@mui/material/Slider';
 
-const TimeSlider = styled.div`
+const SliderBox = styled.div`
   background-color: red;
   width: 80%;
 `
@@ -18,7 +18,7 @@ export default function RangeSlider() {
   };
 
   return(
-    <TimeSlider>
+    <SliderBox>
       <Slider
         getAriaLabel={() => 'Temperature range'}
         value={value}
@@ -26,7 +26,7 @@ export default function RangeSlider() {
         valueLabelDisplay="auto"
         getAriaValueText={valuetext}
       />
-    </TimeSlider>
+    </SliderBox>
 
   )
 }
