@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import SideBarList from "./SideBarList"
 
 const Center = styled.div`
   display: flex;
@@ -18,8 +19,6 @@ const Base = styled(Center) `
   padding: 1rem;
   
   `
-
-
 const Logo = styled.div `
   background-color: red;
   width: 80%;
@@ -32,11 +31,7 @@ const Search= styled.div`
   background-color: blue;
   margin-bottom: 30px;
 `
-const List= styled.div`
-  background-color: yellow;
-  width: 100%;
-  min-height: 50%;
-`
+
 const Footer = styled.div`
   width: 100%;
   background-color: beige;
@@ -52,9 +47,7 @@ export default function SideBar () {
           <input style={{width: '100%'}}  type="text" />
           <button >검색</button>
         </Search>
-        <List>
-            host List
-        </List>
+        <SideBarList/>
       </Base>
       <Footer>
         Copyright ⓒ E1I4

@@ -23,7 +23,7 @@ ChartJS.register(
 
 const Box = styled.div`
   padding: 0% 5%;
-  width: 70%;
+  width: 50%;
   background-color: #8ba2a5;
 `;
 
