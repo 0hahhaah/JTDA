@@ -8,8 +8,8 @@ import Detail from "./page/detail";
 function App() {
   return (
     <div className="App">
-      <Main/>
-      {/* <Detail/> */}
+      {/* <Main/> */}
+      <Detail/>
       {/* <StateCount /> */}
       {/* <CircleChart /> */}
     </div>
