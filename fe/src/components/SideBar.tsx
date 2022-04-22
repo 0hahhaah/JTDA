@@ -9,11 +9,17 @@ const Layout = styled(Center) `
   width: 12%;
   height: 100vh;
   background-color: #bfc1c3;
+  position: fixed;
+  top: 0;
+  left: 0;
 `
 const Base = styled(Center) `
   height: 100%;
-  padding: 50px 10px;
-`
+  padding: 1rem;
+  
+  `
+
+
 const Logo = styled.div `
   background-color: red;
   width: 80%;

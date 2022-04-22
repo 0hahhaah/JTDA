@@ -22,9 +22,11 @@ ChartJS.register(
 
 
 const Box = styled.div`
-    width: 50%;
-    height: 50%;
+  padding: 0% 5%;
+  width: 70%;
+  background-color: #8ba2a5;
 `;
+
 
 export const options = {
   plugins: {

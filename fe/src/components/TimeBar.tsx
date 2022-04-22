@@ -4,8 +4,8 @@ import RangeSlider from "./RangeSlider"
 const Box = styled.div`
   display: flex;
   width: 100%;
-  margin: 100px;
-  background-color: red;
+  padding: 50px 50px 20px 50px ;
+  background-color: beige;
   width: 80%;
 `
 const Content = styled.div`
