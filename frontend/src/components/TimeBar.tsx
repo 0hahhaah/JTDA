@@ -5,7 +5,7 @@ const Box = styled.div`
   display: flex;
   width: 100%;
   padding: 50px 50px 20px 50px ;
-  background-color: beige;
+  background-color: blue;
   width: 80%;
 `
 const Content = styled.div`
