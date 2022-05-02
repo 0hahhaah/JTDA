@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.lang.management.*;
 import java.net.InetAddress;
@@ -232,11 +233,11 @@ public final class Agent extends TimerTask{
                             synchronizerInfoEach.getIdentityHashCode(),
                             synchronizerInfoEach.getClassName()
                     ));
-                    flag = false;
+//                    flag = false;
                 }
-                if(flag) {
-                    lockedOwnableSynchronizers.add("- None");
-                }
+//                if(flag) {
+//                    lockedOwnableSynchronizers.add("- None");
+//                }
                 threadDump.put("lockedOwnableSynchronizers", lockedOwnableSynchronizers);
 
                 // add threadDump (JSON object) into threadDumps (array)
