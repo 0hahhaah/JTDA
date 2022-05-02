@@ -142,7 +142,6 @@ public final class Agent extends TimerTask{
         }
         message.put("threadElements", threadElements);
 
-        // message > threadDumps > threadDump > stackTraces > stackTrace
         // create threadDumps (array)
         JSONArray threadDumps = new JSONArray();
         try {
@@ -152,6 +151,8 @@ public final class Agent extends TimerTask{
                 ThreadInfo[] threadInfo = mxBean.getThreadInfo(ids, true, true);
                 MonitorInfo[] monitorInfo = threadInfo[0].getLockedMonitors();
                 LockInfo lockInfo = threadInfo[0].getLockInfo();
+                long lockOwnerId = threadInfo[0].getLockOwnerId();
+                String lockOwnerName = threadInfo[0].getLockOwnerName();
 
                 // create threadDump Element
                 JSONObject threadDump = new JSONObject();
@@ -160,7 +161,12 @@ public final class Agent extends TimerTask{
                 threadDump.put("name", thread.getName());
                 threadDump.put("isDaemon", thread.isDaemon() ? "true" : "false");
                 threadDump.put("priority", thread.getPriority());
-                threadDump.put("state", thread.getState());
+                threadDump.put("state", thread.getState().toString());
+                if (lockOwnerId != -1) {
+                    threadDump.put("lockOwner", lockOwnerId + "@" + lockOwnerName);
+                } else {
+                    threadDump.put("lockOwner", "null");
+                }
 
                 // create stackTraces (array)
                 JSONArray stackTraces = new JSONArray();
@@ -213,7 +219,7 @@ public final class Agent extends TimerTask{
                         }
                     }
                     stackDepth += 1;
-                    stackTraces.add(stackTrace);
+                    stackTraces.add(stackTrace.toString());
                 }
                 threadDump.put("stackTrace", stackTraces);
 
