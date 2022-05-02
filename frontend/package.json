@@ -1,5 +1,6 @@
 {
   "name": "fe",
+  "type": "module",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -51,5 +52,9 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.25"
-  }
+  },
+
+  
+    
+  
 }
