@@ -1,0 +1,19 @@
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: k6s102.p.ssafy.io:8092
+      group-id: test-log
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: k6s102.p.ssafy.io:8092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  data:
+    mongodb:
+      host: k6s102.p.ssafy.io
+      port: 27017
+      database: threaddump
+      username: beSpringBoot
+      password: s102threaddump
