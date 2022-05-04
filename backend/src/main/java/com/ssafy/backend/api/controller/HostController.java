@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/host")
@@ -36,17 +34,24 @@ public class HostController {
             @ApiResponse(responseCode = "404", description = "Page Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @Operation(summary = "Host 리스트 반환 API", description = "Collection json_log내 특정 기간 내의 hostIp, hostName 항목을 반환")
+    @Operation(summary = "Host 리스트 반환 API", description = "Collection json_log 내 특정 기간 내의 hostIp, hostName 항목을 반환")
     public ResponseEntity<Map<String, Object>> showHostList(
             @RequestParam String startAt,
             @RequestParam String endAt) {
         List<HostList> hostList = hostService.getHostList(startAt, endAt);
+        List<HostList> hostListWithoutDuplicate = new ArrayList<>();
+
+        for(HostList hostListEach : hostList) {
+            if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHostName().equals(hostListEach.getHostName()))) {
+                hostListWithoutDuplicate.add(hostListEach);
+            }
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("startAt", startAt);
         response.put("endAt", endAt);
-        response.put("hostCount", hostList.size());
-        response.put("hosts", hostList);
+        response.put("hostCount", hostListWithoutDuplicate.size());
+        response.put("hosts", hostListWithoutDuplicate);
 
         return ResponseEntity.status(200).body(response);
     }
