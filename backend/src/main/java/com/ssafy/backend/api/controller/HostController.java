@@ -36,7 +36,7 @@ public class HostController {
             @ApiResponse(responseCode = "404", description = "Page Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @Operation(summary = "Host 리스트 반환 API", description = "Collection json_log내 특정 기간 내의 hostIp, hostName 항목을 반환")
+    @Operation(summary = "Host 리스트 반환 API", description = "Collection json_log 내 특정 기간 내의 hostIp, hostName 항목을 반환")
     public ResponseEntity<Map<String, Object>> showHostList(
             @RequestParam String startAt,
             @RequestParam String endAt) {
@@ -49,5 +49,26 @@ public class HostController {
         response.put("hosts", hostList);
 
         return ResponseEntity.status(200).body(response);
+    }
+
+
+    @GetMapping("/search")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Page Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @Operation(summary = "Host 검색 반환 API", description = "Collection json_log 내 hostName 검색 결과 반환")
+    public ResponseEntity<Map<String, Object>> showHostSearch(
+            @RequestParam String query) {
+        List<HostList> hostList = hostService.getHostSearch(query);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("inputWord", query);
+        response.put("count", hostList.size());
+        response.put("searchResults", hostList);
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -7,4 +7,6 @@ import java.util.List;
 public interface HostService {
 
     List<HostList> getHostList(String startAt, String endAt);
+
+    List<HostList> getHostSearch(String query);
 }

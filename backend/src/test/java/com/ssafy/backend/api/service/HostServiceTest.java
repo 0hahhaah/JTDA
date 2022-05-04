@@ -28,4 +28,14 @@ public class HostServiceTest {
             assertThat(host.getHostName()).isNotEmpty();
         }
     }
+
+    @Test
+    public void HostSearch_GET() {
+        List<HostList> hostList = hostService.getHostSearch("DESKTOP");
+
+        for(HostList host : hostList) {
+            assertThat(host.getHostIp()).isNotEmpty();
+            assertThat(host.getHostName()).isNotEmpty();
+        }
+    }
 }
