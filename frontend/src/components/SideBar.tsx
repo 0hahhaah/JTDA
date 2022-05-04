@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import SideBarList from "./SideBarList"
 
@@ -39,10 +40,11 @@ const Footer = styled.div`
   font-size: large;
 `
 export default function SideBar () {
+  const navigate = useNavigate();
   return ( 
     <Layout>
       <Base>
-        <Logo>로고</Logo>
+        <Logo onClick={()=>navigate('/')}>로고</Logo>
         <Search>
           <input style={{width: '100%'}}  type="text" />
           <button >검색</button>
