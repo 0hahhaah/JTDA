@@ -15,6 +15,7 @@ const Title = styled.p`
 `;
 
 const Block = styled.div`
+    cursor: pointer;
     display: inline-block;
     margin: 10px;
     width: 120px;
