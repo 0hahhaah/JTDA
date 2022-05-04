@@ -46,8 +46,8 @@ public class HostController {
         Map<String, Object> response = new HashMap<>();
         response.put("startAt", startAt);
         response.put("endAt", endAt);
-        response.put("hostCount", hostList.size());
-        response.put("hosts", hostList);
+        response.put("hostCount", hostListWithoutDuplicate.size());
+        response.put("hosts", hostListWithoutDuplicate);
 
         return ResponseEntity.status(200).body(response);
     }
