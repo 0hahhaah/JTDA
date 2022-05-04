@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class HostController {
     public ResponseEntity<Map<String, Object>> showHostList(
             @RequestParam String startAt,
             @RequestParam String endAt) {
-        List<HostList> hostList = hostService.getHostList(startAt, endAt);
+        List<HostList> hostList = removeDuplicateHostList(hostService.getHostList(startAt, endAt));
 
         Map<String, Object> response = new HashMap<>();
         response.put("startAt", startAt);
@@ -62,7 +63,7 @@ public class HostController {
     @Operation(summary = "Host 검색 반환 API", description = "Collection json_log 내 hostName 검색 결과 반환")
     public ResponseEntity<Map<String, Object>> showHostSearch(
             @RequestParam String query) {
-        List<HostList> hostList = hostService.getHostSearch(query);
+        List<HostList> hostList = removeDuplicateHostList(hostService.getHostSearch(query));
 
         Map<String, Object> response = new HashMap<>();
         response.put("inputWord", query);
@@ -70,5 +71,17 @@ public class HostController {
         response.put("searchResults", hostList);
 
         return ResponseEntity.ok(response);
+    }
+
+    private List<HostList> removeDuplicateHostList(List<HostList> input) {
+        List<HostList> hostListWithoutDuplicate = new ArrayList<>();
+
+        for(HostList hostListEach : input) {
+            if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHostName().equals(hostListEach.getHostName()))) {
+                hostListWithoutDuplicate.add(hostListEach);
+            }
+        }
+
+        return hostListWithoutDuplicate;
     }
 }
