@@ -15,6 +15,7 @@ public class ThreadLog {
     public String hostName;
     @NotBlank
     public String hostIp;
+    @NotBlank
     private String processId;
 
     private String logTime;

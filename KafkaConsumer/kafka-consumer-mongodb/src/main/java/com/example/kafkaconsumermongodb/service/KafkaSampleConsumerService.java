@@ -20,8 +20,13 @@ public class KafkaSampleConsumerService {
 //        System.out.println("receive message : " + message);
 
         ThreadLog threadLog = new Gson().fromJson(message, ThreadLog.class);
-        mongoTemplate.insert(threadLog);
+//        mongoTemplate.insert(threadLog);
+        mongoInsert(threadLog);
         System.out.println("thread insert");
+    }
+
+    public void mongoInsert(@Valid ThreadLog threadLog) {
+        mongoTemplate.insert(threadLog);
     }
 }
 
