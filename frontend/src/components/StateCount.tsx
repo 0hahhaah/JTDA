@@ -1,5 +1,5 @@
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
 declare module 'styled-components'{
 
 }
@@ -15,6 +15,7 @@ const Title = styled.p`
 `;
 
 const Block = styled.div`
+    cursor: pointer;
     display: inline-block;
     margin: 10px;
     width: 120px;
@@ -33,8 +34,7 @@ const StateNum = styled.span`
 `;
 
 function StateCount(){
-    const date: Date = new Date();
-
+    const navigate = useNavigate();
     return(
         <Container>
             <Title>00월00일 00:00 Thread State</Title>
@@ -42,19 +42,19 @@ function StateCount(){
                 <ThreadState>총 Thread 수</ThreadState>
                 <StateNum>53</StateNum>
             </Block>
-            <Block>
+            <Block onClick={()=>navigate("/detail")}>
                 <ThreadState>BLOCKED</ThreadState>
                 <StateNum>53</StateNum>
             </Block>
-            <Block>
+            <Block onClick={()=>navigate("/detail")}>
                 <ThreadState>RUNNABLE</ThreadState>
                 <StateNum>53</StateNum>
             </Block>
-            <Block>
+            <Block onClick={()=>navigate("/detail")}>
                 <ThreadState>WAITING</ThreadState>
                 <StateNum>53</StateNum>
             </Block>
-            <Block>
+            <Block onClick={()=>navigate("/detail")}>
                 <ThreadState>TIMED_WAITING</ThreadState>
                 <StateNum>53</StateNum>
             </Block>
