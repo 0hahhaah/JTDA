@@ -36,8 +36,8 @@ export const dummyThreadDumps: ThreadDump[] = Array.from(Array(10).keys()).map(
 );
 
 export const dummyThreadLog: ThreadLog = {
-  hostIp: "host_ip",
-  hostName: "host_name",
+  hostIp: "172.17.0.2",
+  hostName: "e7882cd4e607",
   processId: "process_id",
   logTime: "2022-04-19 16:22:30",
   vmInfo: "",

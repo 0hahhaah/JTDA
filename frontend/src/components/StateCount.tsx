@@ -56,8 +56,9 @@ function StateCount() {
 
   // 코드 중복 제거
   const states = ["BLOCKED", "RUNNABLE", "WAITING", "TIMED_WAITING"];
-  const paintCards: JSX.Element[] = states.map((state) => (
+  const paintCards: JSX.Element[] = states.map((state, idx) => (
     <Card
+      key={idx}
       onClick={() =>
         navigate(`/detail?state=${state}&host=${hostId}&datetime=${dateTime}`)
       }
