@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { dummyThread } from "../data/dummy";
+
 declare module "styled-components" {}
 
 const Container = styled.div`
@@ -46,32 +48,15 @@ function StateCount() {
   const [hostId, setHostId] = useState<string>("3");
   const [dateTime, setDateTime] = useState<string>("2022-05-06 09:50:30");
 
-  interface threadInfo {
-    count: number;
-    threadState: threadState;
-  }
-  interface threadState {
-    [index: string]: number;
-    BLOCKED: number;
-    RUNNABLE: number;
-    WAITING: number;
-    TIMED_WAITING: number;
-  }
+  useEffect(() => {
+    setThreadInfo(dummyThread);
+  }, []);
 
-  const dummyThread: threadInfo = {
-    count: 100,
-    threadState: {
-      BLOCKED: 20,
-      RUNNABLE: 40,
-      WAITING: 30,
-      TIMED_WAITING: 10,
-    },
-  };
   const [threadInfo, setThreadInfo] = useState(dummyThread);
 
   // 코드 중복 제거
-  const states = ["BLOCKED", "RUNNABLE", "WAITING", "TIME_WAITING"];
-  const paintCards: Array<JSX.Element> = states.map((state) => (
+  const states = ["BLOCKED", "RUNNABLE", "WAITING", "TIMED_WAITING"];
+  const paintCards: JSX.Element[] = states.map((state) => (
     <Card
       onClick={() =>
         navigate(`/detail?state=${state}&host=${hostId}&datetime=${dateTime}`)
