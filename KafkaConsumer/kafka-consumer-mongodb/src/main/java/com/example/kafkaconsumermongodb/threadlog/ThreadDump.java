@@ -15,6 +15,10 @@ public class ThreadDump {
 
     protected String state;
 
+    public String getState() {
+        return this.state;
+    }
+
     protected int priority;
 
     protected boolean isDaemon;

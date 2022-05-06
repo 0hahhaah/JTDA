@@ -27,4 +27,14 @@ public class ThreadLog {
     private String [] threadElements;
 
     public ThreadDump [] threadDumps;
+
+    public ThreadDump[] getThreadDumps() {
+        return this.threadDumps;
+    }
+
+    private ThreadStateCount threadStateCount;
+
+    public void setThreadStateCount(ThreadStateCount threadStateCount) {
+        this.threadStateCount = threadStateCount;
+    }
 }

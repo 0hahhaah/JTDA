@@ -10,10 +10,7 @@ spring:
       bootstrap-servers: k6s102.p.ssafy.io:8092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-  data:
-    mongodb:
-      host: k6s102.p.ssafy.io
-      port: 27017
-      database: threaddump
-      username: beSpringBoot
-      password: s102threaddump
+  spring:
+    data:
+      mongodb:
+        uri: mongodb://beSpringBoot:s102threaddump@k6s102.p.ssafy.io:27017/threaddump?authSource=threaddump&tls=true
