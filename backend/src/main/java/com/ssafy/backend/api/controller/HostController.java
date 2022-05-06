@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/host")
@@ -38,21 +41,47 @@ public class HostController {
     public ResponseEntity<Map<String, Object>> showHostList(
             @RequestParam String startAt,
             @RequestParam String endAt) {
-        List<HostList> hostList = hostService.getHostList(startAt, endAt);
+        List<HostList> hostList = removeDuplicateHostList(hostService.getHostList(startAt, endAt));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("startAt", startAt);
+        response.put("endAt", endAt);
+        response.put("hostCount", hostList.size());
+        response.put("hosts", hostList);
+
+        return ResponseEntity.status(200).body(response);
+    }
+
+
+    @GetMapping("/search")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Page Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @Operation(summary = "Host 검색 반환 API", description = "Collection json_log 내 hostName 검색 결과 반환")
+    public ResponseEntity<Map<String, Object>> showHostSearch(
+            @RequestParam String query) {
+        List<HostList> hostList = removeDuplicateHostList(hostService.getHostSearch(query));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("inputWord", query);
+        response.put("count", hostList.size());
+        response.put("searchResults", hostList);
+
+        return ResponseEntity.ok(response);
+    }
+
+    private List<HostList> removeDuplicateHostList(List<HostList> input) {
         List<HostList> hostListWithoutDuplicate = new ArrayList<>();
 
-        for(HostList hostListEach : hostList) {
+        for(HostList hostListEach : input) {
             if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHostName().equals(hostListEach.getHostName()))) {
                 hostListWithoutDuplicate.add(hostListEach);
             }
         }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("startAt", startAt);
-        response.put("endAt", endAt);
-        response.put("hostCount", hostListWithoutDuplicate.size());
-        response.put("hosts", hostListWithoutDuplicate);
-
-        return ResponseEntity.status(200).body(response);
+        return hostListWithoutDuplicate;
     }
 }
