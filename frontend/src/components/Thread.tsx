@@ -2,8 +2,13 @@ import { useState } from "react";
 import styled from "styled-components";
 import { dummyThreadLog } from "../data/dummy";
 
-const Detail = styled.h1`
-  margin-top: 50px;
+const Title = styled.h1`
+  margin: 50px 0px 0px 50px;
+`;
+
+const SubTitle = styled.h2`
+  color: rgb(107, 114, 128);
+  margin: 0px 0px 0px 50px;
 `;
 
 const Box = styled.div`
@@ -12,7 +17,7 @@ const Box = styled.div`
   text-align: left;
 `;
 
-const ThreadName = styled.div`
+const ThreadName = styled.h2`
   margin: 10px;
   font-size: 1.5rem;
   font-weight: 600;
@@ -27,7 +32,8 @@ const ThreadInfos = styled.div`
   gap: 10px;
 `;
 
-const ThreadInfo = styled.div`
+const ThreadInfo = styled.p`
+  margin: 0px;
   grid-column: span 1 / span 2;
   font-size: 1rem;
   font-weight: 500;
@@ -39,7 +45,8 @@ const StackTrace = styled.div`
   font-size: 0.875rem;
 `;
 
-const LineText = styled.div`
+const LineText = styled.p`
+  margin: 0px;
   white-space: pre-wrap;
 `;
 
@@ -49,7 +56,7 @@ export default function Thread() {
   const paintThreadLog: JSX.Element[] = dummyThreadLog.threadDumps.map(
     (threadDump, idx) => {
       return (
-        <Box>
+        <Box key={idx} id={threadDump.id}>
           <ThreadName>{threadDump.name}</ThreadName>
           <ThreadInfos>
             <ThreadInfo>{`THREAD ID (DECIMAL): ${threadDump.id}`}</ThreadInfo>
@@ -61,8 +68,10 @@ export default function Thread() {
             <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
           </ThreadInfos>
           <StackTrace>
+            {`stackTrace:`}
+            <br />
             {`java.lang.Thread.State: ${threadDump.state}`}
-            <br></br>
+            <br />
             {paintStringArray(threadDump.stackTrace)}
           </StackTrace>
           {paintStringArray(threadDump.lockedOwnableSynchronizers)}
@@ -73,7 +82,7 @@ export default function Thread() {
 
   function paintStringArray(stringArray: string[]): JSX.Element[] {
     return stringArray.map((stringElement, idx) => (
-      <LineText>
+      <LineText key={idx}>
         {stringElement}
         <br></br>
       </LineText>
@@ -82,65 +91,10 @@ export default function Thread() {
 
   return (
     <>
-      <Detail>Waiting</Detail>
+      <Title>{`${dummyThreadLog.hostIp}@${dummyThreadLog.hostName}`}</Title>
+      <SubTitle>{`${"WAITING"}`}</SubTitle>
+      <SubTitle>{`${dummyThreadLog.logTime}`}</SubTitle>
       {paintThreadLog}
-      {/* <Box>
-        <Title>
-          <h3>java.lang.Thread.State: BLOCKED (on object monitor)</h3>
-        </Title>
-        <Content>
-          at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.goMonitorDeadlock(ThreadDeadLockState.java:197)
-          - waiting to lock (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.monitorOurLock(ThreadDeadLockState.java:182)
-          - locked (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.run(ThreadDeadLockState.java:135)
-        </Content>
-      </Box>
-      <Box>
-        <Title>
-          <h3>java.lang.Thread.State: BLOCKED (on object monitor)</h3>
-        </Title>
-        <Content>
-          at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.goMonitorDeadlock(ThreadDeadLockState.java:197)
-          - waiting to lock (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.monitorOurLock(ThreadDeadLockState.java:182)
-          - locked (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.run(ThreadDeadLockState.java:135)
-        </Content>
-      </Box>
-      <Box>
-        <Title>
-          <h3>java.lang.Thread.State: BLOCKED (on object monitor)</h3>
-        </Title>
-        <Content>
-          at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.goMonitorDeadlock(ThreadDeadLockState.java:197)
-          - waiting to lock (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.monitorOurLock(ThreadDeadLockState.java:182)
-          - locked (a
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$Monitor) at
-          com.nbp.theplatform.threaddump.ThreadDeadLockState$DeadlockThread.run(ThreadDeadLockState.java:135)
-        </Content>
-      </Box> */}
     </>
   );
 }
-
-// const {
-//   id,
-//   hashId,
-//   name,
-//   isDaemon,
-//   priority,
-//   state,
-//   lockOwner,
-//   stackTrace,
-//   lockedOwnableSynchronizers,
-// } = threadDump;
