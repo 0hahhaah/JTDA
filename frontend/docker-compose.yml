@@ -1,13 +1,13 @@
 version: "3"
+
 services:
   frontend: # 이름은 어떤걸로 지정해도 상관없음
     build:
-      dockerfile: Dockerfile.dev # dockerfile이름
-      context: ./ # 도커파일 위치 명시
+      context: . # 도커파일 위치 명시
     volumes:
       - /app/node_modules #도커 /app/node_modules는 맵핑을 따로 안해주겠다.
-      - ./:/app # 로컬에 있는 모든 파일을 맵핑
+      - ./:/app # A:B -> EC2 디렉토리랑 컨테이너(B)랑 연결
     ports:
-      - "3001:3001" # port 맵핑
+      - "3000:3000" # EC2 포트 : 컨테이너 포트
     stdin_open: true
     tty: true
