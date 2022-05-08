@@ -11,6 +11,7 @@ pipeline {
 
     stages {
         stage('Frontend Build') {
+          // ./frontend/ 여기에 있는 dockerfile로 이미지 생성 및 build
             steps {
                 sh 'docker build -t frontend ./frontend/'
             }
