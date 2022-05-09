@@ -2,6 +2,10 @@ import { useState } from "react";
 import styled from "styled-components";
 import { dummyThreadLog } from "../data/dummy";
 
+const Container = styled.div`
+  padding: 30px;
+`;
+
 const Title = styled.h1`
   margin: 50px 0px 0px 50px;
 `;
@@ -12,8 +16,11 @@ const SubTitle = styled.h2`
 `;
 
 const Box = styled.div`
-  margin: 50px 50px;
   text-align: left;
+  margin: 20px 50px;
+  padding: 10px;
+  border: 2px solid #f7f7f7;
+  border-radius: 10px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
@@ -90,11 +97,11 @@ export default function Thread() {
   }
 
   return (
-    <>
+    <Container>
       <Title>{`${dummyThreadLog.hostIp}@${dummyThreadLog.hostName}`}</Title>
       <SubTitle>{`${"WAITING"}`}</SubTitle>
       <SubTitle>{`${dummyThreadLog.logTime}`}</SubTitle>
       {paintThreadLog}
-    </>
+    </Container>
   );
 }

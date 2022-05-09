@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThreadLog } from "../data/dummy";
 
 const List = styled.div`
-  width: 90%;
-  padding: 10px;
-  border-radius: 17px;
+  width: 100%;
+  padding: 10px 0 10px 0;
+  border-radius: 10px;
   background-color: #ffffff;
   box-shadow: 0px 3px 3px #cdcdcd;
 `;
 
 const HashLink = styled.div`
-  width: 100%
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  padding: 5px;
+  padding: 10px;
+  border-radius: 5px;
 
   &:hover {
     background-color: #5f0080;
