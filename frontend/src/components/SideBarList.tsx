@@ -8,23 +8,79 @@ const Center = styled.div`
   flex-direction: column;
   align-items: center;
 `
-
-const Selected = styled(Center)`
-  background-color: aqua;
+const HostBox = styled(Center)`
   width: 100%;
-  height: 300px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0px 3px 3px #CDCDCD;
+  margin-bottom: 15px;
+  padding: 5px 0 10px 0;
   overflow: scroll;
   -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 70%;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent  스크롤바 뒷 배경 색상
+    /* background-color: red; */
+  }
 `;
 
-const List = styled.div`
-  background-color: yellow;
+const Selected = styled(HostBox)`
+  min-height: 15%;
+`;
+
+const List = styled(HostBox)`
+  height: 40%;
+`;
+const ListTitle = styled.p`
+  /* border: 1px solid red; */
+  /* position: fixed; */
+  margin: 5px;
+  margin-bottom: 20px;
+  font-weight: 500;
+`;
+
+const HostData = styled(Center)`
+  flex-direction: row;
   width: 100%;
-  min-height: 50%;
-`
+  padding-left: 20px;
+  margin: 3px 0;
+`;
+
+const HostInput = styled.input`
+  display: none;
+`;
+
+const CheckboxImg = styled.img`
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 5px;
+  src: "/icon/checked.png";
+`;
+
+//--------------------------------
+const SelectButtons = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: end;
+`;
 
 const ConfirmBtn = styled.button`
+  background-color: #5F0080;
+  border: 0;
+  color: white;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin-left: 7px;
+  cursor: pointer;
+`;
 
+const AllCancleBtn = styled(ConfirmBtn)`
+  background-color: #CDCDCD;
+  color: #333333;
 `;
 
 const baseUrl = "http://localhost:8081/";
@@ -44,6 +100,9 @@ export default function SidebarList() {
       'host4',
       'host5',
       'host6',
+      'host7',
+      'host8',
+      'host9',
     ]
 
   const getHosts = async()=>{
@@ -88,7 +147,7 @@ export default function SidebarList() {
   return(
     <>
       <Selected>
-        <p>선택된 host</p>
+        <ListTitle>선택한 host</ListTitle>
         {/* <ul>
         {
           checkedList.map((host, i)=>{
@@ -103,17 +162,21 @@ export default function SidebarList() {
       </Selected>
 
       <List>
+        <ListTitle>Host List</ListTitle>
         {data.map((host, i)=>{
           return (
-            <>
-              <input type='checkbox' id={host} name='host' value={host}></input>
+            <HostData>
+              <CheckboxImg/>
+              <HostInput type='checkbox' id={host} name='host' value={host} />
               <label htmlFor={host}>{host}</label>
-              <br/>
-            </>
+            </HostData>
           )
         })}
       </List>
-      {/* <ConfirmBtn onClick={onCheckedElement}>확인</ConfirmBtn> */}
+      <SelectButtons>
+        <AllCancleBtn>초기화</AllCancleBtn>
+        <ConfirmBtn>확인</ConfirmBtn>
+      </SelectButtons>
     </>
   );
 }
