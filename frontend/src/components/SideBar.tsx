@@ -17,12 +17,6 @@ const Layout = styled(Center) `
   left: 0;
 `
 
-const Selected = styled(Center)`
-  background-color: aqua;
-  width: 100%;
-`;
-
-
 const Base = styled(Center) `
   height: 100%;
   padding: 1rem;
@@ -55,9 +49,6 @@ export default function SideBar () {
     <Layout>
       <Base>
         <Logo onClick={()=>navigate('/')}>로고</Logo>
-        <Selected>
-          <p>선택된 host</p>
-        </Selected>
         <p>host List</p>
         <Search>
           <input 
