@@ -13,8 +13,8 @@ const SubTitle = styled.h2`
 
 const Box = styled.div`
   margin: 50px 50px;
-  border: 1px solid gray;
   text-align: left;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
 const ThreadName = styled.h2`
