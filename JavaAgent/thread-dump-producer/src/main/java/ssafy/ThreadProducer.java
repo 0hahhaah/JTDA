@@ -1,9 +1,13 @@
 package ssafy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+import java.sql.Array;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadProducer
@@ -13,19 +17,40 @@ public class ThreadProducer
 
     public static void main( String[] args ) throws InterruptedException {
 
+        List<Thread> runnableThreads = new ArrayList<Thread>();
+
         TimerTask task = new TimerTask() {
             public void run() {
+                for (int i = 0; i < 30; i++) {
+                    Thread runnableThread = new Thread(new RunnableThread(), "Thread-Runnable-" + i);
+                    runnableThread.start();
+                    runnableThreads.add(runnableThread);
+//                    System.out.println("runnable created");
+                }
+
                 for (int i = 0; i < 20; i++) {
                     // RUNNABLE
-                    Thread basicThread = new Thread(new BasicThread(), "Thread-Basic-" + i);
-                    basicThread.start();
+                    Thread sleepThread = new Thread(new SleepThread(), "Thread-SLEEP-" + i);
+                    sleepThread.start();
                 }
             }
         };
 
+
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.scheduleAtFixedRate(new Runnable(){
+            @Override
+            public void run(){
+                for (Thread runnableThread : runnableThreads ) {
+                    runnableThread.interrupt();
+//                    System.out.println("interrupting: " + runnableThread.getName());
+                }
+            }
+        }, 60000, 180000, TimeUnit.MILLISECONDS);
+
         Timer timer = new Timer("Timer");
-        long delay = 3000;
-        long period = 10000;
+        long delay = 10000;
+        long period = 120000;
         timer.scheduleAtFixedRate(task, delay, period);
 
         // RUNNABLE && BLOCKED (synchronized method)
@@ -33,16 +58,17 @@ public class ThreadProducer
             Thread syncThread = new Thread(new SynchronizedThread(), "Thread-Sync-" + i);
             syncThread.start();
         }
-        Thread order = new Thread(new SynchronizedThread(), "Thread-FirstOrder");
-        Thread newOrder = new Thread(new SynchronizedThread(), "Thread-SecondOrder");
-        Thread newNewOrder = new Thread(new SynchronizedThread(), "Thread-ThirdOrder");
 
-        order.start();
-        newOrder.start();
-        newNewOrder.start();
+//        Thread order = new Thread(new SynchronizedThread(), "Thread-FirstOrder");
+//        Thread newOrder = new Thread(new SynchronizedThread(), "Thread-SecondOrder");
+//        Thread newNewOrder = new Thread(new SynchronizedThread(), "Thread-ThirdOrder");
+//
+//        order.start();
+//        newOrder.start();
+//        newNewOrder.start();
 
         // WAITING by orderEdit.join()
-        Thread interruptedThread = new Thread(new InterruptedThread(), "Thread-EditWaitingOrder");
+        Thread interruptedThread = new Thread(new InterruptedThread(), "Thread-Interrupted");
         interruptedThread.start();
 
         // TIMED_WAITING
@@ -58,6 +84,7 @@ public class ThreadProducer
         T2.start();
         T3.start();
         T4.start();
+
     }
 
     private static class ThreadDeadLockOne extends Thread {
@@ -85,16 +112,29 @@ public class ThreadProducer
         }
     }
 
-    static class BasicThread implements Runnable {
+    static class RunnableThread implements Runnable {
 
         @Override
         public void run() {
-            keepRunning();
+            while(!Thread.currentThread().isInterrupted()){
+
+            }
+//            System.out.println("runnable interrupted");
+        };
+    }
+
+    static class SleepThread implements Runnable {
+
+        @Override
+        public void run() {
+            sleep();
         }
 
-        public static void keepRunning() {
-            while (true) {
-
+        public static void sleep() {
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
