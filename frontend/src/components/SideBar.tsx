@@ -26,32 +26,6 @@ const Base = styled(Center)`
   padding: 1rem;
 `;
 
-const Search = styled.div`
-  position: relative;
-  display: flex;
-  width: 100%;
-  margin-top: 50px;
-  margin-bottom: 20px;
-`;
-
-const SearchInput = styled.input`
-  width: 90%;
-  border-radius: 17px;
-  padding: 10px;
-  padding-left: 15px;
-  padding-right: 40px;
-  border: 0;
-  color: #333333;
-  box-shadow: 0px 3px 3px #cdcdcd;
-`;
-
-const SearchIcon = styled.span`
-  position: absolute;
-  right: 10px;
-  top: 5px;
-  cursor: pointer;
-`;
-
 const Footer = styled.div`
   width: 100%;
   background-color: #cdcdcd;
@@ -71,19 +45,6 @@ export default function SideBar() {
       <Base>
         <Logo></Logo>
         <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
-        {/* <Search>
-          <SearchInput
-            placeholder={isMain ? "Host IP" : "thread id / name"}
-            onChange={(e) => handleInputChange(e.target.value)}
-          />
-          <input 
-            style={{width: '100%'}} 
-            type="text" 
-            onChange={(e)=>{
-              setHost(e.target.value)}}/>
-          <button >검색</button>
-          <SearchIcon className="material-icons">search</SearchIcon>
-        </Search> */}
         {isMain ? <SideBarList /> : <ThreadList searchInput={searchInput} />}
       </Base>
       <Footer>Copyright ⓒ E1I4</Footer>
