@@ -1,20 +1,25 @@
-import { useCallback, useEffect, useState } from 'react'
-import { hostInfo } from '../interfaces/HostInfo.interface'
-import axios from 'axios'
-import styled from "styled-components"
+import { useEffect, useState } from "react";
+// import { hostInfo } from "../interfaces/HostInfo.interface";
+import axios from "axios";
+import styled from "styled-components";
 
 const Center = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
+
 const HostBox = styled(Center)`
   width: 100%;
   border-radius: 10px;
   background-color: white;
-  box-shadow: 0px 3px 3px #CDCDCD;
+  box-shadow: 0px 3px 3px #cdcdcd;
   margin-bottom: 15px;
   padding: 5px 0 10px 0;
+`;
+
+const ListBox = styled.div`
+  width: 100%;
   overflow: scroll;
   -ms-overflow-style: none;
   ::-webkit-scrollbar {
@@ -22,23 +27,25 @@ const HostBox = styled(Center)`
     height: 70%;
   }
   ::-webkit-scrollbar-track {
-    background: transparent  스크롤바 뒷 배경 색상
-    /* background-color: red; */
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cdcdcd;
   }
 `;
 
-const Selected = styled(HostBox)`
-  min-height: 15%;
+const SelectedHost = styled(HostBox)`
+  height: 15%;
 `;
 
-const List = styled(HostBox)`
+const HostList = styled(HostBox)`
   height: 40%;
 `;
-const ListTitle = styled.p`
-  /* border: 1px solid red; */
-  /* position: fixed; */
+
+const ListTitle = styled.div`
   margin: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: 500;
 `;
 
@@ -46,19 +53,15 @@ const HostData = styled(Center)`
   flex-direction: row;
   width: 100%;
   padding-left: 20px;
-  margin: 3px 0;
+  margin: 4px 0;
 `;
 
-const HostInput = styled.input`
-  display: none;
+const HostCheckBox = styled.input`
+  accent-color: #5f0080;
 `;
 
-const CheckboxImg = styled.img`
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  margin-right: 5px;
-  src: "/icon/checked.png";
+const HostLabel = styled.label`
+  cursor: pointer;
 `;
 
 //--------------------------------
@@ -69,7 +72,7 @@ const SelectButtons = styled.div`
 `;
 
 const ConfirmBtn = styled.button`
-  background-color: #5F0080;
+  background-color: #5f0080;
   border: 0;
   color: white;
   border-radius: 5px;
@@ -79,46 +82,47 @@ const ConfirmBtn = styled.button`
 `;
 
 const AllCancleBtn = styled(ConfirmBtn)`
-  background-color: #CDCDCD;
+  background-color: #cdcdcd;
   color: #333333;
 `;
 
 const baseUrl = "http://localhost:8081/";
 
 export default function SidebarList() {
-  const [hosts, setHosts] = useState<hostInfo>({
-    hostIp: '',
-    hostName: ''
-  });
+  const [hosts, setHosts] = useState([]);
   const [startAt, setStartAt] = useState("2022-01-31");
   const [endAt, setEndAt] = useState("2022-12-31");
-  const [checkedList, setCheckedList] = useState<Array<any> | null>(null);
-  const data: Array<string> = [
-      'host1',
-      'host2',
-      'host3',
-      'host4',
-      'host5',
-      'host6',
-      'host7',
-      'host8',
-      'host9',
-    ]
+  // const [checkedList, setCheckedList] = useState<Array<any> | null>(null);
+  const [checkedList, setCheckedList] = useState(null);
+  const data = [
+    "host1",
+    "host2",
+    "host3",
+    "host4",
+    "host5",
+    "host6",
+    "host7",
+    "host8",
+    "host9",
+    "host10",
+    "host11",
+    "host12",
+  ];
 
-  const getHosts = async()=>{
+  const getHosts = async () => {
     await axios({
       url: baseUrl + `api/host/list?startAt=${startAt}&endAt=${endAt}`,
       method: "get",
     })
-    .then((res) => {
-      console.log(res.data.hosts);
-      // setHosts(...res.data.hosts);
-      console.log('호스트결과', hosts);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-  }
+      .then((res) => {
+        console.log(res.data.hosts);
+        // setHosts(...res.data.hosts);
+        console.log("호스트결과", hosts);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   // const onCheckedElement:any = useCallback(
   //   (checked: boolean, list: any) => {
@@ -140,14 +144,14 @@ export default function SidebarList() {
   //   }
   // }
 
-  useEffect(()=>{
+  useEffect(() => {
     getHosts();
-  },[]);
+  }, []);
 
-  return(
+  return (
     <>
-      <Selected>
-        <ListTitle>선택한 host</ListTitle>
+      <SelectedHost>
+        <ListTitle>선택한 Host</ListTitle>
         {/* <ul>
         {
           checkedList.map((host, i)=>{
@@ -159,20 +163,24 @@ export default function SidebarList() {
           })
         }
         </ul> */}
-      </Selected>
+        <ListBox></ListBox>
+      </SelectedHost>
 
-      <List>
+      <HostList>
         <ListTitle>Host List</ListTitle>
-        {data.map((host, i)=>{
-          return (
-            <HostData>
-              <CheckboxImg/>
-              <HostInput type='checkbox' id={host} name='host' value={host} />
-              <label htmlFor={host}>{host}</label>
-            </HostData>
-          )
-        })}
-      </List>
+        <ListBox>
+          {data.map((host, i) => {
+            return (
+              <HostData>
+                <HostLabel>
+                  <HostCheckBox type="checkbox" name="host" value={host} />
+                  {host}
+                </HostLabel>
+              </HostData>
+            );
+          })}
+        </ListBox>
+      </HostList>
       <SelectButtons>
         <AllCancleBtn>초기화</AllCancleBtn>
         <ConfirmBtn>확인</ConfirmBtn>
@@ -180,4 +188,3 @@ export default function SidebarList() {
     </>
   );
 }
-
