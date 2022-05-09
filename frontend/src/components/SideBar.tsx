@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Logo } from './Logo'
 import styled from "styled-components"
 import SideBarList from "./SideBarList"
@@ -9,12 +8,13 @@ const Center = styled.div`
   align-items: center;
 `
 const Layout = styled(Center) `
-  width: 12%;
+  width: 15%;
   height: 100vh;
-  background-color: #bfc1c3;
+  background-color: #F7F7F7;
   position: fixed;
   top: 0;
   left: 0;
+  box-shadow: 0px 3px 3px #CDCDCD;
 `
 
 const Base = styled(Center) `
@@ -23,33 +23,54 @@ const Base = styled(Center) `
   `
 
 const Search= styled.div`
+  position: relative;
   display: flex;
   width: 100%;
-  background-color: blue;
-  margin-bottom: 30px;
+  margin-top: 50px;
+  margin-bottom: 20px;
 `
+
+const SearchInput = styled.input`
+  width: 90%;
+  border-radius: 17px;
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 40px;
+  border: 0;
+  color: #333333;
+  box-shadow: 0px 3px 3px #CDCDCD;
+`;
+
+const SearchIcon = styled.span`
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  cursor: pointer;
+`;
 
 const Footer = styled.div`
   width: 100%;
-  background-color: beige;
+  background-color: #CDCDCD;
   bottom: 0;
-  font-size: large;
+  padding: 5px 0;
+  font-size: 1rem;
+  text-align: center;
 `
 export default function SideBar () {
-  const [host, setHost] = useState("");
-  console.log(host);
   return ( 
     <Layout>
       <Base>
         <Logo></Logo>
-        <p>host List</p>
         <Search>
-          <input 
+          <SearchInput 
+            placeholder='Host IP' />
+          {/* <input 
             style={{width: '100%'}} 
             type="text" 
             onChange={(e)=>{
               setHost(e.target.value)}}/>
-          <button >검색</button>
+          <button >검색</button> */}
+          <SearchIcon className="material-icons">search</SearchIcon>
         </Search>
         <SideBarList/>
       </Base>
