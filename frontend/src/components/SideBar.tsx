@@ -1,9 +1,10 @@
 import { Logo } from "./Logo";
 import styled from "styled-components";
-import SideBarList from "./SideBarList";
-import ThreadList from "./ThreadList";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import SearchBar from "./SearchBar";
+import SideBarList from "./SideBarList";
+import ThreadList from "./ThreadList";
 
 const Center = styled.div`
   display: flex;
@@ -65,27 +66,24 @@ export default function SideBar() {
 
   const [searchInput, setSearchInput] = useState<string>("");
 
-  const handleInputChange = (value: string): void => {
-    setSearchInput(value);
-  };
-
   return (
     <Layout>
       <Base>
         <Logo></Logo>
-        <Search>
+        <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
+        {/* <Search>
           <SearchInput
             placeholder={isMain ? "Host IP" : "thread id / name"}
             onChange={(e) => handleInputChange(e.target.value)}
           />
-          {/* <input 
+          <input 
             style={{width: '100%'}} 
             type="text" 
             onChange={(e)=>{
               setHost(e.target.value)}}/>
-          <button >검색</button> */}
+          <button >검색</button>
           <SearchIcon className="material-icons">search</SearchIcon>
-        </Search>
+        </Search> */}
         {isMain ? <SideBarList /> : <ThreadList searchInput={searchInput} />}
       </Base>
       <Footer>Copyright ⓒ E1I4</Footer>
