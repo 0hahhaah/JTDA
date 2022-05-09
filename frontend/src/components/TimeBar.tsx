@@ -62,6 +62,7 @@ export default function MinMaxDateRangePicker() {
     setCategory(btn);
   };
 
+  const search = () => {};
   return (
     <Box>
       <Content>
@@ -83,6 +84,7 @@ export default function MinMaxDateRangePicker() {
               mask="___/__/__ __:__ _M"
               renderInput={(props) => <TextField {...props} />}
               value={value}
+              maxDateTime={new Date()}
               onChange={(newValue) => {
                 setValue(newValue);
               }}
@@ -94,6 +96,7 @@ export default function MinMaxDateRangePicker() {
               mask="___/__/__ __:__ _M"
               renderInput={(props) => <TextField {...props} />}
               value={value}
+              maxDateTime={new Date()}
               onChange={(newValue) => {
                 setValue(newValue);
               }}
