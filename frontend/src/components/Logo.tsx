@@ -5,10 +5,11 @@ const LogoBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`;
+    `;
 
 const LogoImage = styled.img`
     width: 80%;
+    cursor: pointer;
 `;
 
 export const Logo = () => {
@@ -17,8 +18,8 @@ export const Logo = () => {
         navigate('/');
     };
     return(
-        <LogoBox onClick={onHomeClick}>
-            <LogoImage src="logo.png" alt="JTDA"/>
+        <LogoBox>
+            <LogoImage src="logo.png" alt="JTDA" onClick={onHomeClick}/>
         </LogoBox>
     )
 }

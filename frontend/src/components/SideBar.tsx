@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from "react-router-dom"
 import { Logo } from './Logo'
 import styled from "styled-components"
 import SideBarList from "./SideBarList"
@@ -37,7 +36,6 @@ const Footer = styled.div`
   font-size: large;
 `
 export default function SideBar () {
-  const navigate = useNavigate();
   const [host, setHost] = useState("");
   console.log(host);
   return ( 
