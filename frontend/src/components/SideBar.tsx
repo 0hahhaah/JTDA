@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom"
+import { Logo } from './Logo'
 import styled from "styled-components"
 import SideBarList from "./SideBarList"
 
@@ -19,15 +20,9 @@ const Layout = styled(Center) `
 
 const Base = styled(Center) `
   height: 100%;
-  padding: 1rem;
-  
+  padding: 1rem;  
   `
-const Logo = styled.div `
-  background-color: red;
-  width: 80%;
-  height: 10%;
-  margin-bottom: 50px;
-`
+
 const Search= styled.div`
   display: flex;
   width: 100%;
@@ -48,7 +43,7 @@ export default function SideBar () {
   return ( 
     <Layout>
       <Base>
-        <Logo onClick={()=>navigate('/')}>로고</Logo>
+        <Logo></Logo>
         <p>host List</p>
         <Search>
           <input 
