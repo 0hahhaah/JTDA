@@ -25,7 +25,7 @@ pipeline {
                 sh 'docker ps -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
                 // frontend 이름으로 새로 컨테이너 실행 
                 // -d: damon모드(백그라운드 실행), -p: 호스트포트:컨테이너포트, -u: 컨테이너실행될 리눅스 사용자 이름
-                sh 'docker run -v /home/ubuntu/data:/ubuntu/data -d -p 80:80 -u root --name frontend frontend'
+                sh 'docker run -d -p 80:80 --name frontend frontend'
             }
         }
 
