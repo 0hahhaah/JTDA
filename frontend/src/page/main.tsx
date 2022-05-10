@@ -3,6 +3,7 @@ import SideBar from "../components/SideBar";
 import TimeBar from "../components/TimeBar";
 import TimeChart from "../components/TimeChart";
 import ThreadSummary from "../components/ThreadSummary";
+import StateAreaChart from "../components/StateAreaChart";
 
 const Time = styled.div`
   display: flex;
@@ -28,7 +29,8 @@ export default function main() {
       <SideBar />
       <Time>
         <TimeBar />
-        <TimeChart />
+        {/* <TimeChart /> */}
+        <StateAreaChart />
       </Time>
       <Boundary />
       <SelectedState>

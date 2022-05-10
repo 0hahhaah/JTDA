@@ -22,6 +22,7 @@
     "chart.js": "^3.7.1",
     "chartjs-chart-graph": "^3.7.1",
     "chartjs-plugin-datalabels": "^2.0.0",
+    "chartjs-plugin-zoom": "^1.2.1",
     "date-fns": "^2.28.0",
     "react": "^18.0.0",
     "react-chartjs-2": "^4.1.0",
