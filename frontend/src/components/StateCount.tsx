@@ -1,24 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThread } from "../data/dummy";
-
-declare module "styled-components" {}
+import StatePieChart from "./StatePieChart";
+import { ReactComponent as Lock } from "../assets/lock.svg";
+import { ReactComponent as Play } from "../assets/play.svg";
+import { ReactComponent as Pause } from "../assets/pause.svg";
+import { ReactComponent as Clock } from "../assets/clock.svg";
 
 const Container = styled.div`
   width: fit-content;
 `;
 
-const Title = styled.p`
-  margin: 5px 0 5px 10px;
-  font-size: 20px;
+const Title = styled.h1`
   text-align: left;
+`;
+
+const SubTitle = styled.h2`
+  color: rgb(107, 114, 128);
 `;
 
 const StateBlock = styled.div`
   display: flex;
   gap: 10px;
-  background-color: rgb(254, 240, 138);
 `;
 
 const Card = styled.div`
@@ -26,33 +30,65 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 120px;
-  height: 120px;
-  background-color: lightgray;
+  justify-content: space-evenly;
+  width: 200px;
+  height: 200px;
+  border: 2px solid #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
-const ThreadState = styled.p`
+const ThreadState = styled.div`
   margin: 0;
-  padding: 10px;
-  font-size: 14px;
+  padding: 5px;
+  font-size: 1.1rem;
+  text-align: center;
+  width: 80%;
+  border-radius: 5px;
+  background-color: ${(props) => props.color};
 `;
 
 const StateNum = styled.span`
-  font-size: 40px;
+  font-size: 50px;
 `;
 
-function StateCount() {
+export default function StateCount() {
   const navigate = useNavigate();
 
   // 테스트 용 데이터
   const [hostId, setHostId] = useState<string>("3");
   const [dateTime, setDateTime] = useState<string>("2022-05-06 09:50:30");
 
-  useEffect(() => {
-    setThreadInfo(dummyThread);
-  }, []);
-
   const [threadInfo, setThreadInfo] = useState(dummyThread);
+
+  const paintIcon = (state: string): JSX.Element => {
+    switch (state) {
+      case "BLOCKED":
+        return <Lock width="40" height="40"></Lock>;
+      case "RUNNABLE":
+        return <Play width="40" height="40"></Play>;
+      case "WAITING":
+        return <Pause width="40" height="40"></Pause>;
+      case "TIMED_WAITING":
+        return <Clock width="40" height="40"></Clock>;
+    }
+
+    return <></>;
+  };
+
+  const handleStateColor = (state: string): string => {
+    switch (state) {
+      case "BLOCKED":
+        return "#F9DFDE";
+      case "RUNNABLE":
+        return "#E5F5F5";
+      case "WAITING":
+        return "#F6E9DE";
+      case "TIMED_WAITING":
+        return "#C4DAEC";
+    }
+    return "";
+  };
 
   // 코드 중복 제거
   const states = ["BLOCKED", "RUNNABLE", "WAITING", "TIMED_WAITING"];
@@ -63,25 +99,27 @@ function StateCount() {
         navigate(`/detail?state=${state}&host=${hostId}&datetime=${dateTime}`)
       }
     >
-      <ThreadState>{state}</ThreadState>
+      {paintIcon(state)}
       <StateNum>{threadInfo.threadState[state]}</StateNum>
+      <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
     </Card>
   ));
 
   return (
-    <Container>
-      <Title>
-        host {hostId} / {dateTime} Thread State
-      </Title>
-      <StateBlock>
-        <Card>
-          <ThreadState>총 Thread 수</ThreadState>
-          <StateNum>{threadInfo.count}</StateNum>
-        </Card>
-        {paintCards}
-      </StateBlock>
-    </Container>
+    <>
+      <Container>
+        <Title>
+          host {hostId} / {dateTime} Thread State
+        </Title>
+        <StateBlock>
+          <Card>
+            <ThreadState>총 Thread 수</ThreadState>
+            <StateNum>{threadInfo.count}</StateNum>
+          </Card>
+          {paintCards}
+        </StateBlock>
+      </Container>
+      <StatePieChart threadInfo={threadInfo} />
+    </>
   );
 }
-
-export default StateCount;

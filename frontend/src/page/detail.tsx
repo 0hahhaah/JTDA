@@ -1,10 +1,10 @@
-import ThreadSideBar from "../components/ThreadSideBar";
+import SideBar from "../components/SideBar";
 import Thread from "../components/Thread";
 
 export default function detail() {
   return (
     <>
-      <ThreadSideBar />
+      <SideBar />
       <Thread />
     </>
   );
