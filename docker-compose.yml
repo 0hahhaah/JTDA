@@ -25,15 +25,11 @@
 version: "3"
 
 services:
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend/
+  nginx:
+    container_name: nginx
+    image: nginx:latest
     ports:
-      - "3000:3000"
-    volumes:
-      - "/app/node_modules"
-      - ".:/app"
+      - "80:80"
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
