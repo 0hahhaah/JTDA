@@ -23,7 +23,7 @@ pipeline {
            
                 // -q : id만 출력 / --filter name=frontend 이름 frontend인 컨테이너만 출력 / 
                 // frontend 컨테이너 찾아서 실행중지 시키고 삭제
-                sh 'docker ps -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
+                sh 'docker ps -q --filter name=kurly_frontend | grep -q . && docker stop kurly_frontend && docker rm kurly_frontend'
               
                 // frontend 이름으로 새로 컨테이너 실행 
                 // -d: damon모드(백그라운드 실행), -p: 호스트포트:컨테이너포트, -u: 컨테이너실행될 리눅스 사용자 이름
