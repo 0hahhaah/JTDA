@@ -3,7 +3,7 @@ version: "3"
 services:
   frontend: # 이름은 어떤걸로 지정해도 상관없음
     build:
-      context: . # 도커파일 위치 명시
+      context: ./frontend # 도커파일 위치 명시
     volumes:
       - /app/node_modules #도커 /app/node_modules는 맵핑을 따로 안해주겠다.
       - /home/ubuntu/cert:/home/ubuntu/cert #https연결을 위한
