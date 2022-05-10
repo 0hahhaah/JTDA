@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThread } from "../data/dummy";
-
-declare module "styled-components" {}
+import StatePieChart from "./StatePieChart";
 
 const Container = styled.div`
   width: fit-content;
@@ -41,16 +40,12 @@ const StateNum = styled.span`
   font-size: 40px;
 `;
 
-function StateCount() {
+export default function StateCount() {
   const navigate = useNavigate();
 
   // 테스트 용 데이터
   const [hostId, setHostId] = useState<string>("3");
   const [dateTime, setDateTime] = useState<string>("2022-05-06 09:50:30");
-
-  useEffect(() => {
-    setThreadInfo(dummyThread);
-  }, []);
 
   const [threadInfo, setThreadInfo] = useState(dummyThread);
 
@@ -69,19 +64,20 @@ function StateCount() {
   ));
 
   return (
-    <Container>
-      <Title>
-        host {hostId} / {dateTime} Thread State
-      </Title>
-      <StateBlock>
-        <Card>
-          <ThreadState>총 Thread 수</ThreadState>
-          <StateNum>{threadInfo.count}</StateNum>
-        </Card>
-        {paintCards}
-      </StateBlock>
-    </Container>
+    <>
+      <Container>
+        <Title>
+          host {hostId} / {dateTime} Thread State
+        </Title>
+        <StateBlock>
+          <Card>
+            <ThreadState>총 Thread 수</ThreadState>
+            <StateNum>{threadInfo.count}</StateNum>
+          </Card>
+          {paintCards}
+        </StateBlock>
+      </Container>
+      <StatePieChart threadInfo={threadInfo} />
+    </>
   );
 }
-
-export default StateCount;
