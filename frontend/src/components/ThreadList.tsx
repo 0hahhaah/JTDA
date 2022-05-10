@@ -10,6 +10,20 @@ const List = styled.div`
   border-radius: 10px;
   background-color: #ffffff;
   box-shadow: 0px 3px 3px #cdcdcd;
+  height: 50vh;
+  overflow: scroll;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 70%;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cdcdcd;
+  }
 `;
 
 const HashLink = styled.div<{ selected: boolean }>`
