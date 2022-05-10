@@ -44,7 +44,7 @@ public class ThreadController {
     })
     @Operation(summary = "ThreadStates 를 갖는 Host 리스트 반환 API", description = "Collection threaddump 내 특정 기간 내의 hostIp, hostName, threadState 항목을 반환")
     public ResponseEntity<Map<String, Object>> showThreadstateList(
-            @RequestParam String hostIp,
+            @RequestParam(value = "hostIp[]") List<String> hostIp,
             @RequestParam String startAt,
             @RequestParam String endAt) throws Exception{
         List<ThreadStateListDto> threadStateListDto = threadStateService.getThreadList(hostIp,startAt, endAt);

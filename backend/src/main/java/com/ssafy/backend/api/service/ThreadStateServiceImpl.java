@@ -25,8 +25,13 @@ public class ThreadStateServiceImpl implements ThreadStateService {
 
 
     @Override
-    public List<ThreadStateListDto> getThreadList(String hostIp, String startAt, String endAt) throws Exception {
-        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, hostIp:'"+hostIp+"'}");
+    public List<ThreadStateListDto> getThreadList(List<String> hostIp, String startAt, String endAt) throws Exception {
+        StringBuffer strHost = new StringBuffer();
+        for (String str : hostIp){
+            strHost.append("'"+str+"'"+",");
+        }
+        strHost.setLength(strHost.length()-1);
+        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, hostIp:{$in:["+strHost+"]}}");
 //        query.fields().exclude("_id");
 
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
