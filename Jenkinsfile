@@ -68,9 +68,10 @@
 
 pipeline {
     agent any
-    
-  environment {
+
+     environment {
         GIT_URL = "https://lab.ssafy.com/s06-final/S06P31S102.git"
+
     }
 
     tools {
@@ -80,7 +81,7 @@ pipeline {
     stages {
         stage('Pull') {
             steps {
-                git url: "${GIT_URL}", branch: "develop", poll: true, changelog: true
+                git url: "${GIT_URL}", branch: "*/develop", poll: true, changelog: true
             }
         }
         
