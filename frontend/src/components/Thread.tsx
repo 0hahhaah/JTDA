@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { handleStateColor } from "./StateCount";
 import { dummyThreadLog } from "../data/dummy";
 
 const Container = styled.div`
@@ -8,11 +9,16 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
+  color: #333333;
   margin: 50px 0px 0px 50px;
 `;
 
-const SubTitle = styled.h2`
-  color: #999999;
+const SubTitle = styled.h2<{
+  fontSize?: string;
+  color?: string;
+}>`
+  color: ${({ color }) => color || "#999999"};
+  font-size: ${({ fontSize }) => fontSize || ""};
   margin: 0px 0px 0px 50px;
 `;
 
@@ -31,7 +37,7 @@ const ThreadName = styled.h2`
   margin: 10px;
   font-size: 1.5rem;
   font-weight: 600;
-  color: red;
+  color: #5f0080;
   text-align: left;
 `;
 
@@ -62,7 +68,8 @@ const LineText = styled.p`
 
 export default function Thread() {
   const [threadLog, setThreadLog] = useState(dummyThreadLog);
-  const { hash } = useLocation();
+  const { search, hash } = useLocation();
+  const currentState = threadLog.threadDumps[0].state;
 
   const paintThreadLog: JSX.Element[] = threadLog.threadDumps.map(
     (threadDump, idx) => {
@@ -77,7 +84,7 @@ export default function Thread() {
             <ThreadInfo>{`THREAD ID (DECIMAL): ${threadDump.id}`}</ThreadInfo>
             <ThreadInfo>{`THREAD ID (HASH): ${threadDump.hashId}`}</ThreadInfo>
             <ThreadInfo>
-              {`IS DEAMON: ${threadDump.isDaemon ? true : false}`}
+              {`IS DAEMON: ${threadDump.isDaemon ? true : false}`}
             </ThreadInfo>
             <ThreadInfo>{`PRIORITY: ${threadDump.priority}`}</ThreadInfo>
             <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
@@ -106,9 +113,14 @@ export default function Thread() {
 
   return (
     <Container>
-      <Title>{`${dummyThreadLog.hostIp}@${dummyThreadLog.hostName}`}</Title>
-      <SubTitle>{`${"WAITING"}`}</SubTitle>
-      <SubTitle>{`${dummyThreadLog.logTime}`}</SubTitle>
+      <Title>{`${threadLog.hostIp}@${threadLog.hostName}`}</Title>
+      <SubTitle>{`${threadLog.processId}`}</SubTitle>
+      <SubTitle>{`${threadLog.logTime}`}</SubTitle>
+      <SubTitle fontSize={"1rem"}>{`${threadLog.vmInfo}`}</SubTitle>
+      <SubTitle
+        fontSize={"2rem"}
+        color={handleStateColor(currentState).replace(", 0.5", "")}
+      >{`${currentState}`}</SubTitle>
       {paintThreadLog}
     </Container>
   );

@@ -10,13 +10,20 @@ import { ReactComponent as Clock } from "../assets/clock.svg";
 
 const Container = styled.div`
   width: fit-content;
+  margin-bottom: 100px;
 `;
 
 const Title = styled.h1`
+  color: #333333;
+  font-weight: 600;
+  margin: 0px;
   text-align: left;
 `;
 
 const SubTitle = styled.h2`
+  color: #999999;
+  font-weight: 500;
+  margin: 0px;
   color: rgb(107, 114, 128);
 `;
 
@@ -38,10 +45,13 @@ const Card = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
-const ThreadState = styled.div`
+const ThreadState = styled.div<{ color?: string }>`
   margin: 0;
   padding: 5px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  font-weight: 400;
+  white-space: nowrap;
+  color: #333333;
   text-align: center;
   width: 80%;
   border-radius: 5px;
@@ -51,6 +61,20 @@ const ThreadState = styled.div`
 const StateNum = styled.span`
   font-size: 50px;
 `;
+
+export const handleStateColor = (state: string): string => {
+  switch (state) {
+    case "RUNNABLE":
+      return "rgb(0, 215, 199, 0.5)";
+    case "BLOCKED":
+      return "rgb(228, 59, 94, 0.5)";
+    case "WAITING":
+      return "rgb(255, 124, 75, 0.5)";
+    case "TIMED_WAITING":
+      return "rgb(0, 151, 225, 0.5)";
+  }
+  return "";
+};
 
 export default function StateCount() {
   const navigate = useNavigate();
@@ -63,10 +87,10 @@ export default function StateCount() {
 
   const paintIcon = (state: string): JSX.Element => {
     switch (state) {
-      case "BLOCKED":
-        return <Lock width="40" height="40"></Lock>;
       case "RUNNABLE":
         return <Play width="40" height="40"></Play>;
+      case "BLOCKED":
+        return <Lock width="40" height="40"></Lock>;
       case "WAITING":
         return <Pause width="40" height="40"></Pause>;
       case "TIMED_WAITING":
@@ -76,22 +100,8 @@ export default function StateCount() {
     return <></>;
   };
 
-  const handleStateColor = (state: string): string => {
-    switch (state) {
-      case "BLOCKED":
-        return "#F9DFDE";
-      case "RUNNABLE":
-        return "#E5F5F5";
-      case "WAITING":
-        return "#F6E9DE";
-      case "TIMED_WAITING":
-        return "#C4DAEC";
-    }
-    return "";
-  };
-
   // 코드 중복 제거
-  const states = ["BLOCKED", "RUNNABLE", "WAITING", "TIMED_WAITING"];
+  const states = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
   const paintCards: JSX.Element[] = states.map((state, idx) => (
     <Card
       key={idx}
@@ -108,12 +118,12 @@ export default function StateCount() {
   return (
     <>
       <Container>
-        <Title>
-          host {hostId} / {dateTime} Thread State
-        </Title>
+        <Title>Thread State</Title>
+        <SubTitle>host {hostId}</SubTitle>
+        <SubTitle>{dateTime}</SubTitle>
         <StateBlock>
           <Card>
-            <ThreadState>총 Thread 수</ThreadState>
+            <ThreadState>Total Thread Count</ThreadState>
             <StateNum>{threadInfo.count}</StateNum>
           </Card>
           {paintCards}
