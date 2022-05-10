@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "threaddump")
 @Getter
 @Setter
@@ -21,9 +23,9 @@ public class ThreadStateDetail {
 
     private String logTime;
 
-    private ThreadDumps[] threadDumps;
+    private List<ThreadDumps> threadDumps;
 
-    public ThreadStateDetail(String hostName, String hostIp, String processId, String logTime, ThreadDumps[] threadDumps) {
+    public ThreadStateDetail(String hostName, String hostIp, String processId, String logTime, List<ThreadDumps> threadDumps) {
         this.hostName = hostName;
         this.hostIp = hostIp;
         this.processId = processId;

@@ -72,7 +72,7 @@ public class ThreadController {
         ThreadStateDetailDto threadStateDetailDto = threadStateDetailService.getThreadStateDetailList(_id, state);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("threadCount", threadStateDetailDto.getThreadDumps().length);
+        response.put("threadCount", threadStateDetailDto.getThreadDumps().size());
         response.put("threadStateDetails", threadStateDetailDto);
 
         return ResponseEntity.status(200).body(response);

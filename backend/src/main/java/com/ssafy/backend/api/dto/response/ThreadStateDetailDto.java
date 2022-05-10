@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ApiModel("ThreadResponse")
@@ -20,7 +22,7 @@ public class ThreadStateDetailDto {
 
     private String logTime;
 
-    private ThreadDumps[] threadDumps;
+    private List<ThreadDumps> threadDumps;
     public ThreadStateDetailDto(){}
 
     public ThreadStateDetailDto(ThreadStateDetail threadStateDetail){
@@ -31,7 +33,7 @@ public class ThreadStateDetailDto {
         this.threadDumps = threadStateDetail.getThreadDumps();
     }
 
-    public ThreadStateDetailDto(String hostName, String hostIp, String processId, String logTime, ThreadDumps[] threadDumps) {
+    public ThreadStateDetailDto(String hostName, String hostIp, String processId, String logTime, List<ThreadDumps> threadDumps) {
         this.hostName = hostName;
         this.hostIp = hostIp;
         this.processId = processId;
