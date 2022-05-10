@@ -81,7 +81,7 @@ pipeline {
     stages {
         stage('Pull') {
             steps {
-                git url: "${GIT_URL}", branch: "*/develop", poll: true, changelog: true
+                git url: "${GIT_URL}", poll: true, changelog: true
             }
         }
         
