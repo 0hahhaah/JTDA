@@ -3,7 +3,6 @@ import SideBar from "../components/SideBar";
 import TimeBar from "../components/TimeBar";
 import TimeChart from "../components/TimeChart";
 import StateCount from "../components/StateCount";
-import CircleChart from "../components/CircleChart";
 
 const Time = styled.div`
   display: flex;
@@ -29,7 +28,6 @@ export default function main() {
 
       <SelectedState>
         <StateCount />
-        <CircleChart />
       </SelectedState>
     </div>
   );
