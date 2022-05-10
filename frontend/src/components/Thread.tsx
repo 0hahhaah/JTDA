@@ -1,20 +1,30 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThreadLog } from "../data/dummy";
+
+const Container = styled.div`
+  padding: 30px;
+`;
 
 const Title = styled.h1`
   margin: 50px 0px 0px 50px;
 `;
 
 const SubTitle = styled.h2`
-  color: rgb(107, 114, 128);
+  color: #999999;
   margin: 0px 0px 0px 50px;
 `;
 
-const Box = styled.div`
-  margin: 50px 50px;
-  border: 1px solid gray;
+const Box = styled.div<{ selected: boolean }>`
   text-align: left;
+  margin: 20px 50px;
+  padding: 10px;
+  border: 2px solid ${({ selected }) => (selected ? "#5f0080" : "#f7f7f7")};
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  transition: all 0.2s ease-in-out;
 `;
 
 const ThreadName = styled.h2`
@@ -52,11 +62,16 @@ const LineText = styled.p`
 
 export default function Thread() {
   const [threadLog, setThreadLog] = useState(dummyThreadLog);
+  const { hash } = useLocation();
 
-  const paintThreadLog: JSX.Element[] = dummyThreadLog.threadDumps.map(
+  const paintThreadLog: JSX.Element[] = threadLog.threadDumps.map(
     (threadDump, idx) => {
       return (
-        <Box key={idx} id={threadDump.id}>
+        <Box
+          key={idx}
+          id={threadDump.id}
+          selected={threadDump.id === hash.replace("#", "")}
+        >
           <ThreadName>{threadDump.name}</ThreadName>
           <ThreadInfos>
             <ThreadInfo>{`THREAD ID (DECIMAL): ${threadDump.id}`}</ThreadInfo>
@@ -90,11 +105,11 @@ export default function Thread() {
   }
 
   return (
-    <>
+    <Container>
       <Title>{`${dummyThreadLog.hostIp}@${dummyThreadLog.hostName}`}</Title>
       <SubTitle>{`${"WAITING"}`}</SubTitle>
       <SubTitle>{`${dummyThreadLog.logTime}`}</SubTitle>
       {paintThreadLog}
-    </>
+    </Container>
   );
 }

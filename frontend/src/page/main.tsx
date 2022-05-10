@@ -8,7 +8,6 @@ const Time = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: orange;
 `;
 
 const SelectedState = styled.div`
