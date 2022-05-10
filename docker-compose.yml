@@ -9,5 +9,5 @@ services:
       - /home/ubuntu/cert:/home/ubuntu/cert #https연결을 위한
     ports:
       - "3000:3000" # EC2 포트 : 컨테이너 포트
-    stdin_open: true
-    tty: true
+      - "80:80"
+      - "443:443"
