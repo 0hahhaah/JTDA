@@ -53,6 +53,7 @@ const InfoText = styled.p`
   margin: 0;
   color: #999999;
   text-align: center;
+  font-size: 13px;
 `;
 
 const HostData = styled(Center)`
@@ -166,11 +167,7 @@ export default function SidebarList() {
         <ListTitle>선택한 Host</ListTitle>
         <ListBox>
           {checkedItems.length === 0 ? (
-            <InfoText>
-              조회할 host를
-              <br />
-              선택해주세요
-            </InfoText>
+            <InfoText>조회할 host를 선택해주세요</InfoText>
           ) : (
             <ul>
               {checkedItems.map((e, i) => {
