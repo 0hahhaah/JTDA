@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 import {
   Chart as ChartJS,
@@ -8,8 +8,8 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -20,24 +20,21 @@ ChartJS.register(
   Legend
 );
 
-
 const Box = styled.div`
-  padding: 0% 5%;
+  padding: 0% 2%;
   width: 50%;
-  background-color: #8ba2a5;
 `;
-
 
 export const options = {
   plugins: {
     title: {
       display: true,
-      text: '시간별 thread 정보',
+      text: "시간별 thread 정보",
     },
   },
   responsive: true,
   interaction: {
-    mode: 'index' as const,
+    mode: "index" as const,
     intersect: false,
   },
   scales: {
@@ -50,28 +47,34 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+const labels = ["January", "February", "March", "April", "May", "June", "July"];
 
 export const data = {
   labels,
   datasets: [
     {
-      label: 'Dataset 1',
+      label: "BLOCKED",
       data: [23, 14, 4, 7],
-      backgroundColor: 'rgb(255, 99, 132)',
-      stack: 'Stack 0',
+      backgroundColor: "rgb(255, 116, 111, 1)",
+      stack: "Stack 0",
     },
     {
-      label: 'Dataset 2',
+      label: "RUNNABLE",
       data: [14, 4, 23, 17],
-      backgroundColor: 'rgb(75, 192, 192)',
-      stack: 'Stack 0',
+      backgroundColor: "rgb(0, 214, 227, 1)",
+      stack: "Stack 0",
     },
     {
-      label: 'Dataset 3',
+      label: "WAITING",
       data: [30, 1, 13, 27],
-      backgroundColor: 'rgb(53, 162, 235)',
-      stack: 'Stack 1',
+      backgroundColor: "rgb(255, 139, 40, 1)",
+      stack: "Stack 0",
+    },
+    {
+      label: "TIMED_WAITING",
+      data: [30, 1, 13, 27],
+      backgroundColor: "rgb(52, 149, 228, 1)",
+      stack: "Stack 0",
     },
   ],
 };
@@ -79,7 +82,7 @@ export const data = {
 export default function TimeChart() {
   return (
     <Box>
-        <Bar options={options} data={data} />;
+      <Bar options={options} data={data} />
     </Box>
-)
+  );
 }

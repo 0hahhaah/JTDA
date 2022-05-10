@@ -1,16 +1,14 @@
-import styled from "styled-components"
-import SideBar from "../components/SideBar"
-import TimeBar from "../components/TimeBar"
-import TimeChart from "../components/TimeChart"
-import StateCount from "../components/StateCount"
-import CircleChart from "../components/CircleChart"
+import styled from "styled-components";
+import SideBar from "../components/SideBar";
+import TimeBar from "../components/TimeBar";
+import TimeChart from "../components/TimeChart";
+import StateCount from "../components/StateCount";
 
 const Time = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: orange;
-`
+`;
 
 const SelectedState = styled.div`
   display: flex;
@@ -19,20 +17,18 @@ const SelectedState = styled.div`
   margin: 40px 20px;
 `;
 
-
-export default function main () {
+export default function main() {
   return (
     <div>
-      <SideBar/>
+      <SideBar />
       <Time>
-        <TimeBar/>
-        <TimeChart/>
+        <TimeBar />
+        <TimeChart />
       </Time>
 
       <SelectedState>
         <StateCount />
-        <CircleChart />
       </SelectedState>
     </div>
-  )
+  );
 }

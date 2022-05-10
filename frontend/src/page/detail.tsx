@@ -1,12 +1,11 @@
-import SideBar from "../components/SideBar"
-import Thread from "../components/Thread"
+import SideBar from "../components/SideBar";
+import Thread from "../components/Thread";
 
-
-export default function detail () {
+export default function detail() {
   return (
     <>
-      <SideBar/>
-      <Thread/>
+      <SideBar />
+      <Thread />
     </>
-  )
+  );
 }
