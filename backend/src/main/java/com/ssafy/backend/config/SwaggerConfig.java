@@ -10,6 +10,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+// URL: http://localhost:8081/swagger-ui/index.html
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -20,7 +21,7 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(true)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/api/**"))
+                .paths(PathSelectors.ant("/**"))
                 .build()
                 .apiInfo(apiInfo());
     }
