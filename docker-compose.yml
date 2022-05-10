@@ -25,21 +25,11 @@
 version: "3"
 
 services:
-  web:
-    image: nginx:latest
-    container_name: web
-    restart: "on-failure"
-    ports:
-      - 80:80
-    volumes:
-      - ./frontend/conf:/etc/nginx
-      - /home/ubuntu/cert:/home/ubuntu/cert
-
   frontend:
     build:
       context: .
     container_name: frontend
-    restart: "on-failure"
+    dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
