@@ -32,7 +32,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - conf:/etc/nginx
+      - ./frontend/conf/conf.d:/etc/nginx
       - /home/ubuntu/cert:/home/ubuntu/cert
 
   frontend:
