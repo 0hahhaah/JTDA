@@ -26,9 +26,9 @@ version: "3"
 
 services:
   frontend:
-    build:
-      context: .
     container_name: frontend
+    build:
+      context: ./frontend/
     dockerfile: Dockerfile
     ports:
       - "3000:3000"
