@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { handleStateColor } from "./StateCount";
+import { handleStateColor } from "./ThreadSummary";
 import { dummyThreadLog } from "../data/dummy";
 
 const Container = styled.div`

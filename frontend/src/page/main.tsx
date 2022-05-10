@@ -2,7 +2,7 @@ import styled from "styled-components";
 import SideBar from "../components/SideBar";
 import TimeBar from "../components/TimeBar";
 import TimeChart from "../components/TimeChart";
-import StateCount from "../components/StateCount";
+import ThreadSummary from "../components/ThreadSummary";
 
 const Time = styled.div`
   display: flex;
@@ -17,6 +17,11 @@ const SelectedState = styled.div`
   margin: 40px 20px;
 `;
 
+export const Boundary = styled.hr`
+  width: 95%;
+  border: solid 1px #eeeeee;
+`;
+
 export default function main() {
   return (
     <div>
@@ -25,9 +30,9 @@ export default function main() {
         <TimeBar />
         <TimeChart />
       </Time>
-
+      <Boundary />
       <SelectedState>
-        <StateCount />
+        <ThreadSummary />
       </SelectedState>
     </div>
   );

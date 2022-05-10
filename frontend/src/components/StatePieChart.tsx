@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { ThreadInfo } from "../interfaces/ThreadDump.interface";
-import { useState } from "react";
 
 const Title = styled.div`
   text-align: center;
@@ -14,6 +13,7 @@ const Title = styled.div`
 const Box = styled.div`
   width: 300px;
   height: 300px;
+  grid-column: span 1 / span 1;
 `;
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -23,7 +23,7 @@ interface PieChartProps {
 }
 
 export default function StatePieChart({ threadInfo }: PieChartProps) {
-  const [data, setData] = useState({
+  const data = {
     labels: ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"],
     datasets: [
       {
@@ -38,12 +38,22 @@ export default function StatePieChart({ threadInfo }: PieChartProps) {
         hoverOffset: 10,
       },
     ],
-  });
+  };
+
+  const options: object = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom",
+      },
+    },
+  };
 
   return (
     <Box>
-      <Title>Thread State %</Title>
-      <Pie data={data} />
+      <Title>Thread State (%)</Title>
+      <Pie data={data} options={options} />
     </Box>
   );
 }
