@@ -11,3 +11,5 @@ services:
       - "3000:3000" # EC2 포트 : 컨테이너 포트
       - "80:80"
       - "443:443"
+    stdin_open: true # docker run -i
+    tty: true
