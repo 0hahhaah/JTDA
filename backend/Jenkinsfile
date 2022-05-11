@@ -5,7 +5,7 @@ pipeline {
         stage('Backend Gradle Build && Test') {
             steps {
                 sh 'chmod u+x ./backend/gradlew'
-                sh './backend/gradlew clean build'
+                sh './backend/gradlew clean build ./backend'
             }
             post {
                 success {
