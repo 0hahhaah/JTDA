@@ -19,7 +19,7 @@ pipeline {
 
         stage('Frontend Deploy') {
             steps {
-                sh 'docker ps -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
+                sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
                 sh 'docker run -it -d -p 80:80 -p 443:443 -p 3000:3000 -v "/home/ubuntu/cert/:/home/ubuntu/cert/" -u root --name frontend frontend'
                 echo 'Frontend Deploy 성공!!!!!!!!!!!!!!'
             }
