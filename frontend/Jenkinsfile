@@ -54,14 +54,14 @@ pipeline {
     stages {
         stage('Frontend Build') {
             steps {
-                sh 'docker build -t frontend .'
+                sh 'docker build -t frontend ./frontend'
             }
         }
 
         stage('Frontend Deploy') {
             steps {
                 sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
-                sh 'docker-compose up --build -f .'
+                sh 'docker-compose up --build -f ./frontend'
             }
         }
 
