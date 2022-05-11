@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,14 +61,14 @@ public class HostServiceImpl implements HostService {
         try {
             simpleDateFormat.parse(startAt.trim());
             isStartDate = true;
-        } catch (Exception e) {
+        } catch (ParseException e) {
             isStartDate = false;
         }
         boolean isEndDate;
         try {
             simpleDateFormat.parse(endAt.trim());
             isEndDate = true;
-        } catch (Exception e) {
+        } catch (ParseException e) {
             isEndDate = false;
         }
 

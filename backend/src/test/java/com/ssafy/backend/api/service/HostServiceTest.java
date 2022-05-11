@@ -31,7 +31,7 @@ public class HostServiceTest {
 
     @Test
     public void HostSearch_GET() {
-        HostListRes hostListRes = hostService.getHostSearch("", "", "");
+        HostListRes hostListRes = hostService.getHostSearch("2022-05-09 12:00:00", "2022-05-10 12:00:00", "cc");
 
         assertThat(hostListRes.getHosts()).isNotEmpty();
     }

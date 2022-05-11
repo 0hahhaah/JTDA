@@ -34,11 +34,15 @@ dependencies {
 
 	// MongoTemplate
 	implementation('org.springframework.data:spring-data-mongodb:3.3.4')
-	implementation('org.mongodb:mongo-java-driver:3.12.10')
+	implementation('org.mongodb:mongo-java-driver:3.12.11')
 
 	implementation('org.springframework.data:spring-data-commons:2.6.4')
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jar {
+	enabled = false
 }
