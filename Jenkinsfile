@@ -1,41 +1,72 @@
 pipeline {
     agent any
-    
-    environment {
-        GIT_URL = "https://lab.ssafy.com/s06-final/S06P31S102.git"
-    }
-
-    tools {
-        nodejs "nodejs"
-    }
-
     stages {
-        stage('Frontend Build') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:16.15.0-alpine '
+                }
+            }
             steps {
-                sh 'docker build -t frontend ./frontend/'
+                sh 'npm install'
+                sh 'npm run build'
             }
         }
-
-        stage('Frontend Deploy') {
+        stage('Docker build') {
+            agent any
             steps {
-                sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
-                sh 'docker-compose up --build -f ./frontend'
+                sh 'docker build -t node:latest . --name frontend'
             }
         }
-
-        stage('Frontend Finish') {
-            steps{
-                sh 'docker images -qf dangling=true | xargs -I{} docker rmi {}'
+        stage('Docker run') {
+            agent any
+            steps {
+                sh 'docker ps -f name=frontend -q | xargs --no-run-if-empty docker container stop'
+                sh 'docker container ls -a -f name=frontend -q | xargs -r docker container rm'
+                sh 'docker images --no-trunc --all --quiet --filter="dangling=true" | xargs --no-run-if-empty docker rmi'
+                sh 'docker run -d --name frontend -p 80:80 frontend:latest'
             }
         }
-
-        // stage('Frontend Deploy') {
-        //     steps {
-        //         sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
-        //         sh 'docker run -it -d -p 80:80 -p 443:443 -p 3000:3000 -v "/home/ubuntu/cert/:/home/ubuntu/cert/" -u root --name frontend frontend'
-        //     }
-        // }
-
     }
 }
+// pipeline {
+//     agent any
+    
+//     environment {
+//         GIT_URL = "https://lab.ssafy.com/s06-final/S06P31S102.git"
+//     }
+
+//     tools {
+//         nodejs "nodejs-16.14.0"
+//     }
+
+//     stages {
+//         stage('Frontend Build') {
+//             steps {
+//                 sh 'docker build -t frontend ./frontend/'
+//             }
+//         }
+
+//         stage('Frontend Deploy') {
+//             steps {
+//                 sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
+//                 sh 'docker-compose up --build -f ./frontend'
+//             }
+//         }
+
+//         stage('Frontend Finish') {
+//             steps{
+//                 sh 'docker images -qf dangling=true | xargs -I{} docker rmi {}'
+//             }
+//         }
+
+//         // stage('Frontend Deploy') {
+//         //     steps {
+//         //         sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
+//         //         sh 'docker run -it -d -p 80:80 -p 443:443 -p 3000:3000 -v "/home/ubuntu/cert/:/home/ubuntu/cert/" -u root --name frontend frontend'
+//         //     }
+//         // }
+
+//     }
+// }
 
