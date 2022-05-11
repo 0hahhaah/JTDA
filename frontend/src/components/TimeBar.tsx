@@ -66,9 +66,18 @@ export default function TimeBar() {
   const hostIps = ["172.17.0.9"];
 
   const search = async (startAt: Date | null, endAt: Date | null) => {
+    const startDate = startAt?.toISOString().split("T")[0];
+    const startTime = startAt?.toISOString().split("T")[1].split(".")[0];
+    const startStr = startDate + " " + startTime;
+
+    const endDate = endAt?.toISOString().split("T")[0];
+    const endTime = endAt?.toISOString().split("T")[1].split(".")[0];
+    const endStr = endDate + " " + endTime;
+    console.log("startStr:", startStr);
+    console.log("endStr:", endStr);
     await axios
       .get(
-        `${URL}/api/thread/states?hostIp[]=${hostIps}&startAt=${startAt}&endAt=${endAt}`
+        `${URL}/api/thread/states?hostIp[]=[${hostIps}]&startAt=${startStr}&endAt=${endStr}`
       )
       .then((res) => {
         console.log("res", res);
