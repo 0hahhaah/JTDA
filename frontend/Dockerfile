@@ -25,10 +25,13 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 FROM node:16.14.0 as builder
-WORKDIR /app
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
 
-COPY package.json .
-RUN npm install
-COPY . .
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+COPY package.json /usr/src/app/package.json
+RUN npm install react-scripts@5.0.1 -g --silent
+
+COPY . /usr/src/app
 
 CMD ["npm", "run", "start"]
