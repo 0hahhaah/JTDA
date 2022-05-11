@@ -12,11 +12,11 @@ import javax.validation.constraints.NotBlank;
 @Document(collection = "threaddump")
 public class ThreadLog {
     @NotBlank
-    public String hostName;
+    public String cluster;
     @NotBlank
-    public String hostIp;
+    public String host;
     @NotBlank
-    private String processId;
+    private String [] tags;
 
     private String logTime;
 
