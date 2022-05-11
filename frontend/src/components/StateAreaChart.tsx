@@ -54,33 +54,32 @@ export default function StateAreaChart() {
     labels: dummyDateTimes,
     datasets: [
       {
-        label: "RUNNABLE",
+        label: "host-1",
         data: dummyDatas[0],
-        fill: false,
+        fill: true,
         backgroundColor: "rgb(0, 215, 199, 0.5)",
-        borderColor: "rgb(0, 215, 199, 0.5)",
-        // pointBackgroundColor: "#FFFFFF",
+        borderColor: "rgb(0, 215, 199, 1)",
       },
       {
-        label: "BLOCKED",
+        label: "host-1",
         data: dummyDatas[1],
-        fill: false,
+        fill: true,
         backgroundColor: "rgb(228, 59, 94, 0.5)",
-        borderColor: "rgb(228, 59, 94, 0.5)",
+        borderColor: "rgb(228, 59, 94, 1)",
       },
       {
-        label: "WAITING",
+        label: "host-1",
         data: dummyDatas[2],
-        fill: false,
+        fill: true,
         backgroundColor: "rgb(255, 124, 75, 0.5)",
-        borderColor: "rgb(255, 124, 75, 0.5)",
+        borderColor: "rgb(255, 124, 75, 1)",
       },
       {
-        label: "TIMED_WAITING",
+        label: "host-1",
         data: dummyDatas[3],
-        fill: false,
+        fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
-        borderColor: "rgb(0, 151, 225, 0.5)",
+        borderColor: "rgb(0, 151, 225, 1)",
       },
     ],
   };
@@ -95,20 +94,20 @@ export default function StateAreaChart() {
     onClick: pointOnClick,
     interaction: {
       mode: "nearest",
-      axis: "xy",
+      axis: "x",
       intersect: false,
     },
-    // scales: {
-    //   x: {
-    //     type: "time",
-    //     time: {
-    //       unit: "second",
-    //     },
-    //   },
-    //   y: {
-    //     min: 30,
-    //   },
-    // },
+    scales: {
+      // x: {
+      //   type: "time",
+      //   time: {
+      //     unit: "second",
+      //   },
+      // },
+      y: {
+        stacked: true,
+      },
+    },
     elements: {
       point: {
         borderWidth: 0,
@@ -117,7 +116,8 @@ export default function StateAreaChart() {
         backgroundColor: "rgba(0,0,0,0)",
       },
       line: {
-        borderWidth: 3,
+        borderWidth: 1,
+        // tension: 0.1,
       },
     },
     plugins: {
