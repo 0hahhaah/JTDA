@@ -2,10 +2,10 @@ import * as React from "react";
 import addWeeks from "date-fns/addWeeks";
 import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import styled from "styled-components";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import axios from "axios";
 
 const Box = styled.div`
   background-color: #f7f7f7;
@@ -51,18 +51,44 @@ const RadioLabelRange = styled.label`
 const RadioBtn = styled.input`
   display: none;
 `;
+const URL = `http://k6s102.p.ssafy.io:8081`;
 
-export default function MinMaxDateRangePicker() {
-  const [value, setValue] = React.useState<Date | null>();
+export default function MinMaxDateRangePicker(hostIp: string) {
+  const [value, setValue] = React.useState<Date | null>(new Date());
   const [start, setStart] = React.useState<Date | null>(null);
   const [end, setEnd] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string | null>("point");
-
+  // const [searchPoint, setSearchPoint] = React.useState<string | null>("point");
   const handleClickRadioButton = (btn: string) => {
     setCategory(btn);
   };
 
-  const search = () => {};
+  const hostIps = ["172.17.0.9"];
+
+  const search = async (startAt: Date | null, endAt: Date | null) => {
+    await axios
+      .get(
+        `${URL}/api/thread/states?hostIp[]=${hostIps}&startAt=${startAt}&endAt=${endAt}`
+      )
+      .then((res) => {
+        console.log("res", res);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+  const searchCategory = async () => {
+    if (category === "point") {
+      search(value, value);
+    } else if (category === "range") {
+      search(start, end);
+    }
+  };
+
+  React.useEffect(() => {
+    searchCategory();
+  }, [value, start, end]);
+
   return (
     <Box>
       <Content>
@@ -70,7 +96,7 @@ export default function MinMaxDateRangePicker() {
           type="radio"
           id="point"
           checked={category === "point"}
-          onClick={() => handleClickRadioButton("point")}
+          onChange={() => handleClickRadioButton("point")}
         />
         <RadioLabelPoint htmlFor="point" color={`${category}`}>
           <span> ✔</span>
@@ -110,7 +136,7 @@ export default function MinMaxDateRangePicker() {
           type="radio"
           id="range"
           checked={category === "range"}
-          onClick={() => handleClickRadioButton("range")}
+          onChange={() => handleClickRadioButton("range")}
         />
         <RadioLabelRange htmlFor="range" color={`${category}`}>
           <span> ✔</span>
