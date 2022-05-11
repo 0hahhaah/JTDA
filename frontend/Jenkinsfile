@@ -61,7 +61,7 @@ pipeline {
         stage('Frontend Deploy') {
             steps {
                 sh 'docker ps -a -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
-                sh 'docker-compose up -f ./frontend'
+                sh 'docker run -d -p 3000:3000 --name frontend frontend'
             }
         }
 
