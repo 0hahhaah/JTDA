@@ -1,5 +1,14 @@
 pipeline {
-    agent any
+    agent none
+    //기본적으로 체크아웃을 하지 않는 옵션
+    options { skipDefaultCheckout(true) }
+    stages {
+        stage('Checkout repository') {
+            agent any
+            steps {
+                checkout scm
+            }
+        }
     stages {
         stage('Build') {
             agent {
