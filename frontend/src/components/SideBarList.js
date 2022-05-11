@@ -52,6 +52,7 @@ const ListTitle = styled.div`
 const InfoText = styled.p`
   margin: 0;
   color: #999999;
+  margin-top: 15px;
   text-align: center;
   font-size: 13px;
 `;
@@ -69,6 +70,10 @@ const HostCheckBox = styled.input`
 
 const HostLabel = styled.label`
   cursor: pointer;
+`;
+
+const NoneCheckBox = styled.input`
+  display: none;
 `;
 
 //--------------------------------
@@ -93,22 +98,31 @@ const AllCancleBtn = styled(ConfirmBtn)`
   color: #333333;
 `;
 
-const baseUrl = "http://k6s102.p.ssafy.io:8081/";
+const baseUrl = "http://k6s102.p.ssafy.io/api/";
+
+const charToUnicode = (str) => {
+  if (!str) return false;
+  let unicode = "";
+  for (let i = 0, l = str.length; i < l; i++) {
+    unicode += "%" + str[i].charCodeAt(0).toString(16);
+  }
+  return unicode;
+};
 
 export default function SidebarList({ searchInput }) {
   const [hostsList, setHostsList] = useState([]);
   const [startAt, setStartAt] = useState("2022-05-10");
   const [endAt, setEndAt] = useState("2022-05-10");
   const [query, setQuery] = useState(searchInput);
-  // const [checkedList, setCheckedList] = useState<Array<any> | null>(null);
   const [checkedItems, setCheckedItems] = useState([]);
-  // const [bChecked, setChecked] = useState(true);
 
   const getHosts = async () => {
     await axios({
       url:
         baseUrl +
-        `host/search?startAt=${startAt}&endAt=${endAt}&query=${query}`,
+        `host/search?startAt=${startAt}&endAt=${endAt}&query=${encodeURIComponent(
+          query
+        )}`,
       method: "get",
     })
       .then((res) => {
@@ -130,7 +144,8 @@ export default function SidebarList({ searchInput }) {
   };
 
   const onResetHandler = () => {
-    setCheckedItems([]);
+    // setCheckedItems([]);
+    console.log("초기화");
   };
 
   useEffect(() => {
@@ -146,7 +161,6 @@ export default function SidebarList({ searchInput }) {
       <SelectedHost>
         <ListTitle>선택한 Host</ListTitle>
         <ListBox>
-          {console.log(checkedItems)}
           {checkedItems.length === 0 ? (
             <InfoText>조회할 host를 선택해주세요</InfoText>
           ) : (
@@ -182,7 +196,7 @@ export default function SidebarList({ searchInput }) {
                       }
                     }}
                   />
-                  {host.hostName}
+                  &nbsp;{host.hostName}
                 </HostLabel>
               </HostData>
             );
@@ -190,7 +204,16 @@ export default function SidebarList({ searchInput }) {
         </ListBox>
       </HostList>
       <SelectButtons>
-        <AllCancleBtn onClick={onResetHandler}>초기화</AllCancleBtn>
+        <AllCancleBtn as="div">
+          <HostLabel>
+            <NoneCheckBox
+              type="checkbox"
+              name="host"
+              onChange={(e) => console.log(e.target)}
+            />
+            초기화
+          </HostLabel>
+        </AllCancleBtn>
         <ConfirmBtn onClick={onCheckedItemHandler}>조회</ConfirmBtn>
       </SelectButtons>
     </>
