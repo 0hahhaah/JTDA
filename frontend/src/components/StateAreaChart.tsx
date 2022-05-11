@@ -136,9 +136,9 @@ export default function StateAreaChart() {
           overScaleMode: "y",
         },
       },
-      tooltip: {
-        yAlign: "bottom",
-      },
+      // tooltip: {
+      //   yAlign: "top",
+      // },
     },
   };
 
