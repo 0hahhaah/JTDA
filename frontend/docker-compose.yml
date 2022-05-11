@@ -2,9 +2,8 @@ version: "3"
 services:
   frontend:
     build:
-      context: ./frontend/
+      context: .
     ports:
       - "3000:3000"
-    volumes:
-      - /node_modules
-      - .:/
+    stdin_open: true
+    tty: true
