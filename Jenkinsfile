@@ -9,6 +9,7 @@ pipeline {
                 checkout scm
             }
         }
+    }
     stages {
         stage('Build') {
             agent {
