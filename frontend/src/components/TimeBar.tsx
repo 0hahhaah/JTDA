@@ -53,7 +53,7 @@ const RadioBtn = styled.input`
 `;
 const URL = `http://k6s102.p.ssafy.io:8081`;
 
-export default function MinMaxDateRangePicker(hostIp: string) {
+export default function TimeBar() {
   const [value, setValue] = React.useState<Date | null>(new Date());
   const [start, setStart] = React.useState<Date | null>(null);
   const [end, setEnd] = React.useState<Date | null>(null);
