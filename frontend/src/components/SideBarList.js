@@ -93,79 +93,60 @@ const AllCancleBtn = styled(ConfirmBtn)`
   color: #333333;
 `;
 
-const baseUrl = "http://localhost:8081/";
+const baseUrl = "http://k6s102.p.ssafy.io:8081/";
 
-export default function SidebarList() {
-  const [hosts, setHosts] = useState([]);
-  const [startAt, setStartAt] = useState("2022-01-31");
-  const [endAt, setEndAt] = useState("2022-12-31");
+export default function SidebarList({ searchInput }) {
+  const [hostsList, setHostsList] = useState([]);
+  const [startAt, setStartAt] = useState("2022-05-10");
+  const [endAt, setEndAt] = useState("2022-05-10");
+  const [query, setQuery] = useState(searchInput);
   // const [checkedList, setCheckedList] = useState<Array<any> | null>(null);
   const [checkedItems, setCheckedItems] = useState([]);
-  const data = [
-    "host1",
-    "host2",
-    "host3",
-    "host4",
-    "host5",
-    "host6",
-    "host7",
-    "host8",
-    "host9",
-    "host10",
-    "host11",
-    "host12",
-  ];
-  const [bChecked, setChecked] = useState(false);
+  // const [bChecked, setChecked] = useState(true);
 
   const getHosts = async () => {
     await axios({
-      url: baseUrl + `api/host/list?startAt=${startAt}&endAt=${endAt}`,
+      url:
+        baseUrl +
+        `host/search?startAt=${startAt}&endAt=${endAt}&query=${query}`,
       method: "get",
     })
       .then((res) => {
         console.log(res.data.hosts);
-        // setHosts(...res.data.hosts);
-        console.log("호스트결과", hosts);
+        setHostsList([...res.data.hosts]);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const onCheckedItemHandler = () => {
-    console.log("조회");
-    //잘못생각했음. 밑에거 아니고~
-    //버튼 누르면 api 요청 보내는거
-    // if (isChecked) {
-    //   checkedItems.add(id);
-    //   setCheckedItems(checkedItems);
-    // } else if (!isChecked && checkedItems.has(id)) {
-    //   checkedItems.delete(id);
-    //   setCheckedItems(checkedItems);
-    // }
-    // console.log("dd", checkedItems);
+  const onRemoveItems = (e) => {
+    setCheckedItems(checkedItems.filter((item) => item !== e.target.value));
   };
 
-  const checkHandler = ({ target }) => {
-    setChecked(!bChecked);
-    onCheckedItemHandler(data.id, target.checked);
+  const onCheckedItemHandler = () => {
+    console.log("조회");
+    //버튼 누르면 api 요청 보내기
   };
 
   const onResetHandler = () => {
-    console.log("초기화");
-    checkedItems.map((e, i) => {});
-    //checkedItems 혹은 data의 checked를 다 false로
+    setCheckedItems([]);
   };
 
   useEffect(() => {
     getHosts();
-  }, []);
+  }, [startAt, endAt, query]);
+
+  useEffect(() => {
+    setQuery(searchInput);
+  }, [searchInput]);
 
   return (
     <>
       <SelectedHost>
         <ListTitle>선택한 Host</ListTitle>
         <ListBox>
+          {console.log(checkedItems)}
           {checkedItems.length === 0 ? (
             <InfoText>조회할 host를 선택해주세요</InfoText>
           ) : (
@@ -179,26 +160,29 @@ export default function SidebarList() {
       </SelectedHost>
 
       <HostList>
-        <ListTitle>Host List</ListTitle>
+        <ListTitle>Host List ({hostsList.length})</ListTitle>
         <ListBox>
-          {data.map((host, i) => {
+          {/* {console.log("호스트결과", hostsList)} */}
+          {hostsList.map((host, i) => {
             return (
               <HostData>
                 <HostLabel>
                   <HostCheckBox
                     type="checkbox"
                     name="host"
-                    value={host}
+                    value={host.hostName}
                     key={i}
-                    checked={bChecked}
                     onChange={(e) => {
-                      setChecked(e.target.value.checked);
-                      setCheckedItems([...checkedItems, e.target.value]);
-                      console.log(checkedItems);
-                      //여기까진 됐고 이제 체크해제하면 지워져야됨,
+                      if (e.target.checked) {
+                        setCheckedItems([...checkedItems, e.target.value]);
+                        e.target.checked = true;
+                      } else {
+                        onRemoveItems(e);
+                        e.target.checked = false;
+                      }
                     }}
                   />
-                  {host}
+                  {host.hostName}
                 </HostLabel>
               </HostData>
             );

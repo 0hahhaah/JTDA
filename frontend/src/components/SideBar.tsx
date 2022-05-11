@@ -45,7 +45,9 @@ export default function SideBar() {
       <Base>
         <Logo></Logo>
         <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
-        {isMain ? <SideBarList /> : <ThreadList searchInput={searchInput} />}
+        {isMain 
+          ? <SideBarList searchInput={searchInput}/> 
+          : <ThreadList searchInput={searchInput} />}
       </Base>
       <Footer>Copyright ⓒ E1I4</Footer>
     </Layout>
