@@ -1,14 +1,5 @@
-FROM node:16.14.0 as builder
-
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
-
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-COPY package*.json ./
-
-RUN npm install --silent
-RUN npm install react-scripts@5.0.1 -g --silent
-
-COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
+FROM nginx:latest
+VOLUME /frontend_volume
+RUN rm -rf /etc/nginx/conf.d/default.conf
+ADD ./nginx/default.conf /etc/nginx/conf.d/default.conf
+ADD ./build /usr/share/nginx/html
