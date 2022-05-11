@@ -13,25 +13,17 @@ pipeline {
         stage('Frontend Build') {
           // ./frontend/ 여기에 있는 dockerfile로 이미지 생성 및 build
             steps {
-              sh 'docker build -t frontend -f ./frontend/'
-              sh 'docker run -it -p 80:80 frontend'
-              // sh 'docker-compose up -d --build -f '
-                sh 'docker ps'
+              sh 'docker build -t frontend  ./frontend/'
             }
         }
 
-        // stage('Frontend Deploy') {
-        //     steps {
-           
-        //         // -q : id만 출력 / --filter name=frontend 이름 frontend인 컨테이너만 출력 / 
-        //         // frontend 컨테이너 찾아서 실행중지 시키고 삭제
-        //         // sh 'docker ps -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
-              
-        //         // frontend 이름으로 새로 컨테이너 실행 
-        //         // -d: damon모드(백그라운드 실행), -p: 호스트포트:컨테이너포트, -u: 컨테이너실행될 리눅스 사용자 이름
-        //         sh 'docker run -d -p 3000:3000 --name frontend kurly_frontend'
-        //     }
-        // }
+        stage('Frontend Deploy') {
+            steps {
+                sh 'docker ps -q --filter name=frontend | grep -q . && docker stop frontend && docker rm frontend'
+                sh 'docker run -it -d -p 80:80 -p 443:443 -p 3000:3000 -v "/home/ubuntu/cert/:/home/ubuntu/cert/" -u root --name frontend frontend'
+                echo 'Frontend Deploy 성공!!!!!!!!!!!!!!'
+            }
+        }
 
         stage('Frontend Finish') {
             steps{
