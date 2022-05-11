@@ -15,6 +15,7 @@ import {
   Filler,
 } from "chart.js";
 import { getDatesInRange } from "../utils/formatter";
+import { PointElementProp } from "../interfaces/ChartJS.interface";
 
 ChartJS.register(
   CategoryScale,
@@ -55,37 +56,43 @@ export default function StateAreaChart() {
       {
         label: "RUNNABLE",
         data: dummyDatas[0],
-        fill: true,
+        fill: false,
         backgroundColor: "rgb(0, 215, 199, 0.5)",
-        borderColor: "rgb(0, 215, 199, 1)",
+        borderColor: "rgb(0, 215, 199, 0.5)",
         // pointBackgroundColor: "#FFFFFF",
       },
       {
         label: "BLOCKED",
         data: dummyDatas[1],
-        fill: true,
+        fill: false,
         backgroundColor: "rgb(228, 59, 94, 0.5)",
-        borderColor: "rgb(228, 59, 94, 1)",
+        borderColor: "rgb(228, 59, 94, 0.5)",
       },
       {
         label: "WAITING",
         data: dummyDatas[2],
-        fill: true,
+        fill: false,
         backgroundColor: "rgb(255, 124, 75, 0.5)",
-        borderColor: "rgb(255, 124, 75, 1)",
+        borderColor: "rgb(255, 124, 75, 0.5)",
       },
       {
         label: "TIMED_WAITING",
         data: dummyDatas[3],
-        fill: true,
+        fill: false,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
-        borderColor: "rgb(0, 151, 225, 1)",
+        borderColor: "rgb(0, 151, 225, 0.5)",
       },
     ],
   };
 
+  const pointOnClick = (event: object, element: PointElementProp[]): void => {
+    const idx: number = element[0].index;
+    console.log(dummyDateTimes[idx]);
+  };
+
   const options: object = {
     response: true,
+    onClick: pointOnClick,
     interaction: {
       mode: "nearest",
       axis: "xy",
@@ -110,7 +117,7 @@ export default function StateAreaChart() {
         backgroundColor: "rgba(0,0,0,0)",
       },
       line: {
-        borderWidth: 0,
+        borderWidth: 3,
       },
     },
     plugins: {
