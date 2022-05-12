@@ -41,19 +41,18 @@ const Box = styled.div`
 
 export default function StateAreaChart(props: PropsType) {
   const [dateTimes, setDateTimes] = React.useState<string | []>([]);
+  const [hosts, setHosts] = React.useState<[]>([]);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
-    const startDate = startAt?.toISOString().split("T")[0];
-    const startTime = startAt?.toISOString().split("T")[1].split(".")[0];
-    const startStr = startDate + " " + startTime;
-
-    const endDate = endAt?.toISOString().split("T")[0];
-    const endTime = endAt?.toISOString().split("T")[1].split(".")[0];
-    const endStr = endDate + " " + endTime;
-
-    console.log("startStr:", startStr);
-    console.log("endStrdd:", endStr);
+    const startStr = props.startAt
+      ?.toISOString()
+      .replace("T", " ")
+      .substring(0, 16);
+    const endStr = props.endAt
+      ?.toISOString()
+      .replace("T", " ")
+      .substring(0, 16);
 
     const hostnames = ["na", "ha", "ba", "ra"];
 
@@ -68,6 +67,11 @@ export default function StateAreaChart(props: PropsType) {
       .then((res) => {
         console.log("res", res);
         // setDateTimes(res.dateTimes)
+        // setHosts(res.hosts)
+        // setRUN(res.RUNNABLE)
+        // setBlocked(res.BLOCKED)
+        // setWatting(res.WATTING)
+        // setTIMED(res.TIMED_WAITING)
       })
       .catch((err) => {
         console.log("err", err);
@@ -85,7 +89,7 @@ export default function StateAreaChart(props: PropsType) {
 
   React.useEffect(() => {
     searchCategory();
-  }, [props.pointAt, props.startAt, props.endAt]);
+  }, [props.pointAt, props.endAt]);
 
   const dummyDateTimes: string[] = getDatesInRange(
     new Date("2022-05-09 00:00:00"),
