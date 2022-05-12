@@ -10,3 +10,10 @@ export interface PointElementProp {
 export interface PieChartProps {
   threadInfo: ThreadInfo;
 }
+
+export interface PropsType {
+  pointAt: Date | null;
+  startAt: Date | null;
+  endAt: Date | null;
+  category: string;
+}
