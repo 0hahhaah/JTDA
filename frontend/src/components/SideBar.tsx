@@ -26,6 +26,7 @@ const Base = styled(Center)`
   padding: 1rem;
 `;
 
+///잘 안되네요..
 const Container = styled(Center)`
   width: 100%;
   height: 100%;
@@ -52,7 +53,13 @@ const Footer = styled.div`
   font-size: 1rem;
   text-align: center;
 `;
-export default function SideBar() {
+
+interface Props {
+  startAt?: Date | null | undefined;
+  endAt?: Date | null | undefined;
+}
+
+export default function SideBar({startAt, endAt}:Props) {
   const { pathname } = useLocation();
   const isMain: boolean = pathname === "/" ? true : false;
 
@@ -65,7 +72,10 @@ export default function SideBar() {
         <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
         <Container>
           {isMain 
-            ? <SideBarList searchInput={searchInput}/> 
+            ? <SideBarList 
+                searchInput={searchInput}
+                startAt={startAt}
+                endAt={endAt}/> 
             : <ThreadList searchInput={searchInput} />}
         </Container>
       </Base>

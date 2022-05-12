@@ -3,6 +3,7 @@ import { hostInfo } from "../interfaces/HostInfo.interface";
 import axios from "axios";
 import styled from "styled-components";
 import TagCard from "./TagCard";
+import Clusters from "./Clusters";
 
 const Center = styled.div`
   display: flex;
@@ -80,9 +81,11 @@ const NoneCheckBox = styled.input`
 `;
 //--------------------------------
 const ClusterList = styled(HostList)`
-
 `;
 
+const ToggledHost = styled.div`
+  background-color: red;
+`;
 //--------------------------------
 const SelectButtons = styled.div`
   display: flex;
@@ -109,34 +112,52 @@ const baseUrl = "http://k6s102.p.ssafy.io/api/";
 
 interface Props {
   searchInput: string;
+  startAt?: Date | null | undefined;
+  endAt?: Date | null | undefined;
 }
 
-export default function SidebarList({ searchInput }: Props) {
-  const [hostsList, setHostsList] = useState([]);
-  const [startAt, setStartAt] = useState("2022-05-10");
-  const [endAt, setEndAt] = useState("2022-05-10");
+export default function SidebarList({searchInput, startAt, endAt}: Props) {
+  const [hostsList, setHostsList] = useState<Array<string>>([]);
+  // const [startAt, setStartAt] = useState("2022-05-10");
+  // const [endAt, setEndAt] = useState("2022-05-10");
   const [query, setQuery] = useState(searchInput);
   const [checkedItems, setCheckedItems] = useState<Array<string>>([""]);
   const tags = ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7"];
   const [checkedTags, setCheckedTags] = useState<Array<string>>([""]);
+  // const [clusterList, setClusterList] = useState<any>([]);
+  const clusterList: string[] = ['cluster1', 'cluster2', 'cluster3'];
+  const checkedTagsTest: string[] = ['tag1', 'tag2', 'tag3'];
   
-  // const getHosts = async () => {
-    //   await axios({
-      //     url:
-      //       baseUrl +
-      //       `host/search?startAt=${startAt}&endAt=${endAt}&query=${encodeURIComponent(
-        //         query
-        //       )}`,
-        //     method: "get",
-        //   })
-        //     .then((res) => {
-  //       console.log(res.data.hosts);
-  //       setHostsList([...res.data.hosts]);
-  //     })
-  //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // };
+  //encodeURIComponent(query); 유니코드 변환 함수
+
+  const getAPI = async() => {
+    await axios({
+      url: baseUrl + `host/list?startAt=${startAt}&endAt=${endAt}&cluster=${clusterList}&tags=${checkedTags}`,
+      method: "get",
+    })
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
+  const getHosts = async () => {
+      await axios({
+          url:
+            baseUrl +
+            `host/search`,
+            method: "get",
+      })
+      .then((res) => {
+        console.log('dd',res.data);
+        setHostsList([...res.data.hosts]);
+      })
+      .catch((err) => {
+          console.log(err);
+        });
+    };
 
     const checkedTagsHandler = (code:string, isChecked:boolean) => {
       if(isChecked){
@@ -162,8 +183,9 @@ export default function SidebarList({ searchInput }: Props) {
   };
 
   useEffect(() => {
-    // getHosts();
-  }, [startAt, endAt, query]);
+    getAPI();
+    getHosts();
+  }, [startAt, endAt]); //변수 추가되어야 함
 
   useEffect(() => {
     setQuery(searchInput);
@@ -195,7 +217,7 @@ export default function SidebarList({ searchInput }: Props) {
         </ListBox>
       </SelectedHost>
 
-      <HostList>
+      {/* <HostList>
         <ListTitle>Host List ({hostsList.length})</ListTitle>
         <ListBox>
           {hostsList.map((host:hostInfo, i) => {
@@ -223,10 +245,20 @@ export default function SidebarList({ searchInput }: Props) {
             );
           })}
         </ListBox>
-      </HostList>
+      </HostList> */}
 
       <ClusterList>
           <ListTitle>Clusters</ListTitle>
+          <ListBox>
+            {clusterList.map((cluster, i) => {
+              return (
+                <Clusters 
+                  cluster={cluster}
+                  key={i}>
+                </Clusters>
+              )
+            })}
+          </ListBox>
       </ClusterList>
       {/* <SelectButtons>
         <AllCancleBtn as="div">
