@@ -1,9 +1,8 @@
 package com.ssafy.backend.api.service;
 
 import com.ssafy.backend.api.dto.response.HostListRes;
-//import com.ssafy.backend.core.domain.HostList;
+import com.ssafy.backend.api.dto.response.HostSearchRes;
 
-//import java.util.List;
 
 public interface HostService {
 
@@ -11,5 +10,7 @@ public interface HostService {
 //
 //    List<HostList> getHostSearch(String query);
 
-    HostListRes getHostSearch(String startAt, String endAt, String query);
+    HostSearchRes getHostSearch(String startAt, String endAt, String query);
+
+    HostListRes getHostList(String startAt, String endAt, String cluster, String tags);
 }

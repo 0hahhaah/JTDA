@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+
 @Getter
 @Setter
 @ApiModel("HostListResponse")
@@ -16,17 +17,17 @@ public class HostListRes {
 
     private String endAt;
 
-    private String searchQuery;
+    private hostListSearchInputRes searchInput;
 
-    private int hostCount;
+    private int resultCount;
 
-    private List<HostList> hosts;
+    private List<HostList> results;
 
-    public HostListRes(String startAt, String endAt, int hostCount, List<HostList> hosts, String searchQuery) {
+    public HostListRes(String startAt, String endAt, hostListSearchInputRes searchInput, int resultCount, List<HostList> results) {
         this.startAt = startAt;
         this.endAt = endAt;
-        this.searchQuery = searchQuery;
-        this.hostCount = hostCount;
-        this.hosts = hosts;
+        this.searchInput = searchInput;
+        this.resultCount = resultCount;
+        this.results = results;
     }
 }
