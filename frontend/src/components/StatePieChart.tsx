@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import { ThreadInfo } from "../interfaces/ThreadDump.interface";
+import { PieChartProps } from "../interfaces/ChartJS.interface";
 
 const Title = styled.div`
   text-align: center;
@@ -17,10 +17,6 @@ const Box = styled.div`
 `;
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-interface PieChartProps {
-  threadInfo: ThreadInfo;
-}
 
 export default function StatePieChart({ threadInfo }: PieChartProps) {
   const data = {
