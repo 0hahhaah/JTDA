@@ -51,14 +51,19 @@ const RadioLabelRange = styled.label`
 const RadioBtn = styled.input`
   display: none;
 `;
-const URL = `http://k6s102.p.ssafy.io:8081`;
+const URL = `http://k6s102.p.ssafy.io/`;
 
-export default function TimeBar() {
+interface propsType {
+  startAt: Date | null;
+  endAt: Date | null;
+  setStartAt: React.Dispatch<React.SetStateAction<Date | null>>;
+  setEndAt: React.Dispatch<React.SetStateAction<Date | null>>;
+}
+
+export default function TimeBar(props: propsType) {
   const [value, setValue] = React.useState<Date | null>(new Date());
-  const [start, setStart] = React.useState<Date | null>(null);
-  const [end, setEnd] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string | null>("point");
-  // const [searchPoint, setSearchPoint] = React.useState<string | null>("point");
+
   const handleClickRadioButton = (btn: string) => {
     setCategory(btn);
   };
@@ -86,21 +91,21 @@ export default function TimeBar() {
         console.log("err", err);
       });
   };
-  const searchCategory = async () => {
-    if (category === "point") {
-      search(value, value);
-    } else if (category === "range") {
-      search(start, end);
-    }
-  };
+  // const searchCategory = async () => {
+  //   if (category === "point") {
+  //     search(value, value);
+  //   } else if (category === "range") {
+  //     search(start, end);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    searchCategory();
-  }, [value, start, end]);
+  // React.useEffect(() => {
+  //   searchCategory();
+  // }, [value, start, end]);
 
   return (
     <Box>
-      <Content>
+      {/* <Content>
         <RadioBtn
           type="radio"
           id="point"
@@ -216,7 +221,7 @@ export default function TimeBar() {
             </LocalizationProvider>
           </>
         )}
-      </Content>
+      </Content> */}
     </Box>
   );
 }
