@@ -3,5 +3,6 @@ tagArray=("Monitoring", "WebService", "Frontend", "Backend", "DataBase", "Monito
 for i in {1..10}
 do
     echo "Running container $i"
-    docker run -d --name "thread-producer-$i" -e  CLUSTER=CLUSTER-ONE -e HOST=HOST-$i -e TAGS=${tagArray[i]} thread-producer
+    host="k6s1021${i}.p.ssafy.io"
+    docker run -d --name "thread-producer-$i" -e  CLUSTER=CLUSTER-ONE -e HOST=$host -e TAGS=${tagArray[i]} thread-producer
 done
