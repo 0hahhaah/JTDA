@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-// import { hostInfo } from "../interfaces/HostInfo.interface";
+import { hostInfo } from "../interfaces/HostInfo.interface";
 import axios from "axios";
 import styled from "styled-components";
+import TagCard from "./TagCard";
 
 const Center = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
+
+const TagBox = styled(Center)``;
 
 const HostBox = styled(Center)`
   width: 100%;
@@ -75,6 +78,10 @@ const HostLabel = styled.label`
 const NoneCheckBox = styled.input`
   display: none;
 `;
+//--------------------------------
+const ClusterList = styled(HostList)`
+
+`;
 
 //--------------------------------
 const SelectButtons = styled.div`
@@ -100,47 +107,53 @@ const AllCancleBtn = styled(ConfirmBtn)`
 
 const baseUrl = "http://k6s102.p.ssafy.io/api/";
 
-const charToUnicode = (str) => {
-  if (!str) return false;
-  let unicode = "";
-  for (let i = 0, l = str.length; i < l; i++) {
-    unicode += "%" + str[i].charCodeAt(0).toString(16);
-  }
-  return unicode;
-};
+interface Props {
+  searchInput: string;
+}
 
-export default function SidebarList({ searchInput }) {
+export default function SidebarList({ searchInput }: Props) {
   const [hostsList, setHostsList] = useState([]);
   const [startAt, setStartAt] = useState("2022-05-10");
   const [endAt, setEndAt] = useState("2022-05-10");
   const [query, setQuery] = useState(searchInput);
-  const [checkedItems, setCheckedItems] = useState([]);
+  const [checkedItems, setCheckedItems] = useState<Array<string>>([""]);
+  const tags = ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7"];
+  const [checkedTags, setCheckedTags] = useState<Array<string>>([""]);
+  
+  // const getHosts = async () => {
+    //   await axios({
+      //     url:
+      //       baseUrl +
+      //       `host/search?startAt=${startAt}&endAt=${endAt}&query=${encodeURIComponent(
+        //         query
+        //       )}`,
+        //     method: "get",
+        //   })
+        //     .then((res) => {
+  //       console.log(res.data.hosts);
+  //       setHostsList([...res.data.hosts]);
+  //     })
+  //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
 
-  const getHosts = async () => {
-    await axios({
-      url:
-        baseUrl +
-        `host/search?startAt=${startAt}&endAt=${endAt}&query=${encodeURIComponent(
-          query
-        )}`,
-      method: "get",
-    })
-      .then((res) => {
-        console.log(res.data.hosts);
-        setHostsList([...res.data.hosts]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+    const checkedTagsHandler = (code:string, isChecked:boolean) => {
+      if(isChecked){
+        setCheckedTags([...checkedTags, code])
+      } else if(!isChecked && checkedTags.find(one => one === code)){
+        const filter = checkedItems.filter(one => one !== code)
+        setCheckedTags([...filter])
+      }
+    }
 
-  const onRemoveItems = (e) => {
+  const onRemoveItems = (e:any) => {
     setCheckedItems(checkedItems.filter((item) => item !== e.target.value));
   };
 
   const onCheckedItemHandler = () => {
     console.log("조회");
-    //버튼 누르면 api 요청 보내기
+    //버튼 누르면(X) 옵션 선택하면(O) api 요청 보내기
   };
 
   const onResetHandler = () => {
@@ -149,7 +162,7 @@ export default function SidebarList({ searchInput }) {
   };
 
   useEffect(() => {
-    getHosts();
+    // getHosts();
   }, [startAt, endAt, query]);
 
   useEffect(() => {
@@ -158,6 +171,15 @@ export default function SidebarList({ searchInput }) {
 
   return (
     <>
+      <TagBox>
+        <ListTitle>Tags</ListTitle>
+        <TagCard 
+          tags={tags} 
+          checkedTags={checkedTags}
+          checkedTagsHandler={checkedTagsHandler}
+        ></TagCard>
+      </TagBox>
+
       <SelectedHost>
         <ListTitle>선택한 Host</ListTitle>
         <ListBox>
@@ -176,8 +198,7 @@ export default function SidebarList({ searchInput }) {
       <HostList>
         <ListTitle>Host List ({hostsList.length})</ListTitle>
         <ListBox>
-          {/* {console.log("호스트결과", hostsList)} */}
-          {hostsList.map((host, i) => {
+          {hostsList.map((host:hostInfo, i) => {
             return (
               <HostData>
                 <HostLabel>
@@ -203,7 +224,11 @@ export default function SidebarList({ searchInput }) {
           })}
         </ListBox>
       </HostList>
-      <SelectButtons>
+
+      <ClusterList>
+          <ListTitle>Clusters</ListTitle>
+      </ClusterList>
+      {/* <SelectButtons>
         <AllCancleBtn as="div">
           <HostLabel>
             <NoneCheckBox
@@ -215,7 +240,7 @@ export default function SidebarList({ searchInput }) {
           </HostLabel>
         </AllCancleBtn>
         <ConfirmBtn onClick={onCheckedItemHandler}>조회</ConfirmBtn>
-      </SelectButtons>
+      </SelectButtons> */}
     </>
   );
 }

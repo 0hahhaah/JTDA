@@ -26,9 +26,7 @@ const Base = styled(Center)`
   padding: 1rem;
 `;
 
-//--------사이드바 스크롤(잘 안됨)-----------------------------
 const Container = styled(Center)`
-  border: 1px solid red;
   width: 100%;
   height: 100%;
   overflow: scroll;
@@ -45,7 +43,6 @@ const Container = styled(Center)`
     background: #cdcdcd;
   }
 `;
-//------------------------------------------------------------
 
 const Footer = styled.div`
   width: 100%;
