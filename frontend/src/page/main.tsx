@@ -1,7 +1,8 @@
+import * as React from "react";
+
 import styled from "styled-components";
 import SideBar from "../components/SideBar";
 import TimeBar from "../components/TimeBar";
-import TimeChart from "../components/TimeChart";
 import ThreadSummary from "../components/ThreadSummary";
 import StateAreaChart from "../components/StateAreaChart";
 
@@ -23,13 +24,20 @@ export const Boundary = styled.hr`
   border: solid 1px #eeeeee;
 `;
 
-export default function main() {
+export default function Main() {
+  const [startAt, setStartAt] = React.useState<Date | null>(new Date());
+  const [endAt, setEndAt] = React.useState<Date | null>(new Date());
+
   return (
     <div>
       <SideBar />
       <Time>
-        <TimeBar />
-        {/* <TimeChart /> */}
+        <TimeBar
+          startAt={startAt}
+          endAt={endAt}
+          setStartAt={setStartAt}
+          setEndAt={setEndAt}
+        />
         <StateAreaChart />
       </Time>
       <Boundary />
