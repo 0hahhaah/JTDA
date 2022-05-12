@@ -5,7 +5,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import styled from "styled-components";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import axios from "axios";
 
 const Box = styled.div`
   background-color: #f7f7f7;
@@ -51,7 +50,6 @@ const RadioLabelRange = styled.label`
 const RadioBtn = styled.input`
   display: none;
 `;
-const URL = `http://k6s102.p.ssafy.io/`;
 
 interface propsType {
   pointAt: Date | null;
@@ -68,48 +66,19 @@ export default function TimeBar(props: propsType) {
   const handleClickRadioButton = (btn: string) => {
     props.setCategory(btn);
   };
-  // 조회하기 위해 시간형식 변환 후 -> axios 요청
-  const search = async (startAt: Date | null, endAt: Date | null) => {
-    const startDate = startAt?.toISOString().split("T")[0];
-    const startTime = startAt?.toISOString().split("T")[1].split(".")[0];
-    const startStr = startDate + " " + startTime;
-
-    const endDate = endAt?.toISOString().split("T")[0];
-    const endTime = endAt?.toISOString().split("T")[1].split(".")[0];
-    const endStr = endDate + " " + endTime;
-    console.log("startStr:", startStr);
-    console.log("endStr:", endStr);
-
-    const hostnames = ["na", "ha", "ba", "ra"];
-
-    const hostParam = {
-      hostnames: hostnames.join(","),
-      startAt: startStr,
-      endAt: endStr,
-    };
-
-    await axios
-      .get(`${URL}/api/thread/states?`, { params: hostParam })
-      .then((res) => {
-        console.log("res", res);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-
-  // 어떤 조회를 선택했는지 확인
-  const searchCategory = async () => {
-    if (props.category === "point") {
-      search(props.pointAt, props.pointAt);
-    } else if (props.category === "range") {
-      search(props.startAt, props.endAt);
+  const chageRange = (newValue: Date | null) => {
+    // 종료시각 선택 안됐거나 / 시작시간이 종료시간보다 늦은 경우
+    if (props.endAt === undefined) {
+      props.setEndAt(null);
+    } else if (
+      props.endAt != null &&
+      newValue != null &&
+      newValue >= props.endAt
+    ) {
+      props.setEndAt(null);
     }
+    props.setStartAt(newValue);
   };
-
-  React.useEffect(() => {
-    searchCategory();
-  }, []);
 
   return (
     <Box>
@@ -174,9 +143,7 @@ export default function TimeBar(props: propsType) {
                 renderInput={(props) => <TextField {...props} />}
                 value={props.startAt}
                 maxDateTime={new Date()}
-                onChange={(newValue) => {
-                  props.setStartAt(newValue);
-                }}
+                onChange={(newValue) => chageRange(newValue)}
               />
             </LocalizationProvider>
             <Wave> ~ </Wave>
@@ -206,9 +173,7 @@ export default function TimeBar(props: propsType) {
                 renderInput={(props) => <TextField {...props} />}
                 value={props.startAt}
                 maxDateTime={new Date()}
-                onChange={(newValue) => {
-                  props.setStartAt(newValue);
-                }}
+                onChange={(newValue) => chageRange(newValue)}
               />
             </LocalizationProvider>
             <Wave> ~ </Wave>
