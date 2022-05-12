@@ -54,22 +54,21 @@ const RadioBtn = styled.input`
 const URL = `http://k6s102.p.ssafy.io/`;
 
 interface propsType {
+  pointAt: Date | null;
   startAt: Date | null;
   endAt: Date | null;
+  category: string;
+  setPointAt: React.Dispatch<React.SetStateAction<Date | null>>;
   setStartAt: React.Dispatch<React.SetStateAction<Date | null>>;
   setEndAt: React.Dispatch<React.SetStateAction<Date | null>>;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function TimeBar(props: propsType) {
-  const [value, setValue] = React.useState<Date | null>(new Date());
-  const [category, setCategory] = React.useState<string | null>("point");
-
   const handleClickRadioButton = (btn: string) => {
-    setCategory(btn);
+    props.setCategory(btn);
   };
-
-  const hostIps = ["172.17.0.9"];
-
+  // 조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
     const startDate = startAt?.toISOString().split("T")[0];
     const startTime = startAt?.toISOString().split("T")[1].split(".")[0];
@@ -80,10 +79,17 @@ export default function TimeBar(props: propsType) {
     const endStr = endDate + " " + endTime;
     console.log("startStr:", startStr);
     console.log("endStr:", endStr);
+
+    const hostnames = ["na", "ha", "ba", "ra"];
+
+    const hostParam = {
+      hostnames: hostnames.join(","),
+      startAt: startStr,
+      endAt: endStr,
+    };
+
     await axios
-      .get(
-        `${URL}/api/thread/states?hostIp[]=[${hostIps}]&startAt=${startStr}&endAt=${endStr}`
-      )
+      .get(`${URL}/api/thread/states?`, { params: hostParam })
       .then((res) => {
         console.log("res", res);
       })
@@ -91,42 +97,44 @@ export default function TimeBar(props: propsType) {
         console.log("err", err);
       });
   };
-  // const searchCategory = async () => {
-  //   if (category === "point") {
-  //     search(value, value);
-  //   } else if (category === "range") {
-  //     search(start, end);
-  //   }
-  // };
 
-  // React.useEffect(() => {
-  //   searchCategory();
-  // }, [value, start, end]);
+  // 어떤 조회를 선택했는지 확인
+  const searchCategory = async () => {
+    if (props.category === "point") {
+      search(props.pointAt, props.pointAt);
+    } else if (props.category === "range") {
+      search(props.startAt, props.endAt);
+    }
+  };
+
+  React.useEffect(() => {
+    searchCategory();
+  }, []);
 
   return (
     <Box>
-      {/* <Content>
+      <Content>
         <RadioBtn
           type="radio"
           id="point"
-          checked={category === "point"}
+          checked={props.category === "point"}
           onChange={() => handleClickRadioButton("point")}
         />
-        <RadioLabelPoint htmlFor="point" color={`${category}`}>
+        <RadioLabelPoint htmlFor="point" color={`${props.category}`}>
           <span> ✔</span>
         </RadioLabelPoint>
         <Title>시점 조회</Title>
 
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          {category === "point" ? (
+          {props.category === "point" ? (
             <DateTimePicker
               inputFormat="yyyy/MM/dd hh:mm a"
               mask="___/__/__ __:__ _M"
               renderInput={(props) => <TextField {...props} />}
-              value={value}
+              value={props.pointAt}
               maxDateTime={new Date()}
               onChange={(newValue) => {
-                setValue(newValue);
+                props.setPointAt(newValue);
               }}
             />
           ) : (
@@ -135,10 +143,10 @@ export default function TimeBar(props: propsType) {
               inputFormat="yyyy/MM/dd hh:mm a"
               mask="___/__/__ __:__ _M"
               renderInput={(props) => <TextField {...props} />}
-              value={value}
+              value={props.pointAt}
               maxDateTime={new Date()}
               onChange={(newValue) => {
-                setValue(newValue);
+                props.setPointAt(newValue);
               }}
             />
           )}
@@ -149,14 +157,14 @@ export default function TimeBar(props: propsType) {
         <RadioBtn
           type="radio"
           id="range"
-          checked={category === "range"}
+          checked={props.category === "range"}
           onChange={() => handleClickRadioButton("range")}
         />
-        <RadioLabelRange htmlFor="range" color={`${category}`}>
+        <RadioLabelRange htmlFor="range" color={`${props.category}`}>
           <span> ✔</span>
         </RadioLabelRange>
         <Title>기간 조회</Title>
-        {category === "range" ? (
+        {props.category === "range" ? (
           <>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
@@ -164,10 +172,10 @@ export default function TimeBar(props: propsType) {
                 inputFormat="yyyy/MM/dd hh:mm a"
                 mask="___/__/__ __:__ _M"
                 renderInput={(props) => <TextField {...props} />}
-                value={start}
+                value={props.startAt}
                 maxDateTime={new Date()}
                 onChange={(newValue) => {
-                  setStart(newValue);
+                  props.setStartAt(newValue);
                 }}
               />
             </LocalizationProvider>
@@ -178,11 +186,11 @@ export default function TimeBar(props: propsType) {
                 inputFormat="yyyy/MM/dd hh:mm a"
                 mask="___/__/__ __:__ _M"
                 renderInput={(props) => <TextField {...props} />}
-                value={end}
-                minDateTime={start}
+                value={props.endAt}
+                minDateTime={props.startAt}
                 maxDateTime={new Date()}
                 onChange={(newValue) => {
-                  setEnd(newValue);
+                  props.setEndAt(newValue);
                 }}
               />
             </LocalizationProvider>
@@ -196,10 +204,10 @@ export default function TimeBar(props: propsType) {
                 inputFormat="yyyy/MM/dd hh:mm a"
                 mask="___/__/__ __:__ _M"
                 renderInput={(props) => <TextField {...props} />}
-                value={start}
+                value={props.startAt}
                 maxDateTime={new Date()}
                 onChange={(newValue) => {
-                  setStart(newValue);
+                  props.setStartAt(newValue);
                 }}
               />
             </LocalizationProvider>
@@ -211,17 +219,17 @@ export default function TimeBar(props: propsType) {
                 inputFormat="yyyy/MM/dd hh:mm a"
                 mask="___/__/__ __:__ _M"
                 renderInput={(props) => <TextField {...props} />}
-                value={end}
-                minDateTime={start}
+                value={props.endAt}
+                minDateTime={props.startAt}
                 maxDateTime={new Date()}
                 onChange={(newValue) => {
-                  setEnd(newValue);
+                  props.setEndAt(newValue);
                 }}
               />
             </LocalizationProvider>
           </>
         )}
-      </Content> */}
+      </Content>
     </Box>
   );
 }

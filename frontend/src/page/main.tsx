@@ -25,18 +25,24 @@ export const Boundary = styled.hr`
 `;
 
 export default function Main() {
-  const [startAt, setStartAt] = React.useState<Date | null>(new Date());
-  const [endAt, setEndAt] = React.useState<Date | null>(new Date());
+  const [pointAt, setPointAt] = React.useState<Date | null>(new Date());
+  const [startAt, setStartAt] = React.useState<Date | null>(null);
+  const [endAt, setEndAt] = React.useState<Date | null>(null);
+  const [category, setCategory] = React.useState<string>("point");
 
   return (
     <div>
       <SideBar />
       <Time>
         <TimeBar
+          pointAt={pointAt}
           startAt={startAt}
           endAt={endAt}
+          category={category}
+          setPointAt={setPointAt}
           setStartAt={setStartAt}
           setEndAt={setEndAt}
+          setCategory={setCategory}
         />
         <StateAreaChart />
       </Time>
