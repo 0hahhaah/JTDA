@@ -5,7 +5,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import styled from "styled-components";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import axios from "axios";
 
 const Box = styled.div`
   background-color: #f7f7f7;
@@ -51,7 +50,6 @@ const RadioLabelRange = styled.label`
 const RadioBtn = styled.input`
   display: none;
 `;
-const URL = `http://k6s102.p.ssafy.io/`;
 
 interface propsType {
   pointAt: Date | null;

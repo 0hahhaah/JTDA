@@ -44,7 +44,12 @@ export default function Main() {
           setEndAt={setEndAt}
           setCategory={setCategory}
         />
-        <StateAreaChart />
+        <StateAreaChart
+          pointAt={pointAt}
+          startAt={startAt}
+          endAt={endAt}
+          category={category}
+        />
       </Time>
       <Boundary />
       <SelectedState>
