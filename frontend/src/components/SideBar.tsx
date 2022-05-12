@@ -12,7 +12,7 @@ const Center = styled.div`
   align-items: center;
 `;
 const Layout = styled(Center)`
-  width: 15%;
+  width: 20%;
   height: 100vh;
   background-color: #f7f7f7;
   position: fixed;
@@ -25,6 +25,27 @@ const Base = styled(Center)`
   height: 100%;
   padding: 1rem;
 `;
+
+//--------사이드바 스크롤(잘 안됨)-----------------------------
+const Container = styled(Center)`
+  border: 1px solid red;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 70%;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #cdcdcd;
+  }
+`;
+//------------------------------------------------------------
 
 const Footer = styled.div`
   width: 100%;
@@ -45,9 +66,11 @@ export default function SideBar() {
       <Base>
         <Logo></Logo>
         <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
-        {isMain 
-          ? <SideBarList searchInput={searchInput}/> 
-          : <ThreadList searchInput={searchInput} />}
+        <Container>
+          {isMain 
+            ? <SideBarList searchInput={searchInput}/> 
+            : <ThreadList searchInput={searchInput} />}
+        </Container>
       </Base>
       <Footer>Copyright ⓒ E1I4</Footer>
     </Layout>
