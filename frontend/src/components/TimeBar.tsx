@@ -68,9 +68,7 @@ export default function TimeBar(props: propsType) {
   const handleClickRadioButton = (btn: string) => {
     props.setCategory(btn);
   };
-
-  const hostIps = ["172.17.0.9"];
-
+  // 조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
     const startDate = startAt?.toISOString().split("T")[0];
     const startTime = startAt?.toISOString().split("T")[1].split(".")[0];
@@ -82,10 +80,16 @@ export default function TimeBar(props: propsType) {
     console.log("startStr:", startStr);
     console.log("endStr:", endStr);
 
+    const hostnames = ["na", "ha", "ba", "ra"];
+
+    const hostParam = {
+      hostnames: hostnames.join(","),
+      startAt: startStr,
+      endAt: endStr,
+    };
+
     await axios
-      .get(
-        `${URL}/api/thread/states?hostIp[]=[${hostIps}]&startAt=${startStr}&endAt=${endStr}`
-      )
+      .get(`${URL}/api/thread/states?`, { params: hostParam })
       .then((res) => {
         console.log("res", res);
       })
@@ -93,6 +97,8 @@ export default function TimeBar(props: propsType) {
         console.log("err", err);
       });
   };
+
+  // 어떤 조회를 선택했는지 확인
   const searchCategory = async () => {
     if (props.category === "point") {
       search(props.pointAt, props.pointAt);
@@ -103,7 +109,7 @@ export default function TimeBar(props: propsType) {
 
   React.useEffect(() => {
     searchCategory();
-  }, [props.pointAt, props.startAt, props.endAt]);
+  }, []);
 
   return (
     <Box>
