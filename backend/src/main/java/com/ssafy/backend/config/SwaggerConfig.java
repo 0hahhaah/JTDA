@@ -21,7 +21,7 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(true)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/**"))
+                .paths(PathSelectors.ant("/api/**"))
                 .build()
                 .apiInfo(apiInfo());
     }
