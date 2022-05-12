@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/thread")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@Api(value = "Host 조회", tags = "Host")
+@Api(value = "Thread 조회", tags = "Thread")
 public class ThreadController {
 
     private final ThreadStateService threadStateService;
