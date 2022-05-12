@@ -10,7 +10,7 @@ spring:
       bootstrap-servers: k6s102.p.ssafy.io:8092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-  spring:
-    data:
-      mongodb:
-        uri: mongodb://beSpringBoot:s102threaddump@k6s102.p.ssafy.io:27017/threaddump?authSource=threaddump&tls=true
+  data:
+    mongodb:
+      uri: mongodb://beSpringBoot:s102threaddump@k6s102.p.ssafy.io:27017/threaddump?authSource=threaddump&tls=true
+
