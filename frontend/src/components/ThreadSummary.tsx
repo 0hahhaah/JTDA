@@ -16,14 +16,14 @@ const Shadow = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
-const Section = styled(Shadow)`
+const Container = styled(Shadow)`
   display: flex;
   flex-direction: column;
   padding: 30px;
   border-radius: 10px;
 `;
 
-const Container = styled.div`
+const Section = styled.div`
   display: flex;
   align-items: center;
   width: fit-content;
@@ -152,30 +152,32 @@ export default function ThreadSummary() {
     ));
   };
 
-  const paintSections: JSX.Element[] = hostSummaryArray?.map((hostSummary) => (
-    <Section>
-      <Title>host {hostSummary.host}</Title>
-      <SubTitle>{hostSummary.logTime}</SubTitle>
-      <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
+  const paintContainers: JSX.Element[] = hostSummaryArray?.map(
+    (hostSummary) => (
       <Container>
-        <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
-        <StatePieChart threadStateCount={hostSummary.threadStateCount} />
-      </Container>
-      <Boundary />
-      <SubTitle>Daemon Count</SubTitle>
-      <Container>
-        <CardContainer gridCol={2}>
-          <Card>Daemon</Card>
-          <Card>Non-Daemon</Card>
-        </CardContainer>
-      </Container>
-      {/* <Boundary />
+        <Title>host {hostSummary.host}</Title>
+        <SubTitle>{hostSummary.logTime}</SubTitle>
+        <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
+        <Section>
+          <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
+          <StatePieChart threadStateCount={hostSummary.threadStateCount} />
+        </Section>
+        <Boundary />
+        <SubTitle>Daemon Count</SubTitle>
+        <Section>
+          <CardContainer gridCol={2}>
+            <Card>Daemon</Card>
+            <Card>Non-Daemon</Card>
+          </CardContainer>
+        </Section>
+        {/* <Boundary />
         <SubTitle>Blocking Infos</SubTitle>
         <Container>
           <BlockingGraph></BlockingGraph>
         </Container> */}
-    </Section>
-  ));
+      </Container>
+    )
+  );
 
-  return <Section>{paintSections}</Section>;
+  return <Container>{paintContainers}</Container>;
 }
