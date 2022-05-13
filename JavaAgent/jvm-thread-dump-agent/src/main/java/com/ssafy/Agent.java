@@ -121,22 +121,14 @@ public final class Agent extends TimerTask{
         ThreadMXBean mxBean = ManagementFactory.getThreadMXBean();
         Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
 
-        InetAddress hostInfo;
-        String hostName;
-        String hostIp;
-        try {
-            hostInfo = InetAddress.getLocalHost();
-            hostName = hostInfo.getHostName();
-            hostIp = hostInfo.getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-
         // create message (JSON Object)
         JSONObject message = new JSONObject();
-        message.put("hostName", hostName);
-        message.put("hostIp", hostIp);
-        message.put("processId", ManagementFactory.getRuntimeMXBean().getName());
+        message.put("cluster", clusterName);
+        message.put("host", hostName);
+
+        JSONArray jsonArrayTags= new JSONArray();
+        Collections.addAll(jsonArrayTags, tags); //  copy tags to jsonArrayTags
+        message.put("tags", jsonArrayTags);
 
         LocalDateTime logNowTime = LocalDateTime.now();
         message.put("logTime", logNowTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -148,7 +140,6 @@ public final class Agent extends TimerTask{
         ));
 
         JSONArray threadElements = new JSONArray();
-
         // create threadDumps (array)
         JSONArray threadDumps = new JSONArray();
         for(Thread thread : threads.keySet()) {
@@ -269,11 +260,6 @@ public final class Agent extends TimerTask{
         // add threadDumps (array) to message (JSON Object)
         message.put("threadDumps", threadDumps);
         message.put("threadCount", threadElements.toArray().length);
-        System.out.println("----------------------------");
-        System.out.println("time: " + message.get("logTime"));
-        System.out.println("Elements: " + threadElements.toArray().length);
-        System.out.println("Dumps: " + threadDumps.toArray().length);
-        System.out.println("Count: " + message.get("threadCount"));
 
         sendThreadsDump(message.toString());
     }
