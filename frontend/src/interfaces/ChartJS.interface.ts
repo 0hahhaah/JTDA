@@ -16,6 +16,5 @@ export interface PropsType {
   startAt: Date | null;
   endAt: Date | null;
   category: string;
-  selectedIds: any;
   setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
 }

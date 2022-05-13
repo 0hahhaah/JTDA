@@ -20,7 +20,6 @@ import {
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
-import { rejects } from "assert";
 
 ChartJS.register(
   CategoryScale,
@@ -130,7 +129,7 @@ export default function StateAreaChart(props: PropsType) {
         borderColor: "rgb(255, 124, 75, 1)",
       },
       {
-        label: "timed",
+        label: "TIMED",
         data: timed,
         fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
@@ -141,12 +140,13 @@ export default function StateAreaChart(props: PropsType) {
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-    props.setSelectedIds([]);
-    const IDS: number[][] = [];
+
+    const ids: string[] = [];
     for (let i = 0; i < hosts.length; i++) {
-      IDS.push(hosts[i]._ids[idx]);
+      ids.push(hosts[i]._ids[idx]);
     }
-    props.setSelectedIds(IDS);
+
+    props.setSelectedIds(ids);
   };
 
   const options: object = {

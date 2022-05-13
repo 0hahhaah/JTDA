@@ -14,14 +14,15 @@ const Time = styled.div`
 
 const SelectedState = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
   margin: 40px 20px;
 `;
 
 export const Boundary = styled.hr`
   width: 95%;
   border: solid 1px #eeeeee;
+  margin-bottom: 30px;
 `;
 
 export default function Main() {
@@ -29,7 +30,7 @@ export default function Main() {
   const [startAt, setStartAt] = React.useState<Date | null>(null);
   const [endAt, setEndAt] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string>("point");
-  const [selectedIds, setSelectedIds] = React.useState<any>([]);
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
   return (
     <div>
@@ -50,13 +51,12 @@ export default function Main() {
           startAt={startAt}
           endAt={endAt}
           category={category}
-          selectedIds={selectedIds}
           setSelectedIds={setSelectedIds}
         />
       </Time>
       <Boundary />
       <SelectedState>
-        <ThreadSummary />
+        <ThreadSummary selectedIds={selectedIds} />
       </SelectedState>
     </div>
   );
