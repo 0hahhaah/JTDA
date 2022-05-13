@@ -30,4 +30,19 @@ public class HostList {
         this.host = host;
         this.tags = tags;
     }
+
+    // HashSet 중복 제거
+    @Override
+    public int hashCode() {
+        return host.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof HostList)) {
+            return false;
+        }
+        HostList hostList = (HostList) obj;
+        return host.equals(hostList.host);
+    }
 }

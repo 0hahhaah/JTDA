@@ -1,6 +1,10 @@
 body {
   margin: 0;
+<<<<<<< HEAD
   padding-left: 300px;
+=======
+  padding-left: 20%;
+>>>>>>> aa091f90ca9aec20d9e5956a7dc64da8361d25e8
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
