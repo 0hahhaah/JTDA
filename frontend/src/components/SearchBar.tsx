@@ -27,6 +27,14 @@ const SearchIcon = styled.span`
   cursor: pointer;
 `;
 
+const SearchCategory = styled.select`
+  border-radius: 17px;
+  border: 0;
+  box-shadow: 0px 3px 3px #cdcdcd;
+  padding-left: 5px;
+  margin-right: 3px;
+`;
+
 interface SearchBarProps {
   isMain: boolean;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
@@ -52,11 +60,18 @@ export default function SearchBar({ isMain, setSearchInput }: SearchBarProps) {
 
   return (
     <Search>
+      {isMain
+        ?<SearchCategory>
+          <option value="cluster">Cluster</option>
+          <option value="host">Host</option>
+        </SearchCategory>
+        : null
+      }
       <SearchInput
-        placeholder={isMain ? "Host IP" : "thread id or name"}
+        placeholder={isMain ? "" : "thread id or name"}
         onChange={(e) => handleOnChange(e.target.value)}
         onKeyDown={(e) => handleKeyDown(e)}
-      />
+        />
       <SearchIcon className="material-icons">search</SearchIcon>
     </Search>
   );

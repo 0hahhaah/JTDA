@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
 const LogoBox = styled.div`
@@ -13,9 +12,8 @@ const LogoImage = styled.img`
 `;
 
 export const Logo = () => {
-    const navigate = useNavigate();
     const onHomeClick = () => {
-        navigate('/');
+        window.location.replace('/');
     };
     return(
         <LogoBox>
