@@ -109,7 +109,6 @@ export default function ThreadSummary() {
   ];
   const [selectedIds, setSelectedIds] = useState<string[]>(dummyData);
   const [hostSummaryArray, setSummaryArray] = useState<HostSummary[]>([]);
-  const location = useLocation();
   useEffect(() => {
     const fetchAndSetSummaryArray = async () => {
       const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;

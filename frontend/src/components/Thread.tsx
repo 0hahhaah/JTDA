@@ -81,7 +81,6 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
       const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
       const requestURL: string =
         BASE_URL + `/thread/detail?_id=${id}&state=${state}`;
-      console.log(requestURL);
       const res = await axios.get(requestURL);
 
       setThreadDetail(res.data.threadStateDetails);
