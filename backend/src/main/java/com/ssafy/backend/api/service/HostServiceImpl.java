@@ -1,10 +1,10 @@
 package com.ssafy.backend.api.service;
 
-import com.ssafy.backend.api.dto.response.HostListRes;
-import com.ssafy.backend.api.dto.response.HostSearchRes;
-import com.ssafy.backend.api.dto.response.hostListSearchInputRes;
+import com.ssafy.backend.api.dto.response.*;
 import com.ssafy.backend.core.domain.HostList;
 import com.ssafy.backend.core.domain.HostSearch;
+import com.ssafy.backend.core.domain.HostState;
+import com.ssafy.backend.core.domain.ThreadDumps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,9 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -154,6 +152,38 @@ public class HostServiceImpl implements HostService {
         } else {
             return new HostListRes("", "", new hostListSearchInputRes("", new ArrayList<>()), 0, new ArrayList<>());
         }
+    }
+
+
+    @Override
+    public HostStateRes getHostState(String _id) {
+        List<String> _ids = new ArrayList<>();
+        if(!_id.isEmpty()) {
+            _ids = Arrays.asList(_id.split(","));
+        }
+        Set<String> _idsNoDuplicate = new HashSet<>(_ids);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").in(_idsNoDuplicate))
+                .with(Sort.by(Sort.Direction.ASC, "host"));
+        List<HostState> queryResult = mongoTemplate.find(query, HostState.class, "threaddump");
+        List<HostStateWithDaemonCountRes> returnHosts = new ArrayList<>();
+
+        for(HostState hostState : queryResult) {
+            int daemonCount = 0;
+            int nonDaemonCount = 0;
+            List<ThreadDumps> threadDumpsList = hostState.getThreadDumps();
+            for(ThreadDumps threadDumps : threadDumpsList) {
+                if(threadDumps.isDaemon()) {
+                    daemonCount += 1;
+                } else {
+                    nonDaemonCount += 1;
+                }
+            }
+            returnHosts.add(new HostStateWithDaemonCountRes(hostState.get_id(), hostState.getHost(), hostState.getLogTime(), hostState.getThreadCount(), hostState.getThreadStateCount(), daemonCount, nonDaemonCount));
+        }
+
+        return new HostStateRes(returnHosts);
     }
 
 
