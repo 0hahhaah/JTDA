@@ -93,6 +93,7 @@ public class ThreadStateServiceImpl implements ThreadStateService {
                 if(hostList.get(i).equals(entity.getHost())){
                     // _id 리스트화
                     _idList.add(entity.get_id());
+
                 }
 
             }
