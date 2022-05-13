@@ -42,36 +42,32 @@ const Box = styled.div`
 export default function StateAreaChart(props: PropsType) {
   const [dateTimes, setDateTimes] = React.useState<string | []>([]);
   const [hosts, setHosts] = React.useState<[]>([]);
+  const [runnable, setRunnable] = React.useState<[]>([]);
+  const [blocked, setBlocked] = React.useState<[]>([]);
+  const [watting, setWatting] = React.useState<[]>([]);
+  const [timed, setTimed] = React.useState<[]>([]);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
-    const startStr = props.startAt
-      ?.toISOString()
-      .replace("T", " ")
-      .substring(0, 16);
-    const endStr = props.endAt
-      ?.toISOString()
-      .replace("T", " ")
-      .substring(0, 16);
-
-    const hostnames = ["na", "ha", "ba", "ra"];
-
+    const startStr = startAt?.toISOString().replace("T", " ").substring(0, 19);
+    const endStr = endAt?.toISOString().replace("T", " ").substring(0, 19);
+    const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
     const hostParam = {
-      hostnames: hostnames.join(","),
-      startAt: startStr,
-      endAt: endStr,
+      host: hosts.join(","),
     };
 
     await axios
-      .get(`${URL}/thread/states?`, { params: hostParam })
+      .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
+        params: hostParam,
+      })
       .then((res) => {
         console.log("res", res);
         // setDateTimes(res.dateTimes)
         // setHosts(res.hosts)
-        // setRUN(res.RUNNABLE)
+        // setRunnable(res.RUNNABLE)
         // setBlocked(res.BLOCKED)
         // setWatting(res.WATTING)
-        // setTIMED(res.TIMED_WAITING)
+        // setTimed(res.TIMED_WAITING)
       })
       .catch((err) => {
         console.log("err", err);
