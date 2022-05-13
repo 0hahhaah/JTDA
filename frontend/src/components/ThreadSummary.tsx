@@ -7,6 +7,8 @@ import { ReactComponent as Lock } from "../assets/lock.svg";
 import { ReactComponent as Play } from "../assets/play.svg";
 import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
+import { ReactComponent as ExpandMore } from "../assets/expand_more.svg";
+import { ReactComponent as ExpandLess } from "../assets/expand_less.svg";
 import axios from "axios";
 import { HostSummary } from "../interfaces/HostInfo.interface";
 
@@ -49,6 +51,8 @@ const Title = styled.h1`
   font-weight: 600;
   margin: 0px;
   text-align: left;
+  cursor: pointer;
+  display: flex;
 `;
 
 const SubTitle = styled.h2`
@@ -196,8 +200,16 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
 
   const paintContainers: JSX.Element[] = hostSummaryArray?.map(
     (hostSummary, idx) => (
-      <Container onClick={() => handleToggleClick(idx)}>
-        <Title>host {hostSummary.host}</Title>
+      <Container>
+        <Title onClick={() => handleToggleClick(idx)}>
+          host {hostSummary.host}{" "}
+          <ExpandMore
+            style={{
+              transform: `rotate(${showDetail[idx] ? "-180" : "0"}deg)`,
+              transition: "all 500ms ease",
+            }}
+          />
+        </Title>
         <SubTitle>{hostSummary.logTime}</SubTitle>
         <ToggleBox id={idx.toString()} active={showDetail[idx]}>
           <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
