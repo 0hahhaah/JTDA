@@ -215,26 +215,30 @@ public class HostServiceImpl implements HostService {
     }
 
     private List<HostSearch> removeDuplicateHostSearch(List<HostSearch> input) {
-        List<HostSearch> hostSearchWithoutDuplicate = new ArrayList<>();
+        Set<HostSearch> setInput = new HashSet<>(input);
 
-        for(HostSearch hostSearchEach : input) {
-            if(hostSearchWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostSearchEach.getHost()))) {
-                hostSearchWithoutDuplicate.add(hostSearchEach);
-            }
-        }
-
-        return hostSearchWithoutDuplicate;
+        return new ArrayList<>(setInput);
+//        List<HostSearch> hostSearchWithoutDuplicate = new ArrayList<>();
+//
+//        for(HostSearch hostSearchEach : input) {
+//            if(hostSearchWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostSearchEach.getHost()))) {
+//                hostSearchWithoutDuplicate.add(hostSearchEach);
+//            }
+//        }
+//
+//        return hostSearchWithoutDuplicate;
     }
 
     private List<HostList> removeDuplicateHostList(List<HostList> input) {
-        List<HostList> hostListWithoutDuplicate = new ArrayList<>();
+        Set<HostList> setInput = new HashSet<>(input);
 
-        for(HostList hostListEach : input) {
-            if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostListEach.getHost()))) {
-                hostListWithoutDuplicate.add(hostListEach);
-            }
-        }
-
-        return hostListWithoutDuplicate;
+        return new ArrayList<>(setInput);
+//        for(HostList hostListEach : input) {
+//            if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostListEach.getHost()))) {
+//                hostListWithoutDuplicate.add(hostListEach);
+//            }
+//        }
+//
+//        return hostListWithoutDuplicate;
     }
 }
