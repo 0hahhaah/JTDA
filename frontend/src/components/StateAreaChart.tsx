@@ -17,9 +17,10 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { getDatesInRange } from "../utils/formatter";
+// import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
+import { rejects } from "assert";
 
 ChartJS.register(
   CategoryScale,
@@ -40,12 +41,13 @@ const Box = styled.div`
 `;
 
 export default function StateAreaChart(props: PropsType) {
-  const [dateTimes, setDateTimes] = React.useState<string | []>([]);
-  const [hosts, setHosts] = React.useState<[]>([]);
+  const [logTime, setLogTime] = React.useState<string[]>([]);
+  const [hosts, setHosts] = React.useState<any>([]);
   const [runnable, setRunnable] = React.useState<[]>([]);
   const [blocked, setBlocked] = React.useState<[]>([]);
-  const [watting, setWatting] = React.useState<[]>([]);
+  const [waiting, setWaiting] = React.useState<[]>([]);
   const [timed, setTimed] = React.useState<[]>([]);
+  const [all, setAll] = React.useState<any>([]);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
@@ -61,13 +63,14 @@ export default function StateAreaChart(props: PropsType) {
         params: hostParam,
       })
       .then((res) => {
-        console.log("res", res);
-        // setDateTimes(res.dateTimes)
-        // setHosts(res.hosts)
-        // setRunnable(res.RUNNABLE)
-        // setBlocked(res.BLOCKED)
-        // setWatting(res.WATTING)
-        // setTimed(res.TIMED_WAITING)
+        const info = res.data.hostList;
+        setAll(info);
+        setLogTime(info.logTime);
+        setHosts(info.hosts);
+        setRunnable(info.threadStateCountList.runnable);
+        setBlocked(info.threadStateCountList.blocked);
+        setWaiting(info.threadStateCountList.waiting);
+        setTimed(info.threadStateCountList.timed_WAITING);
       })
       .catch((err) => {
         console.log("err", err);
@@ -85,49 +88,50 @@ export default function StateAreaChart(props: PropsType) {
 
   React.useEffect(() => {
     searchCategory();
-  }, [props.pointAt, props.endAt]);
+  }, [props.pointAt, props.startAt, props.endAt]);
 
-  const dummyDateTimes: string[] = getDatesInRange(
-    new Date("2022-05-09 00:00:00"),
-    new Date("2022-05-10 00:00:00")
-  );
+  // const dummyDateTimes: string[] = getDatesInRange(
+  //   new Date("2022-05-09 00:00:00"),
+  //   new Date("2022-05-10 00:00:00")
+  // );
 
-  const dummyDatas: number[][] = [];
-  for (let i = 0; i < 4; i++) {
-    dummyDatas.push(
-      Array.from({ length: dummyDateTimes.length }, () =>
-        Math.floor(Math.random() * 20 + 40)
-      )
-    );
-  }
+  // const dummyDatas: number[][] = [];
+  // for (let i = 0; i < 4; i++) {
+  //   dummyDatas.push(
+  //     Array.from({ length: dummyDateTimes.length }, () =>
+  //       Math.floor(Math.random() * 20 + 40)
+  //     )
+  //   );
+  // }
+  // console.log("여기다", all.hosts[0]._ids);
 
   const data = {
-    labels: dummyDateTimes,
+    labels: logTime,
     datasets: [
       {
         label: "RUNNABLE",
-        data: dummyDatas[0],
+        data: runnable,
         fill: true,
         backgroundColor: "rgb(0, 215, 199, 0.5)",
         borderColor: "rgb(0, 215, 199, 1)",
       },
       {
         label: "BLOCKED",
-        data: dummyDatas[1],
+        data: blocked,
         fill: true,
         backgroundColor: "rgb(228, 59, 94, 0.5)",
         borderColor: "rgb(228, 59, 94, 1)",
       },
       {
         label: "WAITING",
-        data: dummyDatas[2],
+        data: waiting,
         fill: true,
         backgroundColor: "rgb(255, 124, 75, 0.5)",
         borderColor: "rgb(255, 124, 75, 1)",
       },
       {
-        label: "TIMED_WAITING",
-        data: dummyDatas[3],
+        label: "timed",
+        data: timed,
         fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
         borderColor: "rgb(0, 151, 225, 1)",
@@ -137,7 +141,12 @@ export default function StateAreaChart(props: PropsType) {
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-    console.log(dummyDateTimes[idx]);
+    props.setSelectedIds([]);
+    const IDS: number[][] = [];
+    for (let i = 0; i < hosts.length; i++) {
+      IDS.push(hosts[i]._ids[idx]);
+    }
+    props.setSelectedIds(IDS);
   };
 
   const options: object = {

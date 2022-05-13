@@ -7,7 +7,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 const Box = styled.div`
   background-color: #f7f7f7;
-  width: 1200px;
+  width: 90%;
   margin: 30px;
 `;
 
