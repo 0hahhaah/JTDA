@@ -20,7 +20,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(true)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.backend.api.controller"))
                 .paths(PathSelectors.ant("/api/**"))
                 .build()
                 .apiInfo(apiInfo());

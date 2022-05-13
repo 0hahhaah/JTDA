@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import SideBarList from "./SideBarList";
 import ThreadList from "./ThreadList";
+import { ThreadDump } from "../interfaces/Threadinterface";
 
 const Center = styled.div`
   display: flex;
@@ -57,9 +58,10 @@ const Footer = styled.div`
 interface Props {
   startAt?: Date | null | undefined;
   endAt?: Date | null | undefined;
+  threadDumps?: ThreadDump[];
 }
 
-export default function SideBar({startAt, endAt}:Props) {
+export default function SideBar({ startAt, endAt, threadDumps }: Props) {
   const { pathname } = useLocation();
   const isMain: boolean = pathname === "/" ? true : false;
 
@@ -78,7 +80,9 @@ export default function SideBar({startAt, endAt}:Props) {
                 searchCategory={searchCategory}
                 startAt={startAt}
                 endAt={endAt}/> 
-            : <ThreadList searchInput={searchInput} />}
+            : (
+            <ThreadList searchInput={searchInput} threadDumps={threadDumps} />
+          )}
         </Container>
       </Base>
       <Footer>Copyright ⓒ E1I4</Footer>

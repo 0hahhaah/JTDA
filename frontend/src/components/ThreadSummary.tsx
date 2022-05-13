@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThread } from "../data/dummy";
 import StatePieChart from "./StatePieChart";
@@ -9,6 +9,8 @@ import { ReactComponent as Play } from "../assets/play.svg";
 import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
 import BlockingGraph from "./BlockingGraph";
+import axios, { AxiosResponse } from "axios";
+import { HostSummary } from "../interfaces/HostInfo.interface";
 
 const Shadow = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -100,12 +102,25 @@ export const handleStateColor = (state: string): string => {
 
 export default function ThreadSummary() {
   const navigate = useNavigate();
+  const dummyData: string[] = [
+    "627db1df02a6425b513b9f5b",
+    "627db1ec02a6425b513b9f61",
+    "627db1f802a6425b513b9f68",
+  ];
+  const [selectedIds, setSelectedIds] = useState<string[]>(dummyData);
+  const [hostSummaryArray, setSummaryArray] = useState<HostSummary[]>([]);
+  useEffect(() => {
+    const fetchAndSetSummaryArray = async () => {
+      const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
+      const requestURL: string =
+        BASE_URL + `/host/state?_id=${selectedIds.join()}`;
+      const res = await axios.get(requestURL);
 
-  // 테스트 용 데이터
-  const [hostId, setHostId] = useState<string>("3");
-  const [dateTime, setDateTime] = useState<string>("2022-05-06 09:50:30");
+      setSummaryArray(res.data.hosts);
+    };
 
-  const [threadInfo, setThreadInfo] = useState(dummyThread);
+    fetchAndSetSummaryArray();
+  }, [selectedIds]);
 
   const paintIcon = (state: string): JSX.Element => {
     switch (state) {
@@ -124,27 +139,27 @@ export default function ThreadSummary() {
 
   // 코드 중복 제거
   const states = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
-  const paintCards: JSX.Element[] = states.map((state, idx) => (
-    <Card
-      key={idx}
-      onClick={() =>
-        navigate(`/detail?state=${state}&host=${hostId}&datetime=${dateTime}`)
-      }
-    >
-      {paintIcon(state)}
-      <StateNum>{threadInfo.threadState[state]}</StateNum>
-      <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
-    </Card>
-  ));
+  const paintCards = (hostSummary: HostSummary): JSX.Element[] => {
+    return states.map((state, idx) => (
+      <Card
+        key={idx}
+        onClick={() => navigate(`/detail?state=${state}&id=${hostSummary._id}`)}
+      >
+        {paintIcon(state)}
+        <StateNum>{hostSummary.threadStateCount[state]}</StateNum>
+        <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
+      </Card>
+    ));
+  };
 
-  return (
+  const paintSections: JSX.Element[] = hostSummaryArray?.map((hostSummary) => (
     <Section>
-      <Title>host {hostId}</Title>
-      <SubTitle>{dateTime}</SubTitle>
-      <SubTitle>Total Thread Count: {threadInfo.count}</SubTitle>
+      <Title>host {hostSummary.host}</Title>
+      <SubTitle>{hostSummary.logTime}</SubTitle>
+      <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
       <Container>
-        <CardContainer gridCol={4}>{paintCards}</CardContainer>
-        <StatePieChart threadInfo={threadInfo} />
+        <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
+        <StatePieChart threadStateCount={hostSummary.threadStateCount} />
       </Container>
       <Boundary />
       <SubTitle>Daemon Count</SubTitle>
@@ -154,11 +169,13 @@ export default function ThreadSummary() {
           <Card>Non-Daemon</Card>
         </CardContainer>
       </Container>
-      <Boundary />
-      <SubTitle>Blocking Infos</SubTitle>
-      <Container>
-        <BlockingGraph></BlockingGraph>
-      </Container>
+      {/* <Boundary />
+        <SubTitle>Blocking Infos</SubTitle>
+        <Container>
+          <BlockingGraph></BlockingGraph>
+        </Container> */}
     </Section>
-  );
+  ));
+
+  return <Section>{paintSections}</Section>;
 }

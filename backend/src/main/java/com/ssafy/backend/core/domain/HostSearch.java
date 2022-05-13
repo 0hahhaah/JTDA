@@ -29,4 +29,18 @@ public class HostSearch {
         this.host = host;
         this.tags = tags;
     }
+
+    @Override
+    public int hashCode() {
+        return host.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof HostSearch)) {
+            return false;
+        }
+        HostSearch hostSearch = (HostSearch) obj;
+        return host.equals(hostSearch.host);
+    }
 }

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { dummyThreadLog } from "../data/dummy";
-import { ThreadDump } from "../interfaces/ThreadDump.interface";
+import { ThreadDump } from "../interfaces/Threadinterface";
 
 const List = styled.div`
   width: 100%;
@@ -46,17 +45,28 @@ const Message = styled.div`
 `;
 
 interface ThreadListProps {
-  searchInput: string;
+  searchInput?: string;
+  threadDumps?: ThreadDump[];
 }
 
-export default function ThreadList({ searchInput }: ThreadListProps) {
+export default function ThreadList({
+  searchInput,
+  threadDumps,
+}: ThreadListProps) {
   const navigate = useNavigate();
   const { pathname, search, hash } = useLocation();
   const [originalThreadDumps, setOriginalThreadDumps] = useState<ThreadDump[]>(
-    dummyThreadLog.threadDumps
+    []
   );
   const [filteredThreadDumps, setFilteredThreadDumps] =
     useState<ThreadDump[]>(originalThreadDumps);
+
+  useEffect(() => {
+    if (threadDumps) {
+      setOriginalThreadDumps(threadDumps);
+      setFilteredThreadDumps(threadDumps);
+    }
+  }, [threadDumps]);
 
   const headerOffset: number = 50;
   useEffect(() => {
@@ -85,9 +95,9 @@ export default function ThreadList({ searchInput }: ThreadListProps) {
   useEffect(() => {
     if (searchInput) {
       setFilteredThreadDumps(
-        originalThreadDumps.filter((threadDump) =>
-          threadDump.name.includes(searchInput)
-        )
+        originalThreadDumps.filter((threadDump) => {
+          return threadDump.name.match(new RegExp(searchInput, "i"));
+        })
       );
     } else {
       setFilteredThreadDumps([...originalThreadDumps]);
