@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { URL } from "../public/config/index";
+import { URL } from "../api/index";
 import styled from "styled-components";
 import { Line } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
