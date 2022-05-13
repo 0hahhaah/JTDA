@@ -38,9 +38,10 @@ const SearchCategory = styled.select`
 interface SearchBarProps {
   isMain: boolean;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
+  setSearchCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function SearchBar({ isMain, setSearchInput }: SearchBarProps) {
+export default function SearchBar({ isMain, setSearchInput, setSearchCategory}: SearchBarProps) {
   const [timer, setTimer] = useState<number>(0);
 
   const handleOnChange = (value: string) => {
@@ -61,7 +62,8 @@ export default function SearchBar({ isMain, setSearchInput }: SearchBarProps) {
   return (
     <Search>
       {isMain
-        ?<SearchCategory>
+        ?<SearchCategory
+            onChange={(e)=> setSearchCategory(e.target.value)}>
           <option value="cluster">Cluster</option>
           <option value="host">Host</option>
         </SearchCategory>

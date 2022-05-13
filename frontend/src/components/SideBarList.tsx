@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { hostInfo } from "../interfaces/HostInfo.interface";
+import { URL } from '../api'
 import axios from "axios";
 import styled from "styled-components";
 import TagCard from "./TagCard";
@@ -108,35 +109,47 @@ const AllCancleBtn = styled(ConfirmBtn)`
   color: #333333;
 `;
 
-const baseUrl = "http://k6s102.p.ssafy.io/api/";
+const baseUrl = "https://k6s102.p.ssafy.io/api";
 
 interface Props {
   searchInput: string;
+  searchCategory : string;
   startAt?: Date | null | undefined;
   endAt?: Date | null | undefined;
 }
 
-export default function SidebarList({searchInput, startAt, endAt}: Props) {
+export default function SidebarList({searchInput, searchCategory, startAt, endAt}: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   // const [startAt, setStartAt] = useState("2022-05-10");
   // const [endAt, setEndAt] = useState("2022-05-10");
   const [query, setQuery] = useState(searchInput);
   const [checkedItems, setCheckedItems] = useState<Array<string>>([""]);
-  const tags = ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7"];
+  const tags = ["Monitoring", "Database", "Frontend", "Backend", "WebService"];
   const [checkedTags, setCheckedTags] = useState<Array<string>>([""]);
   // const [clusterList, setClusterList] = useState<any>([]);
+  const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
+  const [checkedCluster, setCheckedCluste] = useState<string>("");
   const clusterList: string[] = ['cluster1', 'cluster2', 'cluster3'];
   const checkedTagsTest: string[] = ['tag1', 'tag2', 'tag3'];
-  
+
   //encodeURIComponent(query); 유니코드 변환 함수
 
   const getAPI = async() => {
+    const startStr = startAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+    const endStr = endAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+
     await axios({
-      url: baseUrl + `host/list?startAt=${startAt}&endAt=${endAt}&cluster=${clusterList}&tags=${checkedTags}`,
+      url: baseUrl + `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${clusterList}&tags=${checkedTags}`,
       method: "get",
     })
     .then((res) => {
-      console.log(res.data);
+      console.log('fff', res.data);
     })
     .catch((err) => {
       console.log(err);
@@ -144,10 +157,19 @@ export default function SidebarList({searchInput, startAt, endAt}: Props) {
   }
 
   const getHosts = async () => {
+    const startStr = startAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+    const endStr = endAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+
       await axios({
           url:
             baseUrl +
-            `host/search`,
+            `/host/search?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
             method: "get",
       })
       .then((res) => {
@@ -185,7 +207,7 @@ export default function SidebarList({searchInput, startAt, endAt}: Props) {
   useEffect(() => {
     getAPI();
     getHosts();
-  }, [startAt, endAt]); //변수 추가되어야 함
+  }, [startAt, endAt, query]); //변수 추가되어야 함
 
   useEffect(() => {
     setQuery(searchInput);

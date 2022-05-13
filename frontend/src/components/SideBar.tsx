@@ -12,7 +12,7 @@ const Center = styled.div`
   align-items: center;
 `;
 const Layout = styled(Center)`
-  width: 20%;
+  width: 300px;
   height: 100vh;
   background-color: #f7f7f7;
   position: fixed;
@@ -64,16 +64,18 @@ export default function SideBar({startAt, endAt}:Props) {
   const isMain: boolean = pathname === "/" ? true : false;
 
   const [searchInput, setSearchInput] = useState<string>("");
+  const [searchCategory, setSearchCategory] = useState<string>("");
 
   return (
     <Layout>
       <Base>
         <Logo></Logo>
-        <SearchBar isMain={isMain} setSearchInput={setSearchInput}></SearchBar>
+        <SearchBar isMain={isMain} setSearchInput={setSearchInput} setSearchCategory={setSearchCategory}></SearchBar>
         <Container>
           {isMain 
             ? <SideBarList 
                 searchInput={searchInput}
+                searchCategory={searchCategory}
                 startAt={startAt}
                 endAt={endAt}/> 
             : <ThreadList searchInput={searchInput} />}
