@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { handleStateColor } from "./ThreadSummary";
-import { dummyThreadLog } from "../data/dummy";
+import { ThreadDetail, ThreadDump } from "../interfaces/Threadinterface";
+import axios from "axios";
+import { queryParser } from "../utils/queryParser";
 
 const Container = styled.div`
   padding: 30px;
@@ -66,41 +68,57 @@ const LineText = styled.p`
   white-space: pre-wrap;
 `;
 
-export default function Thread() {
-  const [threadLog, setThreadLog] = useState(dummyThreadLog);
-  const { search, hash } = useLocation();
-  const currentState = threadLog.threadDumps[0].state;
+interface ThreadProps {
+  setThreadDumps: React.Dispatch<React.SetStateAction<ThreadDump[]>>;
+}
 
-  const paintThreadLog: JSX.Element[] = threadLog.threadDumps.map(
-    (threadDump, idx) => {
-      return (
-        <Box
-          key={idx}
-          id={threadDump.id}
-          selected={threadDump.id === hash.replace("#", "")}
-        >
-          <ThreadName>{threadDump.name}</ThreadName>
-          <ThreadInfos>
-            <ThreadInfo>{`THREAD ID (DECIMAL): ${threadDump.id}`}</ThreadInfo>
-            <ThreadInfo>{`THREAD ID (HASH): ${threadDump.hashId}`}</ThreadInfo>
-            <ThreadInfo>
-              {`IS DAEMON: ${threadDump.isDaemon ? true : false}`}
-            </ThreadInfo>
-            <ThreadInfo>{`PRIORITY: ${threadDump.priority}`}</ThreadInfo>
-            <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
-          </ThreadInfos>
-          <StackTrace>
-            {`stackTrace:`}
-            <br />
-            {`java.lang.Thread.State: ${threadDump.state}`}
-            <br />
-            {paintStringArray(threadDump.stackTrace)}
-          </StackTrace>
-          {paintStringArray(threadDump.lockedOwnableSynchronizers)}
-        </Box>
-      );
-    }
-  );
+export default function Thread({ setThreadDumps }: ThreadProps) {
+  const { search, hash } = useLocation();
+  const { id, state } = queryParser(search);
+  const [threadDetail, setThreadDetail] = useState<ThreadDetail>();
+  useEffect(() => {
+    const fetchAndSetThreadDetail = async () => {
+      const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
+      const requestURL: string =
+        BASE_URL + `/thread/detail?_id=${id}&state=${state}`;
+      console.log(requestURL);
+      const res = await axios.get(requestURL);
+
+      setThreadDetail(res.data.threadStateDetails);
+      setThreadDumps(res.data.threadStateDetails.threadDumps);
+    };
+
+    fetchAndSetThreadDetail();
+  }, [search]);
+
+  const paintthreadDetail = threadDetail?.threadDumps.map((threadDump, idx) => {
+    return (
+      <Box
+        key={idx}
+        id={threadDump.id}
+        selected={threadDump.id === hash.replace("#", "")}
+      >
+        <ThreadName>{threadDump.name}</ThreadName>
+        <ThreadInfos>
+          <ThreadInfo>{`THREAD ID (DECIMAL): ${threadDump.id}`}</ThreadInfo>
+          <ThreadInfo>{`THREAD ID (HASH): ${threadDump.hashId}`}</ThreadInfo>
+          <ThreadInfo>
+            {`IS DAEMON: ${threadDump.daemon ? true : false}`}
+          </ThreadInfo>
+          <ThreadInfo>{`PRIORITY: ${threadDump.priority}`}</ThreadInfo>
+          <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
+        </ThreadInfos>
+        <StackTrace>
+          {`stackTrace:`}
+          <br />
+          {`java.lang.Thread.State: ${threadDump.state}`}
+          <br />
+          {paintStringArray(threadDump.stackTrace)}
+        </StackTrace>
+        {paintStringArray(threadDump.lockedOwnableSynchronizers)}
+      </Box>
+    );
+  });
 
   function paintStringArray(stringArray: string[]): JSX.Element[] {
     return stringArray.map((stringElement, idx) => (
@@ -111,17 +129,20 @@ export default function Thread() {
     ));
   }
 
+  if (threadDetail === undefined) {
+    return <>Loading...</>;
+  }
+
   return (
     <Container>
-      <Title>{`${threadLog.hostIp}@${threadLog.hostName}`}</Title>
-      <SubTitle>{`${threadLog.processId}`}</SubTitle>
-      <SubTitle>{`${threadLog.logTime}`}</SubTitle>
-      <SubTitle fontSize={"1rem"}>{`${threadLog.vmInfo}`}</SubTitle>
+      <Title>{`${threadDetail.cluster}@${threadDetail.host}`}</Title>
+      <SubTitle>{`tags: ${threadDetail.tags}`}</SubTitle>
+      <SubTitle>{`${threadDetail.logTime}`}</SubTitle>
       <SubTitle
         fontSize={"2rem"}
-        color={handleStateColor(currentState).replace(", 0.5", "")}
-      >{`${currentState}`}</SubTitle>
-      {paintThreadLog}
+        color={handleStateColor(state).replace(", 0.5", "")}
+      >{`${state}`}</SubTitle>
+      {paintthreadDetail}
     </Container>
   );
 }

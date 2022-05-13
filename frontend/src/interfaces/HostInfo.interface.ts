@@ -1,4 +1,4 @@
-import { ThreadStateCount } from "./ThreadDump.interface";
+import { ThreadStateCount } from "./Threadinterface";
 
 export interface hostInfo {
   hostIp: string;

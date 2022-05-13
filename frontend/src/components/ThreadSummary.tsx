@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { dummyThread } from "../data/dummy";
 import StatePieChart from "./StatePieChart";
@@ -109,13 +109,13 @@ export default function ThreadSummary() {
   ];
   const [selectedIds, setSelectedIds] = useState<string[]>(dummyData);
   const [hostSummaryArray, setSummaryArray] = useState<HostSummary[]>([]);
-
+  const location = useLocation();
   useEffect(() => {
     const fetchAndSetSummaryArray = async () => {
       const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
       const requestURL: string =
         BASE_URL + `/host/state?_id=${selectedIds.join()}`;
-      const res: AxiosResponse<any, any> = await axios.get(requestURL);
+      const res = await axios.get(requestURL);
 
       setSummaryArray(res.data.hosts);
     };

@@ -1,5 +1,5 @@
 import { PointElement } from "chart.js";
-import { ThreadStateCount } from "./ThreadDump.interface";
+import { ThreadStateCount } from "./Threadinterface";
 
 export interface PointElementProp {
   element: PointElement;
