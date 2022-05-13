@@ -60,7 +60,6 @@ const TagCard = ({tags, checkedTags, checkedTagsHandler}: Props) =>{
                                 onCheck(e)
                             }}/> {tag}
                     </label>
-                    {console.log('test', isChecked)}
                     </>
                 )
             })

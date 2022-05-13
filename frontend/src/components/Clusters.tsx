@@ -22,6 +22,7 @@ interface Props {
 const Clusters:React.FunctionComponent<Props> = (props) => {
     const [isToggled, setIsToggled] = useState<boolean>(false);
     const hosts = ["host1", "host2", "host3", "host4"];
+    
     return(
         <>
             <ClusterBox onClick={()=>{setIsToggled(!isToggled)}}>{props.cluster} ({hosts.length})</ClusterBox>
