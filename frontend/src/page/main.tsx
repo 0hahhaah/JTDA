@@ -29,12 +29,11 @@ export default function Main() {
   const [startAt, setStartAt] = React.useState<Date | null>(null);
   const [endAt, setEndAt] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string>("point");
+  const [selectedIds, setSelectedIds] = React.useState<any>([]);
 
   return (
     <div>
-      <SideBar 
-        startAt={startAt}
-        endAt={endAt}/>
+      <SideBar startAt={startAt} endAt={endAt} />
       <Time>
         <TimeBar
           pointAt={pointAt}
@@ -51,6 +50,8 @@ export default function Main() {
           startAt={startAt}
           endAt={endAt}
           category={category}
+          selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
         />
       </Time>
       <Boundary />
