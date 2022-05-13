@@ -15,20 +15,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ThreadStateList {
 
     private String _id;
-    private String hostName;
 
-    private String hostIp;
+    private String cluster;
+
+    private String host;
+
+    private String [] tags;
 
     private String logTime;
 
+    private int threadCount;
+
     private ThreadStateCount threadStateCount;
 
-
-    public ThreadStateList(String _id, String hostName, String hostIp, String logTime, ThreadStateCount threadStateCount) {
+    public ThreadStateList(String _id, String cluster, String host, String[] tags, String logTime, int threadCount, ThreadStateCount threadStateCount) {
         this._id = _id;
-        this.hostName = hostName;
-        this.hostIp = hostIp;
+        this.cluster = cluster;
+        this.host = host;
+        this.tags = tags;
         this.logTime = logTime;
+        this.threadCount = threadCount;
         this.threadStateCount = threadStateCount;
     }
 }

@@ -15,20 +15,24 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class ThreadStateDetail {
-    private String hostName;
 
-    private String hostIp;
+    private String _id;
 
-    private String processId;
+    private String cluster;
+
+    private String host;
+
+    private String [] tags;
 
     private String logTime;
 
     private List<ThreadDumps> threadDumps;
 
-    public ThreadStateDetail(String hostName, String hostIp, String processId, String logTime, List<ThreadDumps> threadDumps) {
-        this.hostName = hostName;
-        this.hostIp = hostIp;
-        this.processId = processId;
+    public ThreadStateDetail(String _id, String cluster, String host, String[] tags, String logTime, List<ThreadDumps> threadDumps) {
+        this._id = _id;
+        this.cluster = cluster;
+        this.host = host;
+        this.tags = tags;
         this.logTime = logTime;
         this.threadDumps = threadDumps;
     }

@@ -7,16 +7,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 
+
 @Getter
 @Setter
 @Document(collection = "threaddump")
 public class ThreadLog {
-    @NotBlank
-    public String hostName;
-    @NotBlank
-    public String hostIp;
-    @NotBlank
-    private String processId;
+
+    private String cluster;
+
+    private String host;
+
+    private String [] tags;
 
     private String logTime;
 
@@ -24,15 +25,16 @@ public class ThreadLog {
 
     private String vmInfo;
 
-    private String [] threadElements;
+    private String[] threadElements;
 
-    public ThreadDump [] threadDumps;
+    private ThreadDump[] threadDumps;
 
     public ThreadDump[] getThreadDumps() {
         return this.threadDumps;
     }
 
     private ThreadStateCount threadStateCount;
+
 
     public void setThreadStateCount(ThreadStateCount threadStateCount) {
         this.threadStateCount = threadStateCount;

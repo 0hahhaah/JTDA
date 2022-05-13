@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/thread-dump-producer.iml" filepath="$PROJECT_DIR$/.idea/thread-dump-producer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/thread-dump-producer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/thread-dump-producer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/thread-dump-producer.test.iml" filepath="$PROJECT_DIR$/.idea/modules/thread-dump-producer.test.iml" />
+    </modules>
+  </component>
+</project>

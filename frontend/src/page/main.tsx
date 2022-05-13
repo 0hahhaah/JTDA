@@ -32,7 +32,9 @@ export default function Main() {
 
   return (
     <div>
-      <SideBar />
+      <SideBar 
+        startAt={startAt}
+        endAt={endAt}/>
       <Time>
         <TimeBar
           pointAt={pointAt}

@@ -14,11 +14,14 @@ import java.util.List;
 @Setter
 @ApiModel("ThreadResponse")
 public class ThreadStateDetailDto {
-    private String hostName;
 
-    private String hostIp;
+    private String _id;
 
-    private String processId;
+    private String cluster;
+
+    private String host;
+
+    private String [] tags;
 
     private String logTime;
 
@@ -26,17 +29,19 @@ public class ThreadStateDetailDto {
     public ThreadStateDetailDto(){}
 
     public ThreadStateDetailDto(ThreadStateDetail threadStateDetail){
-        this.hostName = threadStateDetail.getHostName();
-        this.hostIp = threadStateDetail.getHostIp();
-        this.processId = threadStateDetail.getProcessId();
+        this._id = threadStateDetail.get_id();
+        this.cluster = threadStateDetail.getCluster();
+        this.host = threadStateDetail.getHost();
+        this.tags = threadStateDetail.getTags();
         this.logTime = threadStateDetail.getLogTime();
         this.threadDumps = threadStateDetail.getThreadDumps();
     }
 
-    public ThreadStateDetailDto(String hostName, String hostIp, String processId, String logTime, List<ThreadDumps> threadDumps) {
-        this.hostName = hostName;
-        this.hostIp = hostIp;
-        this.processId = processId;
+    public ThreadStateDetailDto(String _id, String cluster, String host, String[] tags, String logTime, List<ThreadDumps> threadDumps) {
+        this._id = _id;
+        this.cluster = cluster;
+        this.host = host;
+        this.tags = tags;
         this.logTime = logTime;
         this.threadDumps = threadDumps;
     }
