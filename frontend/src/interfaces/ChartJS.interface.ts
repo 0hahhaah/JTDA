@@ -1,5 +1,5 @@
 import { PointElement } from "chart.js";
-import { ThreadInfo } from "./ThreadDump.interface";
+import { ThreadStateCount } from "./Threadinterface";
 
 export interface PointElementProp {
   element: PointElement;
@@ -8,7 +8,7 @@ export interface PointElementProp {
 }
 
 export interface PieChartProps {
-  threadInfo: ThreadInfo;
+  threadStateCount: ThreadStateCount;
 }
 
 export interface PropsType {

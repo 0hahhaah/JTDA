@@ -1,4 +1,4 @@
-export interface ThreadState {
+export interface ThreadStateCount {
   [index: string]: number;
   BLOCKED: number;
   RUNNABLE: number;
@@ -6,16 +6,11 @@ export interface ThreadState {
   TIMED_WAITING: number;
 }
 
-export interface ThreadInfo {
-  count: number;
-  threadState: ThreadState;
-}
-
 export interface ThreadDump {
   id: string;
   hashId: string;
   name: string;
-  isDaemon: boolean;
+  daemon: boolean;
   priority: number;
   state: string;
   lockOwner: string;
@@ -23,13 +18,16 @@ export interface ThreadDump {
   lockedOwnableSynchronizers: string[];
 }
 
-export interface ThreadLog {
-  hostIp: string;
-  hostName: string;
-  processId: string;
-  logTime: string;
-  vmInfo: string;
+export interface ThreadDetailReponse {
   threadCount: number;
-  threadElements: string[];
+  threadStateDetails: ThreadDetail;
+}
+
+export interface ThreadDetail {
+  _id: string;
+  cluster: string;
+  host: string;
+  tags: string[];
+  logTime: string;
   threadDumps: ThreadDump[];
 }
