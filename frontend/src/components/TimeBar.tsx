@@ -1,5 +1,4 @@
 import * as React from "react";
-import addWeeks from "date-fns/addWeeks";
 import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -8,7 +7,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 const Box = styled.div`
   background-color: #f7f7f7;
-  width: 90%;
+  width: 1200px;
   margin: 30px;
 `;
 
@@ -27,26 +26,28 @@ const Title = styled.div`
   margin: 20px 30px 20px 10px;
 `;
 
-const RadioLabelPoint = styled.label`
+const RadioLabel = styled.label`
   border: 2px solid #5f0080;
   color: white;
+  padding: 10px;
+  border-radius: 3px;
+  width: 3px;
+  height: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const RadioLabelPoint = styled(RadioLabel)`
   background-color: ${(props) =>
     props.color === "point" ? "#5f0080" : "white"};
-  padding: 10px;
-  border-radius: 3px;
-  width: 15px;
-  height: 15px;
 `;
-const RadioLabelRange = styled.label`
-  border: 2px solid #5f0080;
-  color: white;
+
+const RadioLabelRange = styled(RadioLabel)`
   background-color: ${(props) =>
     props.color === "range" ? "#5f0080" : "white"};
-  padding: 10px;
-  border-radius: 3px;
-  width: 15px;
-  height: 15px;
 `;
+
 const RadioBtn = styled.input`
   display: none;
 `;
