@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ThreadStateService {
 
-    List<ThreadStateListDto> getThreadList(List<String> hostIp, String startAt, String endAt) throws Exception;
+    ThreadStateListDto getThreadList(List<String> host, String startAt, String endAt) throws Exception;
     
 }
