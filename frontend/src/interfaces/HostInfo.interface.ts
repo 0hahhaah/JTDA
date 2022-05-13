@@ -1,4 +1,6 @@
 export interface hostInfo {
-    hostIp: string,
-    hostName: string
+    _id: string,
+    cluster: string,
+    host: string,
+    tags: Array<string>
   }

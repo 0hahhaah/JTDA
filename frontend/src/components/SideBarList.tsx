@@ -82,31 +82,7 @@ const NoneCheckBox = styled.input`
 `;
 //--------------------------------
 const ClusterList = styled(HostList)`
-`;
-
-const ToggledHost = styled.div`
-  background-color: red;
-`;
-//--------------------------------
-const SelectButtons = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: end;
-`;
-
-const ConfirmBtn = styled.button`
-  background-color: #5f0080;
-  border: 0;
-  color: white;
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin-left: 7px;
-  cursor: pointer;
-`;
-
-const AllCancleBtn = styled(ConfirmBtn)`
-  background-color: #cdcdcd;
-  color: #333333;
+  height: 60%;
 `;
 
 const baseUrl = "https://k6s102.p.ssafy.io/api";
@@ -119,7 +95,7 @@ interface Props {
 }
 
 export default function SidebarList({searchInput, searchCategory, startAt, endAt}: Props) {
-  const [hostsList, setHostsList] = useState<Array<string>>([]);
+  const [hostsList, setHostsList] = useState<Array<string>>([""]);
   // const [startAt, setStartAt] = useState("2022-05-10");
   // const [endAt, setEndAt] = useState("2022-05-10");
   const [query, setQuery] = useState(searchInput);
@@ -128,12 +104,17 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
   const [checkedTags, setCheckedTags] = useState<Array<string>>([""]);
   // const [clusterList, setClusterList] = useState<any>([]);
   const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
-  const [checkedCluster, setCheckedCluste] = useState<string>("");
-  const clusterList: string[] = ['cluster1', 'cluster2', 'cluster3'];
+  const [checkedCluster, setCheckedCluster] = useState<string>("");
+  const [clusterList, setClusterList] = useState<Array<string>>([]);
+  // const clusterList: string[] = ['cluster1', 'cluster2', 'cluster3'];
   const checkedTagsTest: string[] = ['tag1', 'tag2', 'tag3'];
+  let testClusterList: string[] = [""];
+  let clusterResult: string[] = [""];
 
   //encodeURIComponent(query); 유니코드 변환 함수
-
+  //searchCategory 값에 따라 (host, cluster)
+  //host면 getHosts();
+  //cluster면 getAPI();
   const getAPI = async() => {
     const startStr = startAt
     ?.toISOString()
@@ -149,12 +130,23 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
       method: "get",
     })
     .then((res) => {
-      console.log('fff', res.data);
+      // console.log(res.data.results);
+      setHostsList(res.data.results);
+      // console.log('?',hostsList);
+      // console.log('list', res.data.searchInput.cluster);
+      // setClusterList([...res.data.searchInput.cluster]);
     })
     .catch((err) => {
       console.log(err);
     })
   }
+
+  const makeClusterList = () => {
+    testClusterList = hostsList.map((cluster:any) => cluster.cluster);
+    clusterResult = testClusterList.filter((e,i) => testClusterList.indexOf(e) === i);
+    // console.log('웅', clusterResult);
+  }
+  makeClusterList();
 
   const getHosts = async () => {
     const startStr = startAt
@@ -169,40 +161,30 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
       await axios({
           url:
             baseUrl +
-            `/host/search?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
+            `/host/search`,//?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
             method: "get",
       })
       .then((res) => {
-        console.log('dd',res.data);
-        setHostsList([...res.data.hosts]);
+        // console.log('dd',res.data.hosts);
+        // setHostsList([...res.data.hosts]);
       })
       .catch((err) => {
           console.log(err);
         });
-    };
+  };
 
-    const checkedTagsHandler = (code:string, isChecked:boolean) => {
-      if(isChecked){
-        setCheckedTags([...checkedTags, code])
-      } else if(!isChecked && checkedTags.find(one => one === code)){
-        const filter = checkedItems.filter(one => one !== code)
-        setCheckedTags([...filter])
-      }
+  const checkedTagsHandler = (code:string, isChecked:boolean) => {
+    if(isChecked){
+      setCheckedTags([...checkedTags, code])
+    } else if(!isChecked && checkedTags.find(one => one === code)){
+      const filter = checkedItems.filter(one => one !== code)
+      setCheckedTags([...filter])
     }
+  }
 
-  const onRemoveItems = (e:any) => {
-    setCheckedItems(checkedItems.filter((item) => item !== e.target.value));
-  };
-
-  const onCheckedItemHandler = () => {
-    console.log("조회");
-    //버튼 누르면(X) 옵션 선택하면(O) api 요청 보내기
-  };
-
-  const onResetHandler = () => {
-    // setCheckedItems([]);
-    console.log("초기화");
-  };
+  useEffect(()=>{
+    console.log(startAt, endAt);
+  },[]);
 
   useEffect(() => {
     getAPI();
@@ -224,7 +206,7 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
         ></TagCard>
       </TagBox>
 
-      <SelectedHost>
+      {/* <SelectedHost>
         <ListTitle>선택한 Host</ListTitle>
         <ListBox>
           {checkedItems.length === 0 ? (
@@ -237,7 +219,7 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
             </ul>
           )}
         </ListBox>
-      </SelectedHost>
+      </SelectedHost> */}
 
       {/* <HostList>
         <ListTitle>Host List ({hostsList.length})</ListTitle>
@@ -272,7 +254,7 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
       <ClusterList>
           <ListTitle>Clusters</ListTitle>
           <ListBox>
-            {clusterList.map((cluster, i) => {
+            {clusterResult.map((cluster, i) => {
               return (
                 <Clusters 
                   cluster={cluster}
@@ -282,19 +264,6 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
             })}
           </ListBox>
       </ClusterList>
-      {/* <SelectButtons>
-        <AllCancleBtn as="div">
-          <HostLabel>
-            <NoneCheckBox
-              type="checkbox"
-              name="host"
-              onChange={(e) => console.log(e.target)}
-            />
-            초기화
-          </HostLabel>
-        </AllCancleBtn>
-        <ConfirmBtn onClick={onCheckedItemHandler}>조회</ConfirmBtn>
-      </SelectButtons> */}
     </>
   );
 }

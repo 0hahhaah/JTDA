@@ -5,7 +5,7 @@ const Search = styled.div`
   position: relative;
   display: flex;
   width: 100%;
-  margin-top: 50px;
+  margin-top: 20px;
   margin-bottom: 20px;
 `;
 
