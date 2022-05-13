@@ -1,17 +1,14 @@
 import {
   ThreadDump,
-  ThreadInfo,
+  ThreadStateCount,
   ThreadLog,
 } from "../interfaces/ThreadDump.interface";
 
-export const dummyThread: ThreadInfo = {
-  count: 100,
-  threadState: {
-    BLOCKED: 20,
-    RUNNABLE: 40,
-    WAITING: 30,
-    TIMED_WAITING: 10,
-  },
+export const dummyThread: ThreadStateCount = {
+  BLOCKED: 20,
+  RUNNABLE: 40,
+  WAITING: 30,
+  TIMED_WAITING: 10,
 };
 
 export const dummyThreadDumps: ThreadDump[] = Array.from(Array(30).keys()).map(

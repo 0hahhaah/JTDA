@@ -1,14 +1,9 @@
-export interface ThreadState {
+export interface ThreadStateCount {
   [index: string]: number;
   BLOCKED: number;
   RUNNABLE: number;
   WAITING: number;
   TIMED_WAITING: number;
-}
-
-export interface ThreadInfo {
-  count: number;
-  threadState: ThreadState;
 }
 
 export interface ThreadDump {

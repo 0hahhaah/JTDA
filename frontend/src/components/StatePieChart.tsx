@@ -18,13 +18,13 @@ const Box = styled.div`
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function StatePieChart({ threadInfo }: PieChartProps) {
+export default function StatePieChart({ threadStateCount }: PieChartProps) {
   const data = {
     labels: ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"],
     datasets: [
       {
         label: "# of Threads",
-        data: Object.values(threadInfo.threadState),
+        data: Object.values(threadStateCount),
         backgroundColor: [
           "rgb(0, 215, 199, 0.8)",
           "rgb(228, 59, 94, 0.8)",
