@@ -164,7 +164,8 @@ public class HostServiceImpl implements HostService {
         Set<String> _idsNoDuplicate = new HashSet<>(_ids);
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("_id").in(_idsNoDuplicate));
+        query.addCriteria(Criteria.where("_id").in(_idsNoDuplicate))
+                .with(Sort.by(Sort.Direction.ASC, "host"));
         List<HostState> queryResult = mongoTemplate.find(query, HostState.class, "threaddump");
         List<HostStateWithDaemonCountRes> returnHosts = new ArrayList<>();
 
