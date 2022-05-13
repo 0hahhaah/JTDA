@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "threaddump")
 @Getter
 @Setter
@@ -17,11 +19,14 @@ public class HostSearch {
 
     @Id
     private String _id;
-    private String hostName;
-    private String hostIp;
+    private String cluster;
+    private String host;
 
-    protected HostSearch(String hostName, String hostIp) {
-        this.hostName = hostName;
-        this.hostIp = hostIp;
+    private List<String> tags;
+
+    protected HostSearch(String cluster, String host, List<String> tags) {
+        this.cluster = cluster;
+        this.host = host;
+        this.tags = tags;
     }
 }

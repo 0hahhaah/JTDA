@@ -51,7 +51,7 @@ public class HostServiceImpl implements HostService {
         // startAt, endAt, query 모두 입력
         if(isRegexFlag && !query.isEmpty() && isStartDate && isEndDate) {
             Query queryRegex = new Query();
-            queryRegex.addCriteria(Criteria.where("hostName").regex(query))
+            queryRegex.addCriteria(Criteria.where("host").regex(query))
                     .addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
 
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
@@ -88,14 +88,14 @@ public class HostServiceImpl implements HostService {
 
             Query queryRegex = new Query();
             queryRegex.addCriteria(Criteria.where("logTime").gte(tempStartDate).lte(endAt))
-                    .addCriteria(Criteria.where("hostName").regex(query))
+                    .addCriteria(Criteria.where("host").regex(query))
                     .with(Sort.by(Sort.Order.desc("logTime")));
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
         // query 입력
         } else if(isRegexFlag && !query.isEmpty() && !isStartDate && !isEndDate) {
             Query queryRegex = new Query();
-            queryRegex.addCriteria(Criteria.where("hostName").regex(query));
+            queryRegex.addCriteria(Criteria.where("host").regex(query));
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
         }
@@ -188,7 +188,7 @@ public class HostServiceImpl implements HostService {
         List<HostSearch> hostSearchWithoutDuplicate = new ArrayList<>();
 
         for(HostSearch hostSearchEach : input) {
-            if(hostSearchWithoutDuplicate.stream().noneMatch(o -> o.getHostName().equals(hostSearchEach.getHostName()))) {
+            if(hostSearchWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostSearchEach.getHost()))) {
                 hostSearchWithoutDuplicate.add(hostSearchEach);
             }
         }
