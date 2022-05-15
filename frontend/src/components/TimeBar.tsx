@@ -67,7 +67,15 @@ export default function TimeBar(props: propsType) {
   const handleClickRadioButton = (btn: string) => {
     props.setCategory(btn);
   };
-  const chageRange = (newValue: Date | null) => {
+
+  const changeForm = (now: Date) => {
+    const utcNow = now.getTime() + now.getTimezoneOffset() * 60 * 1000; // 현재 시간을 utc로 변환한 밀리세컨드값
+    const koreaTimeDiff = 9 * 60 * 60 * 1000; // 한국 시간은 UTC보다 9시간 빠름(9시간의 밀리세컨드 표현)
+    const koreaNow = new Date(utcNow + koreaTimeDiff);
+    return koreaNow;
+  };
+
+  const changeRange = (newValue: Date | null) => {
     // 종료시각 선택 안됐거나 / 시작시간이 종료시간보다 늦은 경우
     if (props.endAt === undefined) {
       props.setEndAt(null);
@@ -78,7 +86,12 @@ export default function TimeBar(props: propsType) {
     ) {
       props.setEndAt(null);
     }
-    props.setStartAt(newValue);
+
+    if (newValue === null) {
+      props.setStartAt(newValue);
+    } else {
+      props.setStartAt(changeForm(newValue));
+    }
   };
 
   return (
@@ -104,7 +117,11 @@ export default function TimeBar(props: propsType) {
               value={props.pointAt}
               maxDateTime={new Date()}
               onChange={(newValue) => {
-                props.setPointAt(newValue);
+                if (newValue === null) {
+                  props.setPointAt(newValue);
+                } else {
+                  props.setPointAt(changeForm(newValue));
+                }
               }}
             />
           ) : (
@@ -144,7 +161,7 @@ export default function TimeBar(props: propsType) {
                 renderInput={(props) => <TextField {...props} />}
                 value={props.startAt}
                 maxDateTime={new Date()}
-                onChange={(newValue) => chageRange(newValue)}
+                onChange={(newValue) => changeRange(newValue)}
               />
             </LocalizationProvider>
             <Wave> ~ </Wave>
@@ -158,7 +175,11 @@ export default function TimeBar(props: propsType) {
                 minDateTime={props.startAt}
                 maxDateTime={new Date()}
                 onChange={(newValue) => {
-                  props.setEndAt(newValue);
+                  if (newValue === null) {
+                    props.setEndAt(newValue);
+                  } else {
+                    props.setEndAt(changeForm(newValue));
+                  }
                 }}
               />
             </LocalizationProvider>
@@ -174,7 +195,7 @@ export default function TimeBar(props: propsType) {
                 renderInput={(props) => <TextField {...props} />}
                 value={props.startAt}
                 maxDateTime={new Date()}
-                onChange={(newValue) => chageRange(newValue)}
+                onChange={(newValue) => changeRange(newValue)}
               />
             </LocalizationProvider>
             <Wave> ~ </Wave>
