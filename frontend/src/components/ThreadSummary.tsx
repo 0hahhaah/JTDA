@@ -157,9 +157,9 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
   };
 
   // 코드 중복 제거
-  const states = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
+  const threadStates = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
   const paintCards = (hostSummary: HostSummary): JSX.Element[] => {
-    return states.map((state, idx) => (
+    return threadStates.map((state, idx) => (
       <Card
         key={idx}
         onClick={() => navigate(`/detail?state=${state}&id=${hostSummary._id}`)}
@@ -241,6 +241,10 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
       </Container>
     )
   );
+
+  if (!hostSummaryArray.length) {
+    return <>차트에서 특정 시점을 선택해주세요.</>;
+  }
 
   return <>{paintContainers}</>;
 }
