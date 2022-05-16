@@ -13,3 +13,7 @@ export function getDatesInRange(startDate: Date, endDate: Date): string[] {
 
   return dates;
 }
+
+export function getDateTimeFormat(data: Date): string {
+  return data.toISOString().replace("T", " ").substring(0, 19);
+}

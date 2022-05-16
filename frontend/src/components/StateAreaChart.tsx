@@ -156,12 +156,13 @@ export default function StateAreaChart(props: PropsType) {
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-    props.setSelectedIds([]);
-    const IDS: number[][] = [];
+
+    const ids: string[] = [];
     for (let i = 0; i < hosts.length; i++) {
-      IDS.push(hosts[i]._ids[idx]);
+      ids.push(hosts[i]._ids[idx]);
     }
-    props.setSelectedIds(IDS);
+
+    props.setSelectedIds(ids);
   };
 
   const options: object = {

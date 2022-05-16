@@ -1,33 +1,49 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { dummyThread } from "../data/dummy";
 import StatePieChart from "./StatePieChart";
 import { Boundary } from "../page/main";
 import { ReactComponent as Lock } from "../assets/lock.svg";
 import { ReactComponent as Play } from "../assets/play.svg";
 import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
-import BlockingGraph from "./BlockingGraph";
-import axios, { AxiosResponse } from "axios";
+import { ReactComponent as ExpandMore } from "../assets/expand_more.svg";
+import { ReactComponent as ExpandLess } from "../assets/expand_less.svg";
+import axios from "axios";
 import { HostSummary } from "../interfaces/HostInfo.interface";
 
 const Shadow = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 `;
 
-const Section = styled(Shadow)`
+const Container = styled(Shadow)`
   display: flex;
   flex-direction: column;
+  width: 80%;
   padding: 30px;
   border-radius: 10px;
 `;
+//   background-color: #60008010;
 
-const Container = styled.div`
+const Section = styled.div`
   display: flex;
   align-items: center;
-  width: fit-content;
-  margin-bottom: 100px;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-bottom: 50px;
+`;
+
+const ToggleBox = styled.div<{ active?: boolean }>`
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
+  height: ${(props) => (props.active ? "700px" : "0px")};
+
+  border-radius: 10px;
+  background-color: white;
+
+  @media (max-width: 1536px) {
+    height: ${(props) => (props.active ? "800px" : "0px")};
+  }
 `;
 
 const Title = styled.h1`
@@ -35,6 +51,8 @@ const Title = styled.h1`
   font-weight: 600;
   margin: 0px;
   text-align: left;
+  cursor: pointer;
+  display: flex;
 `;
 
 const SubTitle = styled.h2`
@@ -63,7 +81,7 @@ const Card = styled(Shadow)`
   border-radius: 10px;
 
   grid-column: span 1 / span 1;
-  @media (max-width: 1280px) {
+  @media (max-width: 1536px) {
     grid-column: span 2 / span 4;
   }
 `;
@@ -100,14 +118,14 @@ export const handleStateColor = (state: string): string => {
   return "";
 };
 
-export default function ThreadSummary() {
+interface ThreadSummaryProps {
+  selectedIds: string[];
+}
+
+export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
   const navigate = useNavigate();
-  const dummyData: string[] = [
-    "627db1df02a6425b513b9f5b",
-    "627db1ec02a6425b513b9f61",
-    "627db1f802a6425b513b9f68",
-  ];
-  const [selectedIds, setSelectedIds] = useState<string[]>(dummyData);
+
+  const [showDetail, setShowDetail] = useState<boolean[]>([]);
   const [hostSummaryArray, setSummaryArray] = useState<HostSummary[]>([]);
   useEffect(() => {
     const fetchAndSetSummaryArray = async () => {
@@ -117,6 +135,7 @@ export default function ThreadSummary() {
       const res = await axios.get(requestURL);
 
       setSummaryArray(res.data.hosts);
+      setShowDetail(new Array(res.data.hosts.length).fill(false));
     };
 
     fetchAndSetSummaryArray();
@@ -138,9 +157,9 @@ export default function ThreadSummary() {
   };
 
   // 코드 중복 제거
-  const states = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
+  const threadStates = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
   const paintCards = (hostSummary: HostSummary): JSX.Element[] => {
-    return states.map((state, idx) => (
+    return threadStates.map((state, idx) => (
       <Card
         key={idx}
         onClick={() => navigate(`/detail?state=${state}&id=${hostSummary._id}`)}
@@ -152,30 +171,80 @@ export default function ThreadSummary() {
     ));
   };
 
-  const paintSections: JSX.Element[] = hostSummaryArray?.map((hostSummary) => (
-    <Section>
-      <Title>host {hostSummary.host}</Title>
-      <SubTitle>{hostSummary.logTime}</SubTitle>
-      <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
+  const handleToggleClick = (idx: number): void => {
+    // let offset: number = 200;
+    setShowDetail((state): boolean[] => {
+      const newState: boolean[] = [...state];
+      newState[idx] = !state[idx];
+      // if (newState[idx]) {
+      //   offset = 800;
+      // }
+
+      return newState;
+    });
+
+    // setTimeout(() => {
+    //   const element = document.getElementById(idx.toString())!;
+    //   if (element) {
+    //     console.log("YES");
+    //     const elementPosition: number = element.getBoundingClientRect().top;
+    //     const offsetPosition: number = elementPosition + offset;
+
+    //     window.scrollTo({
+    //       top: offsetPosition,
+    //       behavior: "smooth",
+    //     });
+    //   }
+    // }, 0);
+  };
+
+  const paintContainers: JSX.Element[] = hostSummaryArray?.map(
+    (hostSummary, idx) => (
       <Container>
-        <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
-        <StatePieChart threadStateCount={hostSummary.threadStateCount} />
-      </Container>
-      <Boundary />
-      <SubTitle>Daemon Count</SubTitle>
-      <Container>
-        <CardContainer gridCol={2}>
-          <Card>Daemon</Card>
-          <Card>Non-Daemon</Card>
-        </CardContainer>
-      </Container>
-      {/* <Boundary />
+        <Title onClick={() => handleToggleClick(idx)}>
+          host {hostSummary.host}{" "}
+          <ExpandMore
+            style={{
+              transform: `rotate(${showDetail[idx] ? "-180" : "0"}deg)`,
+              transition: "all 500ms ease",
+            }}
+          />
+        </Title>
+        <SubTitle>{hostSummary.logTime}</SubTitle>
+        <ToggleBox id={idx.toString()} active={showDetail[idx]}>
+          <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
+          <Section>
+            <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
+            <StatePieChart threadStateCount={hostSummary.threadStateCount} />
+          </Section>
+          <Boundary />
+          <Section>
+            <CardContainer gridCol={6}>
+              <Card>
+                <StateNum>{hostSummary.daemonCount}</StateNum>
+                <ThreadState color="rgba(95, 0, 128, 0.5)">Daemon</ThreadState>
+              </Card>
+              <Card>
+                <StateNum>{hostSummary.nonDaemonCount}</StateNum>
+                <ThreadState color="rgba(95, 0, 128, 0.2)">
+                  non-Daemon
+                </ThreadState>
+              </Card>
+            </CardContainer>
+          </Section>
+        </ToggleBox>
+        {/* <Boundary />
         <SubTitle>Blocking Infos</SubTitle>
         <Container>
           <BlockingGraph></BlockingGraph>
         </Container> */}
-    </Section>
-  ));
+      </Container>
+    )
+  );
 
-  return <Section>{paintSections}</Section>;
+  if (!hostSummaryArray.length) {
+    return <>차트에서 특정 시점을 선택해주세요.</>;
+  }
+
+  return <>{paintContainers}</>;
 }
