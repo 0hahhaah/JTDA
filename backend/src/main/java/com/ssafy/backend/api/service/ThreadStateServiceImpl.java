@@ -24,7 +24,27 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         this.mongoTemplate = mongoTemplate;
     }
 
-
+//    @Override
+//    public List<ThreadStateList> getThreadList(List<String> host, String startAt, String endAt) throws Exception {
+//
+//        StringBuffer strHost = new StringBuffer();
+//        for (String str : host) {
+//            strHost.append("'" + str + "'" + ",");
+//        }
+//        strHost.setLength(strHost.length() - 1);
+//        BasicQuery query;
+//        if (startAt.equals(endAt))
+//            query = new BasicQuery("{logTime: {$regex : '" + startAt.substring(0, 16) + "'},host:{$in:[" + strHost + "]}}");
+////        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
+//        else
+//            query = new BasicQuery("{logTime: { $gte: '" + startAt.substring(0, 16) + "', $lte: '" + endAt.substring(0, 16) + "'},host:{$in:[" + strHost + "]}}");
+//        //        query.fields().exclude("_id");
+//        System.out.println(query.toString());
+//
+//        List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
+//
+//        return list;
+//    }
 
     @Override
     public ThreadStateListDto getThreadList(List<String> host, String startAt, String endAt) throws Exception {
@@ -34,11 +54,12 @@ public class ThreadStateServiceImpl implements ThreadStateService {
             strHost.append("'"+str+"'"+",");
         }
         strHost.setLength(strHost.length()-1);
-
+        BasicQuery query;
+        if(startAt.equals(endAt)) query = new BasicQuery("{logTime: {$regex : '"+startAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
 //        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
-        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
-//        query.fields().exclude("_id");
-
+        else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
+        //        query.fields().exclude("_id");
+        System.out.println(query.toString());
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
 //        System.out.println(list.get(0).getHost());
         List<Hosts> hosts = new ArrayList<>();
