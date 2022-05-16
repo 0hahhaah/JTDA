@@ -59,7 +59,7 @@ const ListTitle = styled.div`
 
 //--------------------------------
 const ClusterList = styled(HostList)`
-  height: 60%;
+  max-height: 60%;
 `;
 
 const baseUrl = "https://k6s102.p.ssafy.io/api";
@@ -74,7 +74,8 @@ interface Props {
 export default function SidebarList({searchInput, searchCategory, startAt, endAt}: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
-  const tags = ["Monitoring", "Database", "Frontend", "Backend", "WebService"];
+  // const tags = ["Monitoring", "Database", "Frontend", "Backend", "WebService"];
+  const [tags, setTags] = useState<Array<string>>([]); 
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
   const [clusterList, setClusterList] = useState<Array<string>>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
@@ -87,22 +88,29 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
   //searchCategory 값에 따라 (host, cluster)
   //host면 getHosts(); xx searchHost();
   //cluster면 getAPI();
-  const getAPI = async() => {
-    const startStr = startAt
-    ?.toISOString()
-    .replace("T", " ")
-    .substring(0, 19);
-    const endStr = endAt
-    ?.toISOString()
-    .replace("T", " ")
-    .substring(0, 19);
 
+  let startStr:string|undefined= "";
+  let endStr:string|undefined = "";
+
+  const setTime = () =>{
+    startStr = startAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+    endStr = endAt
+    ?.toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
+  }
+
+  const getAPI = async() => {
     await axios({
-      url: baseUrl + `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${clusterList}&tags=${checkedTags}`,
+      url: baseUrl + `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${checkedCluster}&tags=${checkedTags}`,
       method: "get",
     })
     .then((res) => {
-      console.log(res.data.results);
+      console.log('되는거니?');
+      console.log('ㅇㅇ',res.data.results);
       setHostsList(res.data.results);
       // console.log('?',hostsList);
       // console.log('list', res.data.searchInput.cluster);
@@ -113,24 +121,36 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
     })
   }
 
+  const getTags = async() => {
+    console.log('되나?');
+    await axios({
+      url: baseUrl + `/host/tag?startAt=${startStr}&endAt=${endStr}`,
+      method: "get",
+    })
+    .then((res) => {
+      console.log('태그', res.data.tags);
+      setTags([...res.data.tags]);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }
+
   const makeClusterList = () => {
     console.log(checkedTags)
-    console.log('??', hostsList); //큰일입니다.. 왜 못받아오지?ㅡ,ㅡ tags때문?
+    console.log('??', hostsList);
     testClusterList = hostsList.map((cluster:any) => cluster.cluster);
     clusterResult = testClusterList.filter((e,i) => testClusterList.indexOf(e) === i);
   }
-  makeClusterList();
+  // makeClusterList();
 
-  const searchHosts = async () => {
-    const startStr = startAt
-    ?.toISOString()
-    .replace("T", " ")
-    .substring(0, 19);
-    const endStr = endAt
-    ?.toISOString()
-    .replace("T", " ")
-    .substring(0, 19);
-    
+  let clusterHost:Array<string> = [];
+  const checkedClusterHosts = () => {
+    console.log(hostsList);
+    // clusterHost = hostsList.filter(cluster => cluster.host)
+  }
+
+  const searchHosts = async () => {    
     await axios({ //searchCategory에 따라서 결과 나오도록..해야하나? 암튼 수정 필
         url:
           baseUrl +
@@ -155,10 +175,17 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
     }
   }
 
-  useEffect(() => {
+  useEffect(()=>{
+    setTime();
     getAPI();
-    // makeClusterList();
-  }, [startAt, endAt, checkedTags]); //변수 추가되어야 함
+    getTags();
+    console.log(startStr, endStr);
+  }, [startAt, endAt]);
+
+  useEffect(() => {
+    // getAPI();
+    makeClusterList();
+  }, [startStr, endStr, checkedTags]); //변수 추가되어야 함
   
   useEffect(()=>{
     searchHosts();
@@ -169,12 +196,26 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
   }, [searchInput]);
 
   console.log(checkedCluster);
+  console.log(hostsList);
 
   return (
     <>
       <TagBox>
         <ListTitle>Tags</ListTitle>
         <TagList>
+          {
+            tags.length === 0
+            ? "조회시점을 선택해주세요"
+            :(
+              tags.map((tag) => {
+                return (<TagCard
+                  key={tag}
+                  tag={tag}
+                  checkedTags={checkedTags}
+                  checkedTagsHandler={checkedTagsHandler} />)
+              })
+            )
+          }
           {tags.map((tag) => {
             return (<TagCard
               key={tag}
@@ -203,7 +244,7 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
       <ClusterList>
           <ListTitle>Clusters</ListTitle>
           <ListBox>
-            {clusterTest.map((cluster, i) => {
+            {clusterResult.map((cluster, i) => {
               return (
                 <Clusters 
                   key={i}
