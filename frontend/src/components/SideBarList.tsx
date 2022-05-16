@@ -12,7 +12,14 @@ const Center = styled.div`
   align-items: center;
 `;
 
-const TagBox = styled(Center)``;
+const TagBox = styled(Center)`
+  margin-bottom: 10px;
+`;
+
+const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
 
 const HostBox = styled(Center)`
   width: 100%;
@@ -40,10 +47,6 @@ const ListBox = styled.div`
   }
 `;
 
-const SelectedHost = styled(HostBox)`
-  height: 15%;
-`;
-
 const HostList = styled(HostBox)`
   height: 40%;
 `;
@@ -54,32 +57,6 @@ const ListTitle = styled.div`
   font-weight: 500;
 `;
 
-const InfoText = styled.p`
-  margin: 0;
-  color: #999999;
-  margin-top: 15px;
-  text-align: center;
-  font-size: 13px;
-`;
-
-const HostData = styled(Center)`
-  flex-direction: row;
-  width: 100%;
-  padding-left: 20px;
-  margin: 4px 0;
-`;
-
-const HostCheckBox = styled.input`
-  accent-color: #5f0080;
-`;
-
-const HostLabel = styled.label`
-  cursor: pointer;
-`;
-
-const NoneCheckBox = styled.input`
-  display: none;
-`;
 //--------------------------------
 const ClusterList = styled(HostList)`
   height: 60%;
@@ -95,25 +72,20 @@ interface Props {
 }
 
 export default function SidebarList({searchInput, searchCategory, startAt, endAt}: Props) {
-  const [hostsList, setHostsList] = useState<Array<string>>([""]);
-  // const [startAt, setStartAt] = useState("2022-05-10");
-  // const [endAt, setEndAt] = useState("2022-05-10");
+  const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
-  const [checkedItems, setCheckedItems] = useState<Array<string>>([""]);
   const tags = ["Monitoring", "Database", "Frontend", "Backend", "WebService"];
-  const [checkedTags, setCheckedTags] = useState<Array<string>>([""]);
-  // const [clusterList, setClusterList] = useState<any>([]);
-  const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
-  const [checkedCluster, setCheckedCluster] = useState<string>("");
+  const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
   const [clusterList, setClusterList] = useState<Array<string>>([]);
-  // const clusterList: string[] = ['cluster1', 'cluster2', 'cluster3'];
-  const checkedTagsTest: string[] = ['tag1', 'tag2', 'tag3'];
+  const [checkedCluster, setCheckedCluster] = useState<string>("");
   let testClusterList: string[] = [""];
   let clusterResult: string[] = [""];
+  const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
 
+  const [clusterTest, setClusterTest] = useState<Array<string>>(['cl1', 'cl2', 'cl3']);
   //encodeURIComponent(query); 유니코드 변환 함수
   //searchCategory 값에 따라 (host, cluster)
-  //host면 getHosts();
+  //host면 getHosts(); xx searchHost();
   //cluster면 getAPI();
   const getAPI = async() => {
     const startStr = startAt
@@ -130,7 +102,7 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
       method: "get",
     })
     .then((res) => {
-      // console.log(res.data.results);
+      console.log(res.data.results);
       setHostsList(res.data.results);
       // console.log('?',hostsList);
       // console.log('list', res.data.searchInput.cluster);
@@ -142,13 +114,14 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
   }
 
   const makeClusterList = () => {
+    console.log(checkedTags)
+    console.log('??', hostsList); //큰일입니다.. 왜 못받아오지?ㅡ,ㅡ tags때문?
     testClusterList = hostsList.map((cluster:any) => cluster.cluster);
     clusterResult = testClusterList.filter((e,i) => testClusterList.indexOf(e) === i);
-    // console.log('웅', clusterResult);
   }
   makeClusterList();
 
-  const getHosts = async () => {
+  const searchHosts = async () => {
     const startStr = startAt
     ?.toISOString()
     .replace("T", " ")
@@ -157,53 +130,59 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
     ?.toISOString()
     .replace("T", " ")
     .substring(0, 19);
-
-      await axios({
-          url:
-            baseUrl +
-            `/host/search`,//?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
-            method: "get",
-      })
-      .then((res) => {
-        // console.log('dd',res.data.hosts);
-        // setHostsList([...res.data.hosts]);
-      })
-      .catch((err) => {
-          console.log(err);
-        });
+    
+    await axios({ //searchCategory에 따라서 결과 나오도록..해야하나? 암튼 수정 필
+        url:
+          baseUrl +
+          `/host/search`,//?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
+          method: "get",
+    })
+    .then((res) => {
+      console.log('dd',res.data.hosts);
+      // setHostsList([...res.data.hosts]);
+    })
+    .catch((err) => {
+        console.log(err);
+      });
   };
 
   const checkedTagsHandler = (code:string, isChecked:boolean) => {
     if(isChecked){
       setCheckedTags([...checkedTags, code])
     } else if(!isChecked && checkedTags.find(one => one === code)){
-      const filter = checkedItems.filter(one => one !== code)
+      const filter = checkedTags.filter(one => one !== code)
       setCheckedTags([...filter])
     }
   }
 
-  useEffect(()=>{
-    console.log(startAt, endAt);
-  },[]);
-
   useEffect(() => {
     getAPI();
-    getHosts();
-  }, [startAt, endAt, query]); //변수 추가되어야 함
+    // makeClusterList();
+  }, [startAt, endAt, checkedTags]); //변수 추가되어야 함
+  
+  useEffect(()=>{
+    searchHosts();
+  },[startAt, endAt, query]);
 
   useEffect(() => {
     setQuery(searchInput);
   }, [searchInput]);
 
+  console.log(checkedCluster);
+
   return (
     <>
       <TagBox>
         <ListTitle>Tags</ListTitle>
-        <TagCard 
-          tags={tags} 
-          checkedTags={checkedTags}
-          checkedTagsHandler={checkedTagsHandler}
-        ></TagCard>
+        <TagList>
+          {tags.map((tag) => {
+            return (<TagCard
+              key={tag}
+              tag={tag}
+              checkedTags={checkedTags}
+              checkedTagsHandler={checkedTagsHandler} />)
+          })}
+        </TagList>
       </TagBox>
 
       {/* <SelectedHost>
@@ -221,44 +200,15 @@ export default function SidebarList({searchInput, searchCategory, startAt, endAt
         </ListBox>
       </SelectedHost> */}
 
-      {/* <HostList>
-        <ListTitle>Host List ({hostsList.length})</ListTitle>
-        <ListBox>
-          {hostsList.map((host:hostInfo, i) => {
-            return (
-              <HostData>
-                <HostLabel>
-                  <HostCheckBox
-                    type="checkbox"
-                    name="host"
-                    value={host.hostName}
-                    key={i}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setCheckedItems([...checkedItems, e.target.value]);
-                        e.target.checked = true;
-                      } else {
-                        onRemoveItems(e);
-                        e.target.checked = false;
-                      }
-                    }}
-                  />
-                  &nbsp;{host.hostName}
-                </HostLabel>
-              </HostData>
-            );
-          })}
-        </ListBox>
-      </HostList> */}
-
       <ClusterList>
           <ListTitle>Clusters</ListTitle>
           <ListBox>
-            {clusterResult.map((cluster, i) => {
+            {clusterTest.map((cluster, i) => {
               return (
                 <Clusters 
+                  key={i}
                   cluster={cluster}
-                  key={i}>
+                  setCheckedCluster={setCheckedCluster}>
                 </Clusters>
               )
             })}

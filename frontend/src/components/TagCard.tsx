@@ -1,12 +1,6 @@
-import { Checkbox } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Tags } from '../interfaces/HostInfo.interface';
 import styled from 'styled-components';
-
-const Container = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-`;
 
 const CheckBox = styled.input`
     display: none;
@@ -19,53 +13,37 @@ const TagDiv = styled.div`
     border-radius: 17px;
     border: 1px solid #cdcdcd;
     margin: 3px;
+    background-color: ${(props) => props.color === "true" ? "#5F0080" : "white"};
+    color: ${(props) => props.color === "true" ? "white" : "#333333"};
 `;
 
-interface Props{
-    tags: string[];
-    checkedTags: string[];
-    checkedTagsHandler: any;
-}
-
-const TagCard = ({tags, checkedTags, checkedTagsHandler}: Props) =>{
+const TagCard = ({tag, checkedTags, checkedTagsHandler}: Tags) =>{
     const [isChecked, setIsChecked] = useState<boolean>(false);
 
-    const onCheck=({target}:any)=>{
-        checkedTagsHandler(target.value)
+    const onCheck=({target}:React.ChangeEvent<HTMLInputElement>)=>{
+        checkedTagsHandler(target.value, target.checked)
         setIsChecked(target.checked);
     }
 
-    return (
-        <Container>
-        {
-            tags.map((tag, i) => {
-                return (
-                    <>
-                    <label>
-                        {/* <CheckBox type="checkbox" 
-                            name="tag"
-                            checked={isChecked}
-                            value={tag}
-                            key={i}
-                            onChange = { (e) =>{
-                                if(e.target.checked) setIsChecked(true);
-                                else setIsChecked(false);
-                            }}
-                        />
-                        <TagDiv>{tag}</TagDiv>  */}
-                        <input
-                            type='checkbox'
-                            name='tag'
-                            onChange={(e)=>{
-                                onCheck(e)
-                            }}/> {tag}
-                    </label>
-                    </>
-                )
-            })
+    useEffect(() => {
+        if(checkedTags.includes(tag)) {
+            setIsChecked(true)
+        } else {
+            setIsChecked(false)
         }
-        </Container>
-    );
+    }, [checkedTags]);
+
+    return (
+        <label>
+            <CheckBox type="checkbox" 
+                name="tag"
+                checked={isChecked}
+                value={tag}
+                onChange = { e => onCheck(e) }/>
+            <TagDiv 
+                color={`${isChecked}`}>{tag}</TagDiv> 
+        </label>
+    )
 };
 
 export default TagCard;
