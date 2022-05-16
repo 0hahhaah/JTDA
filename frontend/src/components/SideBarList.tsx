@@ -132,18 +132,20 @@ export default function SidebarList({
       method: "get",
     })
     .then((res) => {
-      setTags([...res.data.tags]);
+      setTags(res.data.tags);
     })
+    .then(() => {removeTagBlank()})
     .catch((err) => {
       console.log(err);
     });
-
-    tagRemoveBlank();
   };
   
-  const tagRemoveBlank = () => { //태그 맨 앞에 생기는 공백 제거
-    setTags(tags.filter(element => element !== ''));
+  const removeTagBlank = () => { //태그 맨 앞에 생기는 공백 제거
+    if(tags[0] === '') {
+      setTags(tags.filter((e,i) => i !== 0));
+    }
   }
+  
 
   const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
     let searchUrl = "";
@@ -180,6 +182,7 @@ export default function SidebarList({
 
   useEffect(()=>{
     getTags();
+    getAPI();
   }, [startStr, endStr]);
 
   useEffect(() => {
