@@ -59,7 +59,7 @@ public class ThreadStateServiceImpl implements ThreadStateService {
 //        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
         else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
         //        query.fields().exclude("_id");
-        System.out.println(query.toString());
+//        System.out.println(query.toString());
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
 //        System.out.println(list.get(0).getHost());
         List<Hosts> hosts = new ArrayList<>();
@@ -104,8 +104,8 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         }
 
         ThreadStateCountList threadStateCountList = new ThreadStateCountList(RUNNABLE,BLOCKED,WAITING,TIMED_WAITING);
-        int hostSize = hostList.size();
-        for(int i=0; i<hostSize; i++){
+        int idSize = logTimeList.size();
+        for(int i=0; i<hostList.size(); i++){
 
             int limit = 0;
 
@@ -118,7 +118,7 @@ public class ThreadStateServiceImpl implements ThreadStateService {
                     _idList.add(entity.get_id());
                     limit++;
                 }
-                if (limit >= hostSize) break;
+                if (limit >= idSize) break;
             }
             hosts.add(new Hosts(hostList.get(i),_idList));
         }
