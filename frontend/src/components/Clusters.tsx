@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-const ClusterBox = styled.p`
+const ClusterBox = styled.p<{ftWeight:string}>`
     margin: 0 0 5px 0;
     padding: 0 0 0 20px;
     cursor: pointer;
-    font-weight: ${(props) => props.color === "true" ? "500" : "normal"};
+    font-weight: ${(props) => props.ftWeight === "true" ? "500" : "normal"};
 `;
 
 const HostUl = styled.ul`
@@ -22,18 +22,22 @@ interface Props {
     setCheckedCluster: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Clusters:React.FunctionComponent<Props> = (props: Props) => {
+const Clusters:React.FunctionComponent<Props> = ({cluster, setCheckedCluster}: Props) => {
     const [isToggled, setIsToggled] = useState<boolean>(false);
     const hosts = ["host1", "host2", "host3", "host4"];
     
+    const checkedClusterHosts = () => {
+        
+    }
+
     const onClusterHandler = () =>{
         setIsToggled(!isToggled);
-        // setCheckedCluster(""); //왜,,,안될까? 나는 모르게쏘
+        setCheckedCluster(cluster)
     }
 
     return(
         <>
-            <ClusterBox color={`${isToggled}`}onClick={onClusterHandler}>{props.cluster} ()</ClusterBox>
+            <ClusterBox ftWeight={`${isToggled}`} onClick={onClusterHandler}>{cluster} ()</ClusterBox>
             {
                 isToggled
                 ? (<HostUl>
