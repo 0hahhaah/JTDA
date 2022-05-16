@@ -34,7 +34,12 @@ export default function Main() {
 
   return (
     <div>
-      <SideBar startAt={startAt} endAt={endAt} />
+      <SideBar 
+        pointAt={pointAt}
+        startAt={startAt} 
+        endAt={endAt}
+        category={category}
+        />
       <Time>
         <TimeBar
           pointAt={pointAt}

@@ -67,10 +67,10 @@ const baseUrl = "https://k6s102.p.ssafy.io/api";
 interface Props {
   searchInput: string;
   searchCategory: string;
-  category: string;
-  pointAt: Date;
-  startAt: Date;
-  endAt: Date;
+  category?: string;
+  pointAt?: Date|null;
+  startAt?: Date|null;
+  endAt?: Date|null;
 }
 
 export default function SidebarList({
@@ -106,12 +106,12 @@ export default function SidebarList({
   //cluster면 getAPI();
 
   const setTime = () => {
-    if (category === "point") {
+    if (category === "point"&&pointAt) {
       setStartStr(changeTime(pointAt));
       setEndStr(changeTime(pointAt));
     } else {
-      setStartStr(changeTime(startAt));
-      setEndStr(changeTime(endAt));
+      if(startAt) setStartStr(changeTime(startAt));
+      if(endAt) setEndStr(changeTime(endAt));
     }
   };
 
