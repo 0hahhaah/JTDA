@@ -20,7 +20,6 @@ import {
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
-import { rejects } from "assert";
 
 ChartJS.register(
   CategoryScale,
@@ -47,34 +46,50 @@ export default function StateAreaChart(props: PropsType) {
   const [blocked, setBlocked] = React.useState<[]>([]);
   const [waiting, setWaiting] = React.useState<[]>([]);
   const [timed, setTimed] = React.useState<[]>([]);
-  const [all, setAll] = React.useState<any>([]);
+
+  const changeTime = (value: Date | null) => {
+    if (value !== null) {
+      const koreaTime = new Date(
+        value.getTime() - value.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .replace("T", " ")
+        .substring(0, 19);
+      return koreaTime;
+    }
+  };
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
-    const startStr = startAt?.toISOString().replace("T", " ").substring(0, 19);
-    const endStr = endAt?.toISOString().replace("T", " ").substring(0, 19);
-    const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
-    const hostParam = {
-      host: hosts.join(","),
-    };
-
-    await axios
-      .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
-        params: hostParam,
-      })
-      .then((res) => {
-        const info = res.data.hostList;
-        setAll(info);
-        setLogTime(info.logTime);
-        setHosts(info.hosts);
-        setRunnable(info.threadStateCountList.runnable);
-        setBlocked(info.threadStateCountList.blocked);
-        setWaiting(info.threadStateCountList.waiting);
-        setTimed(info.threadStateCountList.timed_WAITING);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    if (startAt !== null && endAt !== null) {
+      const startStr = changeTime(startAt);
+      const endStr = changeTime(endAt);
+      // console.log(startAt);
+      // console.log("----");
+      // console.log(endAt);
+      // console.log("=============");
+      const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
+      const hostParam = {
+        host: hosts.join(","),
+      };
+      await axios
+        .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
+          params: hostParam,
+        })
+        .then((res) => {
+          const info = res.data.hostList;
+          // console.log(res.data);
+          setLogTime(info.logTime);
+          setHosts(info.hosts);
+          setRunnable(info.threadStateCountList.runnable);
+          setBlocked(info.threadStateCountList.blocked);
+          setWaiting(info.threadStateCountList.waiting);
+          setTimed(info.threadStateCountList.timed_WAITING);
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
   };
 
   // 어떤 조회를 선택했는지 확인
@@ -130,7 +145,7 @@ export default function StateAreaChart(props: PropsType) {
         borderColor: "rgb(255, 124, 75, 1)",
       },
       {
-        label: "timed",
+        label: "TIMED_WAITING",
         data: timed,
         fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
