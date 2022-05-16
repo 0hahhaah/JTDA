@@ -133,6 +133,9 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
       const requestURL: string =
         BASE_URL + `/host/state?_id=${selectedIds.join()}`;
       const res = await axios.get(requestURL);
+      console.log(selectedIds);
+      console.log("=====");
+      console.log(res.data.hosts);
 
       setSummaryArray(res.data.hosts);
       setShowDetail(new Array(res.data.hosts.length).fill(false));

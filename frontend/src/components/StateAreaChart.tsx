@@ -42,10 +42,10 @@ const Box = styled.div`
 export default function StateAreaChart(props: PropsType) {
   const [logTime, setLogTime] = React.useState<string[]>([]);
   const [hosts, setHosts] = React.useState<any>([]);
-  const [runnable, setRunnable] = React.useState<[]>([]);
-  const [blocked, setBlocked] = React.useState<[]>([]);
-  const [waiting, setWaiting] = React.useState<[]>([]);
-  const [timed, setTimed] = React.useState<[]>([]);
+  const [runnable, setRunnable] = React.useState<any[]>([]);
+  const [blocked, setBlocked] = React.useState<any[]>([]);
+  const [waiting, setWaiting] = React.useState<any[]>([]);
+  const [timed, setTimed] = React.useState<any[]>([]);
 
   const changeTime = (value: Date | null) => {
     if (value !== null) {
@@ -72,20 +72,44 @@ export default function StateAreaChart(props: PropsType) {
       const hostParam = {
         host: hosts.join(","),
       };
+      console.log();
       await axios
         .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
           params: hostParam,
         })
         .then((res) => {
           const info = res.data.hostList;
-          // console.log(res.data);
-          setLogTime(info.logTime);
-          setHosts(info.hosts);
-          setRunnable(info.threadStateCountList.runnable);
-          setBlocked(info.threadStateCountList.blocked);
-          setWaiting(info.threadStateCountList.waiting);
-          setTimed(info.threadStateCountList.timed_WAITING);
+          console.log(res.data);
+
+          if (startStr === endStr) {
+            setLogTime([info.logTime[0], info.logTime[0]]);
+            setHosts([info.hosts[0], info.hosts[0]]);
+            setRunnable([
+              info.threadStateCountList.runnable[0],
+              info.threadStateCountList.runnable[0],
+            ]);
+            setBlocked([
+              info.threadStateCountList.blocked[0],
+              info.threadStateCountList.blocked[0],
+            ]);
+            setWaiting([
+              info.threadStateCountList.waiting[0],
+              info.threadStateCountList.waiting[0],
+            ]);
+            setTimed([
+              info.threadStateCountList.timed_WAITING[0],
+              info.threadStateCountList.timed_WAITING[0],
+            ]);
+          } else {
+            setLogTime(info.logTime);
+            setHosts(info.hosts);
+            setRunnable(info.threadStateCountList.runnable);
+            setBlocked(info.threadStateCountList.blocked);
+            setWaiting(info.threadStateCountList.waiting);
+            setTimed(info.threadStateCountList.timed_WAITING);
+          }
         })
+
         .catch((err) => {
           console.log("err", err);
         });
