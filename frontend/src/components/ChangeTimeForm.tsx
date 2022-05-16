@@ -1,4 +1,4 @@
-export default function changeTime(value: Date | null) {
+export default function changeTime(value: Date | null): string {
   if (value !== null) {
     const koreaTime = new Date(
       value.getTime() - value.getTimezoneOffset() * 60000
@@ -8,4 +8,5 @@ export default function changeTime(value: Date | null) {
       .substring(0, 19);
     return koreaTime;
   }
+  return "";
 }

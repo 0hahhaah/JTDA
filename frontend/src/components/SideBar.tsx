@@ -56,12 +56,20 @@ const Footer = styled.div`
 `;
 
 interface Props {
-  startAt?: Date | null | undefined;
-  endAt?: Date | null | undefined;
+  pointAt: Date;
+  startAt: Date;
+  endAt: Date;
+  category: string;
   threadDumps?: ThreadDump[];
 }
 
-export default function SideBar({ startAt, endAt, threadDumps }: Props) {
+export default function SideBar({
+  startAt,
+  endAt,
+  threadDumps,
+  pointAt,
+  category,
+}: Props) {
   const { pathname } = useLocation();
   const isMain: boolean = pathname === "/" ? true : false;
 
@@ -72,15 +80,22 @@ export default function SideBar({ startAt, endAt, threadDumps }: Props) {
     <Layout>
       <Base>
         <Logo></Logo>
-        <SearchBar isMain={isMain} setSearchInput={setSearchInput} setSearchCategory={setSearchCategory}></SearchBar>
+        <SearchBar
+          isMain={isMain}
+          setSearchInput={setSearchInput}
+          setSearchCategory={setSearchCategory}
+        ></SearchBar>
         <Container>
-          {isMain 
-            ? <SideBarList 
-                searchInput={searchInput}
-                searchCategory={searchCategory}
-                startAt={startAt}
-                endAt={endAt}/> 
-            : (
+          {isMain ? (
+            <SideBarList
+              searchInput={searchInput}
+              searchCategory={searchCategory}
+              startAt={startAt}
+              endAt={endAt}
+              category={category}
+              pointAt={pointAt}
+            />
+          ) : (
             <ThreadList searchInput={searchInput} threadDumps={threadDumps} />
           )}
         </Container>
