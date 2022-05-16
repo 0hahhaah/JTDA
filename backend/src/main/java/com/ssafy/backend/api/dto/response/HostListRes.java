@@ -21,9 +21,9 @@ public class HostListRes {
 
     private int resultCount;
 
-    private List<HostList> results;
+    private List<HostListResultsRes> results;
 
-    public HostListRes(String startAt, String endAt, hostListSearchInputRes searchInput, int resultCount, List<HostList> results) {
+    public HostListRes(String startAt, String endAt, hostListSearchInputRes searchInput, int resultCount, List<HostListResultsRes> results) {
         this.startAt = startAt;
         this.endAt = endAt;
         this.searchInput = searchInput;
