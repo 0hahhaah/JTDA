@@ -1,10 +1,7 @@
 package com.ssafy.backend.api.service;
 
 import com.ssafy.backend.api.dto.response.*;
-import com.ssafy.backend.core.domain.HostList;
-import com.ssafy.backend.core.domain.HostSearch;
-import com.ssafy.backend.core.domain.HostState;
-import com.ssafy.backend.core.domain.ThreadDumps;
+import com.ssafy.backend.core.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -184,6 +181,24 @@ public class HostServiceImpl implements HostService {
         }
 
         return new HostStateRes(returnHosts);
+    }
+
+
+    @Override
+    public HostTagRes getHostTag(String startAt, String endAt) {
+        boolean isStartDate = isDateTime(startAt);
+        boolean isEndDate = isDateTime(endAt);
+
+        if(isStartDate && isEndDate) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
+            List<HostTag> queryResult = mongoTemplate.findDistinct(query, "tags", "threaddump", HostTag.class);
+            Set<HostTag> returnTag = new HashSet<>(queryResult);
+
+            return new HostTagRes(new ArrayList<>(returnTag));
+        } else {
+            return new HostTagRes(new ArrayList<>());
+        }
     }
 
 

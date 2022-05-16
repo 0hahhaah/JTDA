@@ -3,7 +3,9 @@ package com.ssafy.backend.api.controller;
 import com.ssafy.backend.api.dto.response.HostListRes;
 import com.ssafy.backend.api.dto.response.HostSearchRes;
 import com.ssafy.backend.api.dto.response.HostStateRes;
+import com.ssafy.backend.api.dto.response.HostTagRes;
 import com.ssafy.backend.api.service.HostService;
+import com.ssafy.backend.core.domain.HostTag;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -74,5 +76,19 @@ public class HostController {
         HostStateRes hostStateRes = hostService.getHostState(_id);
 
         return ResponseEntity.ok(hostStateRes);
+    }
+
+    @GetMapping("/tag")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "404", description = "Page Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    @Operation(summary = "Tag 목록 반환", description = "Collection threaddump 내 특정 기간 내 모든 Tag 목록 반환")
+    public ResponseEntity<HostTagRes> showHostTag(@RequestParam String startAt, @RequestParam String endAt) {
+        HostTagRes hostTagRes = hostService.getHostTag(startAt, endAt);
+
+        return ResponseEntity.ok(hostTagRes);
     }
 }
