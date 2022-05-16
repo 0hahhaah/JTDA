@@ -28,7 +28,7 @@ const Clusters:React.FunctionComponent<Props> = (props: Props) => {
     
     const onClusterHandler = () =>{
         setIsToggled(!isToggled);
-        setCheckedCluster(""); //왜,,,안될까? 나는 모르게쏘
+        // setCheckedCluster(""); //왜,,,안될까? 나는 모르게쏘
     }
 
     return(
