@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service("ThreadDetailService")
 public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
@@ -30,6 +29,7 @@ public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
 //        BasicQuery query = new BasicQuery("{_id : ObjectId('"+_id+"')}");
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(_id));
+
 //        query.addCriteria(Criteria.where("threadDumps").elemMatch(Criteria.where("state").is(state)));
 //        List<Criteria> criteriaList = new ArrayList<>();
 //        criteriaList.add(Criteria.where("threadDumps").elemMatch(Criteria.where("state").is(state)));
@@ -57,6 +57,13 @@ public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
                 threadSize--;
             }
         }
+
+        Collections.sort(detail.getThreadDumps(), new Comparator<ThreadDumps>() {
+            @Override
+            public int compare(ThreadDumps o1, ThreadDumps o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return new ThreadStateDetailDto(detail);
     }
 }
