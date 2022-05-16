@@ -17,14 +17,15 @@ const HostList = styled.li`
 `;
 
 interface Props {
-  // children: never[];
   cluster: string;
   setCheckedCluster: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const Clusters: React.FunctionComponent<Props> = ({
   cluster,
   setCheckedCluster,
+  setSelectedIds
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
   const hosts = ["host1", "host2", "host3", "host4"];
@@ -33,18 +34,27 @@ const Clusters: React.FunctionComponent<Props> = ({
 
   const onClusterHandler = () => {
     setIsToggled(!isToggled);
-    setCheckedCluster(cluster);
+    // setCheckedCluster(cluster.cluster);
+    setCheckedCluster('CLUSTER-ONE');
   };
+
+  const onSelectedIdsHandler = (id: string) => {
+    // setSelectedIds()
+  }
 
   return (
     <>
       <ClusterBox ftWeight={`${isToggled}`} onClick={onClusterHandler}>
-        {cluster} ()
+        {/* {cluster.cluster} ({cluster.host.length}) */}
+        cluster.cluster (cluster.hosts.length)
       </ClusterBox>
       {isToggled ? (
         <HostUl>
-          {hosts.map((e, i) => {
-            return <HostList key={i}>{e}</HostList>;
+          {cluster.hosts.map((host, i) => {
+            return (
+            <HostList 
+              key={i} 
+              onClick={onSelectedIdsHandler(host.host)}>{host.host}</HostList>) ; //id로 바꿔야 함.
           })}
         </HostUl>
       ) : null}

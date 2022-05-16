@@ -60,6 +60,8 @@ interface Props {
   endAt?: Date | null;
   category?: string;
   threadDumps?: ThreadDump[];
+  selectedIds?: string[];
+  setSelectedIds?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function SideBar({
@@ -68,6 +70,8 @@ export default function SideBar({
   threadDumps,
   pointAt,
   category,
+  selectedIds,
+  setSelectedIds
 }: Props) {
   const { pathname } = useLocation();
   const isMain: boolean = pathname === "/" ? true : false;
@@ -93,6 +97,8 @@ export default function SideBar({
               endAt={endAt}
               category={category}
               pointAt={pointAt}
+              selectedIds={selectedIds}
+              setSelectedIds={setSelectedIds}
             />
           ) : (
             <ThreadList searchInput={searchInput} threadDumps={threadDumps} />

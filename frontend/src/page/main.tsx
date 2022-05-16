@@ -39,6 +39,8 @@ export default function Main() {
         startAt={startAt} 
         endAt={endAt}
         category={category}
+        selectedIds={selectedIds}
+        setSelectedIds={setSelectedIds}
         />
       <Time>
         <TimeBar

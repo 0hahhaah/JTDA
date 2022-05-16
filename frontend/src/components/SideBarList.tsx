@@ -71,6 +71,8 @@ interface Props {
   pointAt?: Date|null;
   startAt?: Date|null;
   endAt?: Date|null;
+  selectedIds: string[];
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function SidebarList({
@@ -80,6 +82,8 @@ export default function SidebarList({
   endAt,
   pointAt,
   category,
+  selectedIds,
+  setSelectedIds
 }: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
@@ -117,9 +121,6 @@ export default function SidebarList({
       .then((res) => {
         console.log("ㅇㅇ", res.data.results);
         setClusterList(res.data.results);
-        // console.log('?',hostsList);
-        // console.log('list', res.data.searchInput.cluster);
-        // setClusterList([...res.data.searchInput.cluster]);
       })
       .catch((err) => {
         console.log(err);
@@ -145,7 +146,6 @@ export default function SidebarList({
       setTags(tags.filter((e,i) => i !== 0));
     }
   }
-  
 
   const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
     let searchUrl = "";
@@ -166,7 +166,6 @@ export default function SidebarList({
     })
   }  
 
-
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
     if (isChecked) {
       setCheckedTags([...checkedTags, code]);
@@ -182,12 +181,11 @@ export default function SidebarList({
 
   useEffect(()=>{
     getTags();
-    getAPI();
   }, [startStr, endStr]);
 
-  useEffect(() => {
-    // getAPI();
-  }, [startStr, endStr, checkedTags]); //변수 추가되어야 함
+  useEffect(()=>{
+    getAPI();
+  }, [startStr, endStr, checkedCluster, checkedTags])
 
   useEffect(() => {
     // searchHosts();
@@ -241,6 +239,8 @@ export default function SidebarList({
                 key={i}
                 cluster={cluster}
                 setCheckedCluster={setCheckedCluster}
+                selectedIds={selectedIds}
+                setSelectedIds={setSelectedIds}
               ></Clusters>
             );
           })}
