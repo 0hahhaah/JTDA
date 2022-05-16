@@ -126,7 +126,7 @@ export default function SidebarList({
       });
   };
 
-  const getTags = async () => {
+  const getTags = async() => {
     await axios({
       url: baseUrl + `/host/tag?startAt=${startStr}&endAt=${endStr}`,
       method: "get",
@@ -138,7 +138,7 @@ export default function SidebarList({
       console.log(err);
     });
 
-    await tagRemoveBlank();
+    tagRemoveBlank();
   };
   
   const tagRemoveBlank = () => { //태그 맨 앞에 생기는 공백 제거
