@@ -27,7 +27,6 @@ const Base = styled(Center)`
   padding: 1rem;
 `;
 
-///잘 안되네요..
 const Container = styled(Center)`
   width: 100%;
   height: 100%;
@@ -56,10 +55,10 @@ const Footer = styled.div`
 `;
 
 interface Props {
-  pointAt: Date;
-  startAt: Date;
-  endAt: Date;
-  category: string;
+  pointAt?: Date | null;
+  startAt?: Date | null;
+  endAt?: Date | null;
+  category?: string;
   threadDumps?: ThreadDump[];
 }
 
