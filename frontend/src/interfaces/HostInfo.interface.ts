@@ -16,3 +16,9 @@ export interface HostSummary {
   daemonCount: number;
   nonDaemonCount: number;
 }
+
+export interface Tags{
+  tag: string;
+  checkedTags: string[];
+  checkedTagsHandler: (code: string, isChecked: boolean) => void;
+}
