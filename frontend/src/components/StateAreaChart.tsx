@@ -4,7 +4,7 @@ import { URL } from "../api/index";
 import styled from "styled-components";
 import { Line } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
-
+import changeTime from "./ChangeTimeForm";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,6 +17,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
+
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
@@ -47,27 +48,24 @@ export default function StateAreaChart(props: PropsType) {
   const [waiting, setWaiting] = React.useState<any[]>([]);
   const [timed, setTimed] = React.useState<any[]>([]);
 
-  const changeTime = (value: Date | null) => {
-    if (value !== null) {
-      const koreaTime = new Date(
-        value.getTime() - value.getTimezoneOffset() * 60000
-      )
-        .toISOString()
-        .replace("T", " ")
-        .substring(0, 19);
-      return koreaTime;
-    }
-  };
+  // const changeTime = (value: Date | null) => {
+  //   if (value !== null) {
+  //     const koreaTime = new Date(
+  //       value.getTime() - value.getTimezoneOffset() * 60000
+  //     )
+  //       .toISOString()
+  //       .replace("T", " ")
+  //       .substring(0, 19);
+  //     return koreaTime;
+  //   }
+  // };
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
     if (startAt !== null && endAt !== null) {
       const startStr = changeTime(startAt);
       const endStr = changeTime(endAt);
-      // console.log(startAt);
-      // console.log("----");
-      // console.log(endAt);
-      // console.log("=============");
+
       const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
       const hostParam = {
         host: hosts.join(","),
