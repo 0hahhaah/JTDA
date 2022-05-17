@@ -17,4 +17,5 @@ export interface AreaChartProps {
   endAt: Date | null;
   category: string;
   setSelectedTime: React.Dispatch<React.SetStateAction<string>>;
+  selectedHostNames: string[];
 }

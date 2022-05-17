@@ -21,6 +21,8 @@ import {
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { AreaChartProps } from "../interfaces/ChartJS.interface";
+import CircularProgress from "@mui/material/CircularProgress";
+import { HostChartSummary } from "../interfaces/HostInfo.interface";
 
 ChartJS.register(
   CategoryScale,
@@ -38,6 +40,10 @@ ChartJS.register(
 const Box = styled.div`
   padding: 40px 20px;
   width: 80%;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default function StateAreaChart({
@@ -46,72 +52,37 @@ export default function StateAreaChart({
   endAt,
   category,
   setSelectedTime,
+  selectedHostNames,
 }: AreaChartProps) {
-  const [logTime, setLogTime] = useState<string[]>([]);
-  const [hosts, setHosts] = useState<any>([]);
-  const [runnable, setRunnable] = useState<any[]>([]);
-  const [blocked, setBlocked] = useState<any[]>([]);
-  const [waiting, setWaiting] = useState<any[]>([]);
-  const [timed, setTimed] = useState<any[]>([]);
-
-  // const changeTime = (value: Date | null) => {
-  //   if (value !== null) {
-  //     const koreaTime = new Date(
-  //       value.getTime() - value.getTimezoneOffset() * 60000
-  //     )
-  //       .toISOString()
-  //       .replace("T", " ")
-  //       .substring(0, 19);
-  //     return koreaTime;
-  //   }
-  // };
+  const [hostChartSummary, setHostChartSummary] = useState<HostChartSummary>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [noData, setNoData] = useState<boolean>(false);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
-    if (startAt !== null && endAt !== null) {
+    if (startAt !== null && endAt !== null && selectedHostNames.length > 0) {
+      setLoading(true);
       const startStr = changeTime(startAt);
       const endStr = changeTime(endAt);
-
-      const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
       const hostParam = {
-        host: hosts.join(","),
+        host: selectedHostNames.join(","),
       };
-
       await axios
         .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
           params: hostParam,
         })
         .then((res) => {
           const info = res.data.hostList;
-          console.log(res.data);
+          console.log(info);
 
-          if (startStr === endStr) {
-            setLogTime([info.logTime[0], info.logTime[0]]);
-            setHosts([info.hosts[0], info.hosts[0]]);
-            setRunnable([
-              info.threadStateCountList.runnable[0],
-              info.threadStateCountList.runnable[0],
-            ]);
-            setBlocked([
-              info.threadStateCountList.blocked[0],
-              info.threadStateCountList.blocked[0],
-            ]);
-            setWaiting([
-              info.threadStateCountList.waiting[0],
-              info.threadStateCountList.waiting[0],
-            ]);
-            setTimed([
-              info.threadStateCountList.timed_WAITING[0],
-              info.threadStateCountList.timed_WAITING[0],
-            ]);
+          setHostChartSummary(res.data.hostList);
+          if (info.dataCount === 0) {
+            setNoData(true);
           } else {
-            setLogTime(info.logTime);
-            setHosts(info.hosts);
-            setRunnable(info.threadStateCountList.runnable);
-            setBlocked(info.threadStateCountList.blocked);
-            setWaiting(info.threadStateCountList.waiting);
-            setTimed(info.threadStateCountList.timed_WAITING);
+            setNoData(false);
           }
+
+          setLoading(false);
         })
 
         .catch((err) => {
@@ -129,37 +100,38 @@ export default function StateAreaChart({
     }
   };
 
+  // 시간 바뀔때마다 다시!
   useEffect(() => {
     searchCategory();
-  }, [pointAt, startAt, endAt]);
+  }, [pointAt, startAt, endAt, category, selectedHostNames]);
 
   const data = {
-    labels: logTime,
+    labels: hostChartSummary?.logTime,
     datasets: [
       {
         label: "RUNNABLE",
-        data: runnable,
+        data: hostChartSummary?.threadStateCountList.runnable,
         fill: true,
         backgroundColor: "rgb(0, 215, 199, 0.5)",
         borderColor: "rgb(0, 215, 199, 1)",
       },
       {
         label: "BLOCKED",
-        data: blocked,
+        data: hostChartSummary?.threadStateCountList.blocked,
         fill: true,
         backgroundColor: "rgb(228, 59, 94, 0.5)",
         borderColor: "rgb(228, 59, 94, 1)",
       },
       {
         label: "WAITING",
-        data: waiting,
+        data: hostChartSummary?.threadStateCountList.waiting,
         fill: true,
         backgroundColor: "rgb(255, 124, 75, 0.5)",
         borderColor: "rgb(255, 124, 75, 1)",
       },
       {
         label: "TIMED_WAITING",
-        data: timed,
+        data: hostChartSummary?.threadStateCountList.timed_WAITING,
         fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
         borderColor: "rgb(0, 151, 225, 1)",
@@ -169,8 +141,9 @@ export default function StateAreaChart({
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-
-    setSelectedTime(logTime[idx]);
+    if (hostChartSummary && hostChartSummary.logTime) {
+      setSelectedTime(hostChartSummary.logTime[idx]);
+    }
   };
 
   const options: object = {
@@ -226,9 +199,27 @@ export default function StateAreaChart({
     },
   };
 
-  return (
-    <Box>
-      <Line data={data} options={options} />
-    </Box>
-  );
+  // 로딩중 + 데이터 유무에 따라 출력 다르게
+  const byLoading = (): JSX.Element => {
+    if (loading && selectedHostNames[0]) {
+      return <CircularProgress size={80} />;
+    } else {
+      if (noData) {
+        return <>"데이터가 없습니다."</>;
+      } else {
+        return <Line data={data} options={options} />;
+      }
+    }
+  };
+
+  // 호스트 선택 유무에 따라 출력 다르게
+  const output = () => {
+    if (selectedHostNames.length <= 0) {
+      return "검색할 Host를 선택하세요";
+    } else {
+      return byLoading();
+    }
+  };
+
+  return <Box>{output()}</Box>;
 }

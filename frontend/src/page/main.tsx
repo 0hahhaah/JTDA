@@ -61,6 +61,7 @@ export default function Main() {
           startAt={startAt}
           endAt={endAt}
           category={category}
+          selectedHostNames={selectedHostNames}
           setSelectedTime={setSelectedTime}
         />
       </Time>
