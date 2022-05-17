@@ -11,10 +11,10 @@ export interface PieChartProps {
   threadStateCount: ThreadStateCount;
 }
 
-export interface PropsType {
+export interface AreaChartProps {
   pointAt: Date | null;
   startAt: Date | null;
   endAt: Date | null;
   category: string;
-  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
+  setSelectedTime: React.Dispatch<React.SetStateAction<string>>;
 }

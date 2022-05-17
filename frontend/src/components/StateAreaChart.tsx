@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { URL } from "../api/index";
 import styled from "styled-components";
@@ -20,7 +20,7 @@ import {
 
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
-import { PropsType } from "../interfaces/ChartJS.interface";
+import { AreaChartProps } from "../interfaces/ChartJS.interface";
 
 ChartJS.register(
   CategoryScale,
@@ -40,13 +40,19 @@ const Box = styled.div`
   width: 80%;
 `;
 
-export default function StateAreaChart(props: PropsType) {
-  const [logTime, setLogTime] = React.useState<string[]>([]);
-  const [hosts, setHosts] = React.useState<any>([]);
-  const [runnable, setRunnable] = React.useState<any[]>([]);
-  const [blocked, setBlocked] = React.useState<any[]>([]);
-  const [waiting, setWaiting] = React.useState<any[]>([]);
-  const [timed, setTimed] = React.useState<any[]>([]);
+export default function StateAreaChart({
+  pointAt,
+  startAt,
+  endAt,
+  category,
+  setSelectedTime,
+}: AreaChartProps) {
+  const [logTime, setLogTime] = useState<string[]>([]);
+  const [hosts, setHosts] = useState<any>([]);
+  const [runnable, setRunnable] = useState<any[]>([]);
+  const [blocked, setBlocked] = useState<any[]>([]);
+  const [waiting, setWaiting] = useState<any[]>([]);
+  const [timed, setTimed] = useState<any[]>([]);
 
   // const changeTime = (value: Date | null) => {
   //   if (value !== null) {
@@ -70,7 +76,7 @@ export default function StateAreaChart(props: PropsType) {
       const hostParam = {
         host: hosts.join(","),
       };
-      console.log();
+
       await axios
         .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
           params: hostParam,
@@ -116,31 +122,16 @@ export default function StateAreaChart(props: PropsType) {
 
   // 어떤 조회를 선택했는지 확인
   const searchCategory = async () => {
-    if (props.category === "point") {
-      search(props.pointAt, props.pointAt);
-    } else if (props.category === "range") {
-      search(props.startAt, props.endAt);
+    if (category === "point") {
+      search(pointAt, pointAt);
+    } else if (category === "range") {
+      search(startAt, endAt);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     searchCategory();
-  }, [props.pointAt, props.startAt, props.endAt]);
-
-  // const dummyDateTimes: string[] = getDatesInRange(
-  //   new Date("2022-05-09 00:00:00"),
-  //   new Date("2022-05-10 00:00:00")
-  // );
-
-  // const dummyDatas: number[][] = [];
-  // for (let i = 0; i < 4; i++) {
-  //   dummyDatas.push(
-  //     Array.from({ length: dummyDateTimes.length }, () =>
-  //       Math.floor(Math.random() * 20 + 40)
-  //     )
-  //   );
-  // }
-  // console.log("여기다", all.hosts[0]._ids);
+  }, [pointAt, startAt, endAt]);
 
   const data = {
     labels: logTime,
@@ -179,12 +170,7 @@ export default function StateAreaChart(props: PropsType) {
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
 
-    const ids: string[] = [];
-    for (let i = 0; i < hosts.length; i++) {
-      ids.push(hosts[i]._ids[idx]);
-    }
-
-    props.setSelectedIds(ids);
+    setSelectedTime(logTime[idx]);
   };
 
   const options: object = {
