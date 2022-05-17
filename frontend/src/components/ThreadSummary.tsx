@@ -135,14 +135,17 @@ export default function ThreadSummary({
       const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
       const requestURL: string =
         BASE_URL +
-        `/host/state?_id=${selectedHostNames.join()}&time=${selectedTime}`;
+        `/host/state?host=${selectedHostNames.join()}&time=${selectedTime}`;
       const res = await axios.get(requestURL);
+      console.log("@@", res.data.hosts);
 
       setSummaryArray(res.data.hosts);
       setShowDetail(new Array(res.data.hosts.length).fill(false));
     };
 
-    fetchAndSetSummaryArray();
+    if (selectedTime) {
+      fetchAndSetSummaryArray();
+    }
   }, [selectedTime, selectedHostNames]);
 
   const paintIcon = (state: string): JSX.Element => {
