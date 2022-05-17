@@ -22,3 +22,12 @@ export interface Tags{
   checkedTags: string[];
   checkedTagsHandler: (code: string, isChecked: boolean) => void;
 }
+
+export interface Host {
+  host: string;
+  tags: string[];
+}
+export interface Cluster {
+  cluster: string;
+  hosts: Host[];
+}

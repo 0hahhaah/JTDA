@@ -40,6 +40,8 @@ export default function Main() {
         startAt={startAt} 
         endAt={endAt}
         category={category}
+        selectedHostNames={selectedHostNames}
+        setSelectedHostNames={setSelectedHostNames}
         />
       <Time>
         <TimeBar

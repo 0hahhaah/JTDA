@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Cluster } from "../interfaces/HostInfo.interface";
 import styled from "styled-components";
 
 const ClusterBox = styled.p<{ ftWeight: string }>`
@@ -17,16 +18,19 @@ const HostList = styled.li`
 `;
 
 interface Props {
-  cluster: string;
+  cluster: Cluster;
   setCheckedCluster: React.Dispatch<React.SetStateAction<string>>;
+  selectedHostNames?: string[];
+  setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const Clusters: React.FunctionComponent<Props> = ({
   cluster,
   setCheckedCluster,
+  selectedHostNames,
+  setSelectedHostNames
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
-  const hosts = ["host1", "host2", "host3", "host4"];
 
   const checkedClusterHosts = () => {};
 
@@ -42,16 +46,15 @@ const Clusters: React.FunctionComponent<Props> = ({
   return (
     <>
       <ClusterBox ftWeight={`${isToggled}`} onClick={onClusterHandler}>
-        {cluster.cluster} ({cluster.host.length})
-        {/* cluster.cluster (cluster.hosts.length) */}
+        {cluster.cluster} ({cluster.hosts.length})
       </ClusterBox>
       {isToggled ? (
         <HostUl>
           {cluster.hosts.map((host, i) => {
             return (
             <HostList 
-              key={i}>ㅇㅇ
-            </HostList>) ; //id로 바꿔야 함.
+              key={i}>{host.host}
+            </HostList>) ; 
           })}
         </HostUl>
       ) : null}

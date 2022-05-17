@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { hostInfo } from "../interfaces/HostInfo.interface";
+import { hostInfo, Cluster } from "../interfaces/HostInfo.interface";
 import { URL } from "../api";
 import axios from "axios";
 import styled from "styled-components";
@@ -71,6 +71,8 @@ interface Props {
   pointAt?: Date|null;
   startAt?: Date|null;
   endAt?: Date|null;
+  selectedHostNames?: string[];
+  setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function SidebarList({
@@ -80,12 +82,14 @@ export default function SidebarList({
   endAt,
   pointAt,
   category,
+  selectedHostNames,
+  setSelectedHostNames
 }: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
   const [tags, setTags] = useState<Array<string>>([]);
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
-  const [clusterList, setClusterList] = useState<Array<string>>([]);
+  const [clusterList, setClusterList] = useState<Cluster[]>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
   const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
 
@@ -129,18 +133,15 @@ export default function SidebarList({
       method: "get",
     })
     .then((res) => {
-      setTags(res.data.tags);
+      removeTagBlank(res.data.tags);
     })
-    .then(() => {removeTagBlank()})
     .catch((err) => {
       console.log(err);
     });
   };
   
-  const removeTagBlank = () => { //태그 맨 앞에 생기는 공백 제거
-    if(tags[0] === '') {
-      setTags(tags.filter((e,i) => i !== 0));
-    }
+  const removeTagBlank = (tagList: string[]) => { //태그 맨 앞에 생기는 공백 제거
+    setTags(tagList.filter((e) => e));
   }
 
   const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
@@ -235,6 +236,8 @@ export default function SidebarList({
                 key={i}
                 cluster={cluster}
                 setCheckedCluster={setCheckedCluster}
+                selectedHostNames={selectedHostNames}
+                setSelectedHostNames={setSelectedHostNames}
               ></Clusters>
             );
           })}
