@@ -71,8 +71,6 @@ interface Props {
   pointAt?: Date|null;
   startAt?: Date|null;
   endAt?: Date|null;
-  selectedIds: string[];
-  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function SidebarList({
@@ -82,8 +80,6 @@ export default function SidebarList({
   endAt,
   pointAt,
   category,
-  selectedIds,
-  setSelectedIds
 }: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
@@ -239,8 +235,6 @@ export default function SidebarList({
                 key={i}
                 cluster={cluster}
                 setCheckedCluster={setCheckedCluster}
-                selectedIds={selectedIds}
-                setSelectedIds={setSelectedIds}
               ></Clusters>
             );
           })}

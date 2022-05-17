@@ -31,6 +31,7 @@ export default function Main() {
   const [endAt, setEndAt] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string>("point");
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [selectedHostNames, setSelectedHostNames] = React.useState<string[]>([]);
 
   return (
     <div>
@@ -39,8 +40,6 @@ export default function Main() {
         startAt={startAt} 
         endAt={endAt}
         category={category}
-        selectedIds={selectedIds}
-        setSelectedIds={setSelectedIds}
         />
       <Time>
         <TimeBar
