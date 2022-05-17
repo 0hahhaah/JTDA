@@ -92,7 +92,6 @@ export default function SidebarList({
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
   const [clusterList, setClusterList] = useState<Cluster[]>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
-  const [clusterTemp, setClusterTemp] = useState<Cluster[]>([]);
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
 
@@ -147,7 +146,7 @@ export default function SidebarList({
   const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
     let searchUrl = "";
     if(searchCategory === "cluster"){
-      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&query=${query}` //cluster 검색때는 host/list
+      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${query}&tags=${checkedTags}` //cluster 검색때는 host/list
     } else if(searchCategory === "host"){
       searchUrl = `/host/search?startAt=${startStr}&endAt=${endStr}&query=${query}`; //host 검색때는 search
     }
@@ -156,7 +155,8 @@ export default function SidebarList({
       method: "get",
     })
     .then((res) => {
-      console.log(res.data);
+      console.log('검색', res.data.results);
+      setClusterList(res.data.results);
     })
     .catch((err) => {
       console.log(err);
@@ -184,21 +184,14 @@ export default function SidebarList({
     getAPI();
   }, [startStr, endStr, checkedCluster, checkedTags])
 
-  useEffect(() =>{
-    // setClusterTemp(clusterList.map(cluster => cluster.cluster));
-    setClusterTemp(clusterList);
-    setCheckedCluster("");
-  }, [startStr, endStr]);
-
   useEffect(() => {
     // searchHosts();
   }, [startAt, endAt, query]);
 
   useEffect(() => {
     setQuery(searchInput);
+    searchAPI();
   }, [searchInput]);
-
-  console.log('..',clusterTemp);
 
   return (
     <>
@@ -228,7 +221,6 @@ export default function SidebarList({
               <Clusters
                 key={i}
                 cluster={cluster}
-                setCheckedCluster={setCheckedCluster}
                 selectedHostNames={selectedHostNames}
                 setSelectedHostNames={setSelectedHostNames}
               ></Clusters>

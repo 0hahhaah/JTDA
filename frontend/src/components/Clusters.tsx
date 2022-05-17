@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Cluster } from "../interfaces/HostInfo.interface";
+import CheckHost from "./CheckHost";
 import styled from "styled-components";
-import id from "date-fns/esm/locale/id/index.js";
 
 const ClusterBox = styled.p<{ ftWeight: string }>`
   margin: 0 0 5px 0;
@@ -13,21 +13,23 @@ const ClusterBox = styled.p<{ ftWeight: string }>`
 const HostUl = styled.ul`
   margin: 5px 0 10px 0;
 `;
+
 const HostList = styled.li`
+  list-style: none;
   margin: 3px 0;
   cursor: pointer;
+  font-weight: ${props => props.color === "true" ? "500" : "normal"};
+  color: ${props => props.color === "true" ? "#5F0080" : "#333333"};
 `;
 
 interface Props {
   cluster: Cluster;
-  setCheckedCluster: React.Dispatch<React.SetStateAction<string>>;
   selectedHostNames?: string[];
   setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const Clusters: React.FunctionComponent<Props> = ({
   cluster,
-  setCheckedCluster,
   selectedHostNames,
   setSelectedHostNames
 }: Props) => {
@@ -35,23 +37,28 @@ const Clusters: React.FunctionComponent<Props> = ({
 
   const onClusterHandler = () => {
     setIsToggled(!isToggled);
-    if(!isToggled){
-      const clusterSet = cluster.hosts.map((hosts) => hosts.host);
-      if(setSelectedHostNames) setSelectedHostNames(clusterSet);
-    }
+    if(!isToggled && selectedHostNames && setSelectedHostNames){
+      setSelectedHostNames([...selectedHostNames,...cluster.hosts.map((hosts) => hosts.host)]);
+    } 
   };
 
-  const onSelectedHostsHandler = async(host: string) => {
+  const selectedHostHandler = (code: string, isChecked: boolean) => {
     if(selectedHostNames && setSelectedHostNames){
-      setSelectedHostNames([...selectedHostNames, host]);
-      if(selectedHostNames.includes(host)) {
-        setSelectedHostNames(selectedHostNames.filter(e => e!== host));
+      if(isChecked) {
+        setSelectedHostNames([...selectedHostNames, code]);
+      } else if (!isChecked && selectedHostNames.find((one) => one === code)){
+        const filter = selectedHostNames.filter((one) => one !== code);
+        setSelectedHostNames([...filter]);
       }
+  }
+  }
+
+  const reset =() =>{
+    if(setSelectedHostNames){
+      setSelectedHostNames([]);
     }
   }
 
-  console.log(selectedHostNames);
-  //필터로 걸러낸다.. 있는애는 bold 없는애는 normal
   return (
     <>
       <ClusterBox ftWeight={`${isToggled}`} onClick={onClusterHandler}>
@@ -61,13 +68,16 @@ const Clusters: React.FunctionComponent<Props> = ({
         <HostUl>
           {cluster.hosts.map((host, i) => {
             return (
-            <HostList 
-              key={i}
-              onClick={() => {onSelectedHostsHandler(host.host)}}>{host.host}
-            </HostList>) ; 
+              <CheckHost
+                key={i}
+                host={host}
+                selectedHostNames={selectedHostNames}
+                selectedHostHandler={selectedHostHandler}
+              ></CheckHost>);
           })}
         </HostUl>
       ) : null}
+      <button onClick={reset}>oo</button>
     </>
   );
 };
