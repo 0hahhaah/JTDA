@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class HostState {
+public class HostState implements Comparable<HostState>{
 
     @Id
     private String _id;
@@ -51,5 +51,10 @@ public class HostState {
         }
         HostState hostState = (HostState) obj;
         return host.equals(hostState.host);
+    }
+
+    @Override
+    public int compareTo(HostState obj) {
+        return host.compareTo(obj.getHost());
     }
 }

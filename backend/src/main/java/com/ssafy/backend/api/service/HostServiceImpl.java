@@ -18,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
 
 @Service("HostListService")
 public class HostServiceImpl implements HostService {
@@ -288,7 +287,8 @@ public class HostServiceImpl implements HostService {
     }
 
     private List<HostState> removeDuplicateHostState(List<HostState> input) {
-        Set<HostState> setInput = new HashSet<>(input);
+        TreeSet<HostState> setInput = new TreeSet<>(input);
+
         return new ArrayList<>(setInput);
     }
 
