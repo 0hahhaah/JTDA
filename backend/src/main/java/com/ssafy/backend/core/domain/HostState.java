@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class HostState {
+public class HostState implements Comparable<HostState>{
 
     @Id
     private String _id;
@@ -36,5 +36,25 @@ public class HostState {
         this.threadCount = threadCount;
         this.threadStateCount = threadStateCount;
         this.threadDumps = threadDumps;
+    }
+
+    // HashSet 중복 제거
+    @Override
+    public int hashCode() {
+        return host.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof HostState)) {
+            return false;
+        }
+        HostState hostState = (HostState) obj;
+        return host.equals(hostState.host);
+    }
+
+    @Override
+    public int compareTo(HostState obj) {
+        return host.compareTo(obj.getHost());
     }
 }

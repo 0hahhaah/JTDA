@@ -58,14 +58,14 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         if(startAt.equals(endAt)) query = new BasicQuery("{logTime: {$regex : '"+startAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
 //        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
         else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
-        //        query.fields().exclude("_id");
-//        System.out.println(query.toString());
+        query.fields().exclude("threadDumps").exclude("vmInfo").exclude("threadElements").exclude("_class").exclude("tags").exclude("cluster").exclude("threadCount");
+
+        //        System.out.println(query.toString());
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
 //        System.out.println(list.get(0).getHost());
         List<Hosts> hosts = new ArrayList<>();
         List<String> hostList = new ArrayList<>();
         List <String> logTimeList = new ArrayList<>();
-
 
 
         for(ThreadStateList entity : list){
@@ -103,24 +103,35 @@ public class ThreadStateServiceImpl implements ThreadStateService {
 
         }
 
+        String [] arrId;
+
         ThreadStateCountList threadStateCountList = new ThreadStateCountList(RUNNABLE,BLOCKED,WAITING,TIMED_WAITING);
-        int idSize = logTimeList.size();
+        int timeSize = logTimeList.size();
+//        int limit;
+
         for(int i=0; i<hostList.size(); i++){
 
-            int limit = 0;
-
-            List <String> _idList = new ArrayList<>();
+//            limit = 0;
+//            List <String> _idList = new ArrayList<>();
+            arrId = new String[logTimeList.size()];
 
             for(ThreadStateList entity : list){
 
-                if(hostList.get(i).equals(entity.getHost())){
-                    // _id 리스트화
-                    _idList.add(entity.get_id());
-                    limit++;
+                for (int j=0; j<timeSize; j++) {
+
+                    if (hostList.get(i).equals(entity.getHost()) && logTimeList.get(j).equals(entity.getLogTime().substring(0, 16))) {
+                        // _id 리스트화
+//                    _idList.add(entity.get_id());
+
+                        arrId[j] = entity.get_id();
+                        continue;
+//                    limit++;
+                    }
                 }
-                if (limit >= idSize) break;
+//                if (limit >= timeSize) break;
             }
-            hosts.add(new Hosts(hostList.get(i),_idList));
+//            hosts.add(new Hosts(hostList.get(i),_idList));
+            hosts.add(new Hosts(hostList.get(i),arrId));
         }
 //        threadStateListDto.setHosts(hosts);
 //        threadStateListDto.setThreadStateCountList(threadStateCountList);

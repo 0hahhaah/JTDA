@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { hostInfo } from "../interfaces/HostInfo.interface";
+import { hostInfo, Cluster } from "../interfaces/HostInfo.interface";
 import { URL } from "../api";
 import axios from "axios";
 import styled from "styled-components";
@@ -71,6 +71,8 @@ interface Props {
   pointAt?: Date|null;
   startAt?: Date|null;
   endAt?: Date|null;
+  selectedHostNames?: string[];
+  setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function SidebarList({
@@ -80,23 +82,17 @@ export default function SidebarList({
   endAt,
   pointAt,
   category,
+  selectedHostNames,
+  setSelectedHostNames
 }: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
-  // const tags = ["Monitoring", "Database", "Frontend", "Backend", "WebService"];
   const [tags, setTags] = useState<Array<string>>([]);
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
-  const [clusterList, setClusterList] = useState<Array<string>>([]);
+  const [clusterList, setClusterList] = useState<Cluster[]>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
-  let testClusterList: string[] = [""];
-  let clusterResult: string[] = [""];
   const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
 
-  const [clusterTest, setClusterTest] = useState<Array<string>>([
-    "cl1",
-    "cl2",
-    "cl3",
-  ]);
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
 
@@ -123,63 +119,49 @@ export default function SidebarList({
       method: "get",
     })
       .then((res) => {
-        console.log("되는거니?");
         console.log("ㅇㅇ", res.data.results);
-        setHostsList(res.data.results);
-        // console.log('?',hostsList);
-        // console.log('list', res.data.searchInput.cluster);
-        // setClusterList([...res.data.searchInput.cluster]);
+        setClusterList(res.data.results);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const getTags = async () => {
-    console.log("되나?");
+  const getTags = async() => {
     await axios({
       url: baseUrl + `/host/tag?startAt=${startStr}&endAt=${endStr}`,
       method: "get",
     })
-      .then((res) => {
-        console.log("태그", res.data.tags);
-        setTags([...res.data.tags]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    .then((res) => {
+      removeTagBlank(res.data.tags);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   };
+  
+  const removeTagBlank = (tagList: string[]) => { //태그 맨 앞에 생기는 공백 제거
+    setTags(tagList.filter((e) => e));
+  }
 
-  const makeClusterList = () => {
-    console.log(checkedTags);
-    console.log("??", hostsList);
-    testClusterList = hostsList.map((cluster: any) => cluster.cluster);
-    clusterResult = testClusterList.filter(
-      (e, i) => testClusterList.indexOf(e) === i
-    );
-  };
-  // makeClusterList();
-
-  let clusterHost: Array<string> = [];
-  const checkedClusterHosts = () => {
-    console.log(hostsList);
-    // clusterHost = hostsList.filter(cluster => cluster.host)
-  };
-
-  const searchHosts = async () => {
+  const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
+    let searchUrl = "";
+    if(searchCategory === "cluster"){
+      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&query=${query}` //cluster 검색때는 host/list
+    } else if(searchCategory === "host"){
+      searchUrl = `/host/search?startAt=${startStr}&endAt=${endStr}&query=${query}`; //host 검색때는 search
+    }
     await axios({
-      //searchCategory에 따라서 결과 나오도록..해야하나? 암튼 수정 필
-      url: baseUrl + `/host/search`, //?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
+      url: baseUrl + searchUrl,
       method: "get",
     })
-      .then((res) => {
-        console.log("dd", res.data.hosts);
-        // setHostsList([...res.data.hosts]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }  
 
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
     if (isChecked) {
@@ -189,29 +171,26 @@ export default function SidebarList({
       setCheckedTags([...filter]);
     }
   };
-
+  
   useEffect(() => {
     setTime();
-    getAPI();
-    getTags();
-    console.log(startStr, endStr);
   }, [pointAt, startAt, endAt]);
 
-  useEffect(() => {
-    // getAPI();
-    makeClusterList();
-  }, [startStr, endStr, checkedTags]); //변수 추가되어야 함
+  useEffect(()=>{
+    getTags();
+  }, [startStr, endStr]);
+
+  useEffect(()=>{
+    getAPI();
+  }, [startStr, endStr, checkedCluster, checkedTags])
 
   useEffect(() => {
-    searchHosts();
+    // searchHosts();
   }, [startAt, endAt, query]);
 
   useEffect(() => {
     setQuery(searchInput);
   }, [searchInput]);
-
-  console.log(checkedCluster);
-  console.log(hostsList);
 
   return (
     <>
@@ -230,43 +209,20 @@ export default function SidebarList({
                   />
                 );
               })}
-          {tags.map((tag) => {
-            return (
-              <TagCard
-                key={tag}
-                tag={tag}
-                checkedTags={checkedTags}
-                checkedTagsHandler={checkedTagsHandler}
-              />
-            );
-          })}
         </TagList>
       </TagBox>
-
-      {/* <SelectedHost>
-        <ListTitle>선택한 Host</ListTitle>
-        <ListBox>
-          {checkedItems.length === 0 ? (
-            <InfoText>조회할 host를 선택해주세요</InfoText>
-          ) : (
-            <ul>
-              {checkedItems.map((e, i) => {
-                return <li key={i}>{e}</li>;
-              })}
-            </ul>
-          )}
-        </ListBox>
-      </SelectedHost> */}
 
       <ClusterList>
         <ListTitle>Clusters</ListTitle>
         <ListBox>
-          {clusterResult.map((cluster, i) => {
+          {clusterList.map((cluster, i) => {
             return (
               <Clusters
                 key={i}
                 cluster={cluster}
                 setCheckedCluster={setCheckedCluster}
+                selectedHostNames={selectedHostNames}
+                setSelectedHostNames={setSelectedHostNames}
               ></Clusters>
             );
           })}

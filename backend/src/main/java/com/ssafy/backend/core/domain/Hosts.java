@@ -15,13 +15,13 @@ public class Hosts {
 
     private String host;
 
-    private List<String> _ids;
+    private String [] _ids;
 
     public Hosts(String host) {
         this.host = host;
     }
 
-    public Hosts(String host, List<String> _ids) {
+    public Hosts(String host, String [] _ids) {
         this.host = host;
         this._ids = _ids;
     }

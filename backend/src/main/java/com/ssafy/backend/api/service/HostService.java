@@ -16,7 +16,7 @@ public interface HostService {
 
     HostListRes getHostList(String startAt, String endAt, String cluster, String tags);
 
-    HostStateRes getHostState(String _id);
+    HostStateRes getHostState(String host, String time);
 
     HostTagRes getHostTag(String startAt, String endAt);
 }

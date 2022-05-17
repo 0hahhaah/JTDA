@@ -60,6 +60,8 @@ interface Props {
   endAt?: Date | null;
   category?: string;
   threadDumps?: ThreadDump[];
+  selectedHostNames?: string[];
+  setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function SideBar({
@@ -68,6 +70,8 @@ export default function SideBar({
   threadDumps,
   pointAt,
   category,
+  selectedHostNames,
+  setSelectedHostNames
 }: Props) {
   const { pathname } = useLocation();
   const isMain: boolean = pathname === "/" ? true : false;
@@ -93,6 +97,8 @@ export default function SideBar({
               endAt={endAt}
               category={category}
               pointAt={pointAt}
+              selectedHostNames={selectedHostNames}
+              setSelectedHostNames={setSelectedHostNames}
             />
           ) : (
             <ThreadList searchInput={searchInput} threadDumps={threadDumps} />
