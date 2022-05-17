@@ -54,7 +54,7 @@ export default function StateAreaChart({
   setSelectedTime,
   selectedHostNames,
 }: AreaChartProps) {
-  const [hostChartSummary, setHostChartSummary] = useState<HostChartSummary>();
+  const [hostData, setHostData] = useState<HostChartSummary>();
   const [loading, setLoading] = useState<boolean>(false);
   const [noData, setNoData] = useState<boolean>(false);
 
@@ -73,14 +73,14 @@ export default function StateAreaChart({
         })
         .then((res) => {
           const info = res.data.hostList;
-          console.log(info);
 
-          setHostChartSummary(res.data.hostList);
-          if (info.dataCount === 0) {
-            setNoData(true);
-          } else {
-            setNoData(false);
-          }
+          setHostData(info);
+          if (info.dataCount === 1)
+            if (info.dataCount === 0) {
+              setNoData(true);
+            } else {
+              setNoData(false);
+            }
 
           setLoading(false);
         })
@@ -106,32 +106,47 @@ export default function StateAreaChart({
   }, [pointAt, startAt, endAt, category, selectedHostNames]);
 
   const data = {
-    labels: hostChartSummary?.logTime,
+    labels:
+      hostData?.dataCount === 1
+        ? new Array(2).fill(hostData?.logTime[0])
+        : hostData?.logTime,
     datasets: [
       {
         label: "RUNNABLE",
-        data: hostChartSummary?.threadStateCountList.runnable,
+        data:
+          hostData?.dataCount === 1
+            ? new Array(2).fill(hostData?.threadStateCountList.runnable[0])
+            : hostData?.threadStateCountList.runnable,
         fill: true,
         backgroundColor: "rgb(0, 215, 199, 0.5)",
         borderColor: "rgb(0, 215, 199, 1)",
       },
       {
         label: "BLOCKED",
-        data: hostChartSummary?.threadStateCountList.blocked,
+        data:
+          hostData?.dataCount === 1
+            ? new Array(2).fill(hostData?.threadStateCountList.blocked[0])
+            : hostData?.threadStateCountList.blocked,
         fill: true,
         backgroundColor: "rgb(228, 59, 94, 0.5)",
         borderColor: "rgb(228, 59, 94, 1)",
       },
       {
         label: "WAITING",
-        data: hostChartSummary?.threadStateCountList.waiting,
+        data:
+          hostData?.dataCount === 1
+            ? new Array(2).fill(hostData?.threadStateCountList.waiting[0])
+            : hostData?.threadStateCountList.waiting,
         fill: true,
         backgroundColor: "rgb(255, 124, 75, 0.5)",
         borderColor: "rgb(255, 124, 75, 1)",
       },
       {
         label: "TIMED_WAITING",
-        data: hostChartSummary?.threadStateCountList.timed_WAITING,
+        data:
+          hostData?.dataCount === 1
+            ? new Array(2).fill(hostData?.threadStateCountList.timed_WAITING[0])
+            : hostData?.threadStateCountList.timed_WAITING,
         fill: true,
         backgroundColor: "rgb(0, 151, 225, 0.5)",
         borderColor: "rgb(0, 151, 225, 1)",
@@ -141,8 +156,8 @@ export default function StateAreaChart({
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-    if (hostChartSummary && hostChartSummary.logTime) {
-      setSelectedTime(hostChartSummary.logTime[idx]);
+    if (hostData && hostData.logTime) {
+      setSelectedTime(hostData.logTime[idx]);
     }
   };
 

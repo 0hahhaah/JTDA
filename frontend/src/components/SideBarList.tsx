@@ -69,9 +69,9 @@ interface Props {
   searchInput: string;
   searchCategory: string;
   category?: string;
-  pointAt?: Date|null;
-  startAt?: Date|null;
-  endAt?: Date|null;
+  pointAt?: Date | null;
+  startAt?: Date | null;
+  endAt?: Date | null;
   selectedHostNames?: string[];
   setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -84,7 +84,7 @@ export default function SidebarList({
   pointAt,
   category,
   selectedHostNames,
-  setSelectedHostNames
+  setSelectedHostNames,
 }: Props) {
   const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
@@ -102,12 +102,12 @@ export default function SidebarList({
   //cluster면 getAPI();
 
   const setTime = () => {
-    if (category === "point"&&pointAt) {
+    if (category === "point" && pointAt) {
       setStartStr(changeTime(pointAt));
       setEndStr(changeTime(pointAt));
     } else {
-      if(startAt) setStartStr(changeTime(startAt));
-      if(endAt) setEndStr(changeTime(endAt));
+      if (startAt) setStartStr(changeTime(startAt));
+      if (endAt) setEndStr(changeTime(endAt));
     }
   };
 
@@ -119,7 +119,6 @@ export default function SidebarList({
       method: "get",
     })
       .then((res) => {
-        console.log("ㅇㅇ", res.data.results);
         setClusterList(res.data.results);
       })
       .catch((err) => {
@@ -127,41 +126,41 @@ export default function SidebarList({
       });
   };
 
-  const getTags = async() => {
+  const getTags = async () => {
     await axios({
       url: baseUrl + `/host/tag?startAt=${startStr}&endAt=${endStr}`,
       method: "get",
     })
-    .then((res) => {
-      removeTagBlank(res.data.tags);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((res) => {
+        removeTagBlank(res.data.tags);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
-  
-  const removeTagBlank = (tagList: string[]) => { //태그 맨 앞에 생기는 공백 제거
-    setTags(tagList.filter((e) => e));
-  }
 
-  const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
+  const removeTagBlank = (tagList: string[]) => {
+    //태그 맨 앞에 생기는 공백 제거
+    setTags(tagList.filter((e) => e));
+  };
+
+  const searchAPI = async () => {
+    //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
     let searchUrl = "";
-    if(searchCategory === "cluster"){
-      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&query=${query}` //cluster 검색때는 host/list
-    } else if(searchCategory === "host"){
+    if (searchCategory === "cluster") {
+      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&query=${query}`; //cluster 검색때는 host/list
+    } else if (searchCategory === "host") {
       searchUrl = `/host/search?startAt=${startStr}&endAt=${endStr}&query=${query}`; //host 검색때는 search
     }
     await axios({
       url: baseUrl + searchUrl,
       method: "get",
     })
-    .then((res) => {
-      console.log(res.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-  }  
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
     if (isChecked) {
@@ -171,20 +170,20 @@ export default function SidebarList({
       setCheckedTags([...filter]);
     }
   };
-  
+
   useEffect(() => {
     setTime();
   }, [pointAt, startAt, endAt]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getTags();
   }, [startStr, endStr]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getAPI();
-  }, [startStr, endStr, checkedCluster, checkedTags])
+  }, [startStr, endStr, checkedCluster, checkedTags]);
 
-  useEffect(() =>{
+  useEffect(() => {
     // setClusterTemp(clusterList.map(cluster => cluster.cluster));
     setClusterTemp(clusterList);
     setCheckedCluster("");
@@ -197,8 +196,6 @@ export default function SidebarList({
   useEffect(() => {
     setQuery(searchInput);
   }, [searchInput]);
-
-  console.log('..',clusterTemp);
 
   return (
     <>
