@@ -35,7 +35,10 @@ const Clusters: React.FunctionComponent<Props> = ({
 
   const onClusterHandler = () => {
     setIsToggled(!isToggled);
-    setCheckedCluster(cluster.cluster);
+    if(!isToggled){
+      const clusterSet = cluster.hosts.map((hosts) => hosts.host);
+      if(setSelectedHostNames) setSelectedHostNames(clusterSet);
+    }
   };
 
   const onSelectedHostsHandler = async(host: string) => {
@@ -47,6 +50,7 @@ const Clusters: React.FunctionComponent<Props> = ({
     }
   }
 
+  console.log(selectedHostNames);
   //필터로 걸러낸다.. 있는애는 bold 없는애는 normal
   return (
     <>
