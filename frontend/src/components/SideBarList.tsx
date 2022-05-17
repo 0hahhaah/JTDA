@@ -108,7 +108,7 @@ export default function SidebarList({
     await axios({
       url:
         URL +
-        `/api/host/list?startAt=${startStr}&endAt=${endStr}&tags=${checkedTags}`,
+        `/api/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${checkedCluster}&tags=${checkedTags}`,
       method: "get",
     })
       .then((res) => {
@@ -143,6 +143,7 @@ export default function SidebarList({
       })
       .then((res) =>{
         setClusterList(res.data.results);
+        setCheckedCluster(query);
       })
       .catch((err) =>{
       })
@@ -221,7 +222,6 @@ export default function SidebarList({
                 cluster={cluster}
                 selectedHostNames={selectedHostNames}
                 setSelectedHostNames={setSelectedHostNames}
-                setCheckedCluster={setCheckedCluster}
               ></Clusters>
             );
           })}
