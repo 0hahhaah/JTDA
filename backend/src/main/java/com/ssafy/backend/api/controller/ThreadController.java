@@ -6,6 +6,7 @@ import com.ssafy.backend.api.dto.response.ThreadStateDetailDto;
 import com.ssafy.backend.api.dto.response.ThreadStateListDto;
 import com.ssafy.backend.api.service.ThreadStateDetailService;
 import com.ssafy.backend.api.service.ThreadStateService;
+import com.ssafy.backend.core.domain.ThreadStateCount;
 import com.ssafy.backend.core.domain.ThreadStateList;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @RestController
 @RequestMapping("/thread")
@@ -48,13 +50,13 @@ public class ThreadController {
             @RequestParam String startAt,
             @RequestParam String endAt) throws Exception{
         ThreadStateListDto threadStateListDto = threadStateService.getThreadList(host, startAt, endAt);
-//        List<ThreadStateList> list = threadStateService.getThreadList(host, startAt, endAt);
+//        TreeMap<String, ThreadStateCount> map = threadStateService.getThreadList2(host, startAt, endAt);
         Map<String, Object> response = new HashMap<>();
         response.put("startAt", startAt);
         response.put("endAt", endAt);
 //        response.put("hostCount", threadStateListDto.size());
-//        response.put("hostList", threadStateListDto);
         response.put("hostList", threadStateListDto);
+
 
         return ResponseEntity.status(200).body(response);
     }
