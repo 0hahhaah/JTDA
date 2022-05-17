@@ -30,7 +30,7 @@ export default function Main() {
   const [startAt, setStartAt] = React.useState<Date | null>(null);
   const [endAt, setEndAt] = React.useState<Date | null>(null);
   const [category, setCategory] = React.useState<string>("point");
-  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [selectedTime, setSelectedTime] = React.useState<string>("");
   const [selectedHostNames, setSelectedHostNames] = React.useState<string[]>(
     []
   );
@@ -57,17 +57,20 @@ export default function Main() {
           setCategory={setCategory}
         />
         <StateAreaChart
-          selectedHostNames={selectedHostNames}
           pointAt={pointAt}
           startAt={startAt}
           endAt={endAt}
           category={category}
-          setSelectedIds={setSelectedIds}
+          selectedHostNames={selectedHostNames}
+          setSelectedTime={setSelectedTime}
         />
       </Time>
       <Boundary />
       <SelectedState>
-        <ThreadSummary selectedIds={selectedIds} />
+        <ThreadSummary
+          selectedTime={selectedTime}
+          selectedHostNames={selectedHostNames}
+        />
       </SelectedState>
     </div>
   );

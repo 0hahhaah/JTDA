@@ -29,28 +29,27 @@ const Clusters: React.FunctionComponent<Props> = ({
   cluster,
   setCheckedCluster,
   selectedHostNames,
-  setSelectedHostNames
+  setSelectedHostNames,
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
   const onClusterHandler = () => {
     setIsToggled(!isToggled);
-    if(!isToggled){
+    if (!isToggled) {
       const clusterSet = cluster.hosts.map((hosts) => hosts.host);
-      if(setSelectedHostNames) setSelectedHostNames(clusterSet);
+      if (setSelectedHostNames) setSelectedHostNames(clusterSet);
     }
   };
 
-  const onSelectedHostsHandler = async(host: string) => {
-    if(selectedHostNames && setSelectedHostNames){
+  const onSelectedHostsHandler = async (host: string) => {
+    if (selectedHostNames && setSelectedHostNames) {
       setSelectedHostNames([...selectedHostNames, host]);
-      if(selectedHostNames.includes(host)) {
-        setSelectedHostNames(selectedHostNames.filter(e => e!== host));
+      if (selectedHostNames.includes(host)) {
+        setSelectedHostNames(selectedHostNames.filter((e) => e !== host));
       }
     }
-  }
+  };
 
-  console.log(selectedHostNames);
   //필터로 걸러낸다.. 있는애는 bold 없는애는 normal
   return (
     <>
@@ -61,10 +60,15 @@ const Clusters: React.FunctionComponent<Props> = ({
         <HostUl>
           {cluster.hosts.map((host, i) => {
             return (
-            <HostList 
-              key={i}
-              onClick={() => {onSelectedHostsHandler(host.host)}}>{host.host}
-            </HostList>) ; 
+              <HostList
+                key={i}
+                onClick={() => {
+                  onSelectedHostsHandler(host.host);
+                }}
+              >
+                {host.host}
+              </HostList>
+            );
           })}
         </HostUl>
       ) : null}
