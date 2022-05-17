@@ -14,14 +14,6 @@ const HostUl = styled.ul`
   margin: 5px 0 10px 0;
 `;
 
-const HostList = styled.li`
-  list-style: none;
-  margin: 3px 0;
-  cursor: pointer;
-  font-weight: ${props => props.color === "true" ? "500" : "normal"};
-  color: ${props => props.color === "true" ? "#5F0080" : "#333333"};
-`;
-
 interface Props {
   cluster: Cluster;
   selectedHostNames?: string[];
@@ -35,11 +27,14 @@ const Clusters: React.FunctionComponent<Props> = ({
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
-  const onClusterHandler = () => {
+  const onClusterHandler = () => { //클러스터 내 호스트 전체 선택
     setIsToggled(!isToggled);
-    if(!isToggled && selectedHostNames && setSelectedHostNames){
+    if(!isToggled && selectedHostNames && setSelectedHostNames) {
       setSelectedHostNames([...selectedHostNames,...cluster.hosts.map((hosts) => hosts.host)]);
-    } 
+    } else if(isToggled && selectedHostNames && setSelectedHostNames) {
+      //다시 누르면(토글 닫으면) 해당 클러스터 내의 호스트들 전부 선택 해제
+      // console.log(cluster.hosts.map((host) => host.host));
+    }
   };
 
   const selectedHostHandler = (code: string, isChecked: boolean) => {
@@ -53,7 +48,8 @@ const Clusters: React.FunctionComponent<Props> = ({
   }
   }
 
-  const reset =() =>{
+  //테스트용입니다
+  const reset = () =>{
     if(setSelectedHostNames){
       setSelectedHostNames([]);
     }

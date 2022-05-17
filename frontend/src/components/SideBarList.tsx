@@ -143,11 +143,12 @@ export default function SidebarList({
     setTags(tagList.filter((e) => e));
   }
 
-  const searchAPI = async() => { //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
+  const searchAPI = async() => { //검색창 사용
+    console.log('검색');
     let searchUrl = "";
-    if(searchCategory === "cluster"){
+    if(searchCategory === "cluster") {
       searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${query}&tags=${checkedTags}` //cluster 검색때는 host/list
-    } else if(searchCategory === "host"){
+    } else if(searchCategory === "host") {
       searchUrl = `/host/search?startAt=${startStr}&endAt=${endStr}&query=${query}`; //host 검색때는 search
     }
     await axios({
@@ -183,10 +184,6 @@ export default function SidebarList({
   useEffect(()=>{
     getAPI();
   }, [startStr, endStr, checkedCluster, checkedTags])
-
-  useEffect(() => {
-    // searchHosts();
-  }, [startAt, endAt, query]);
 
   useEffect(() => {
     setQuery(searchInput);
