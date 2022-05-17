@@ -16,5 +16,6 @@ export interface PropsType {
   startAt: Date | null;
   endAt: Date | null;
   category: string;
+  selectedHostNames: string[];
   setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
 }
