@@ -92,7 +92,6 @@ export default function SidebarList({
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
   const [clusterList, setClusterList] = useState<Cluster[]>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
-  const [clusterTemp, setClusterTemp] = useState<Cluster[]>([]);
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
 
@@ -156,11 +155,14 @@ export default function SidebarList({
       url: baseUrl + searchUrl,
       method: "get",
     })
-      .then((res) => {})
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+    .then((res) => {
+      console.log('검색', res.data.results);
+      setClusterList(res.data.results);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }  
 
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
     if (isChecked) {
@@ -184,17 +186,8 @@ export default function SidebarList({
   }, [startStr, endStr, checkedCluster, checkedTags]);
 
   useEffect(() => {
-    // setClusterTemp(clusterList.map(cluster => cluster.cluster));
-    setClusterTemp(clusterList);
-    setCheckedCluster("");
-  }, [startStr, endStr]);
-
-  useEffect(() => {
-    // searchHosts();
-  }, [startAt, endAt, query]);
-
-  useEffect(() => {
     setQuery(searchInput);
+    searchAPI();
   }, [searchInput]);
 
   return (
@@ -225,7 +218,6 @@ export default function SidebarList({
               <Clusters
                 key={i}
                 cluster={cluster}
-                setCheckedCluster={setCheckedCluster}
                 selectedHostNames={selectedHostNames}
                 setSelectedHostNames={setSelectedHostNames}
               ></Clusters>
