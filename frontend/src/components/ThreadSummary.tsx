@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import axios from "axios";
 import StatePieChart from "./StatePieChart";
 import { Boundary } from "../page/main";
 import { ReactComponent as Lock } from "../assets/lock.svg";
@@ -8,8 +9,6 @@ import { ReactComponent as Play } from "../assets/play.svg";
 import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
 import { ReactComponent as ExpandMore } from "../assets/expand_more.svg";
-import { ReactComponent as ExpandLess } from "../assets/expand_less.svg";
-import axios from "axios";
 import { HostSummary } from "../interfaces/HostInfo.interface";
 
 const Shadow = styled.div`
@@ -119,10 +118,14 @@ export const handleStateColor = (state: string): string => {
 };
 
 interface ThreadSummaryProps {
-  selectedIds: string[];
+  selectedTime: string;
+  selectedHostNames: string[];
 }
 
-export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
+export default function ThreadSummary({
+  selectedTime,
+  selectedHostNames,
+}: ThreadSummaryProps) {
   const navigate = useNavigate();
 
   const [showDetail, setShowDetail] = useState<boolean[]>([]);
@@ -131,18 +134,19 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
     const fetchAndSetSummaryArray = async () => {
       const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
       const requestURL: string =
-        BASE_URL + `/host/state?_id=${selectedIds.join()}`;
+        BASE_URL +
+        `/host/state?host=${selectedHostNames.join()}&time=${selectedTime}`;
       const res = await axios.get(requestURL);
-      console.log(selectedIds);
-      console.log("=====");
-      console.log(res.data.hosts);
+      console.log("@@", res.data.hosts);
 
       setSummaryArray(res.data.hosts);
       setShowDetail(new Array(res.data.hosts.length).fill(false));
     };
 
-    fetchAndSetSummaryArray();
-  }, [selectedIds]);
+    if (selectedTime) {
+      fetchAndSetSummaryArray();
+    }
+  }, [selectedTime, selectedHostNames]);
 
   const paintIcon = (state: string): JSX.Element => {
     switch (state) {
@@ -159,46 +163,35 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
     return <></>;
   };
 
-  // 코드 중복 제거
   const threadStates = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
-  const paintCards = (hostSummary: HostSummary): JSX.Element[] => {
-    return threadStates.map((state, idx) => (
-      <Card
-        key={idx}
-        onClick={() => navigate(`/detail?state=${state}&id=${hostSummary._id}`)}
-      >
-        {paintIcon(state)}
-        <StateNum>{hostSummary.threadStateCount[state]}</StateNum>
-        <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
-      </Card>
-    ));
+  const paintCards = (
+    hostSummary: HostSummary
+  ): JSX.Element[] | JSX.Element => {
+    if (hostSummary.threadStateCount) {
+      return threadStates.map((state, idx) => (
+        <Card
+          key={idx}
+          onClick={() =>
+            navigate(`/detail?state=${state}&id=${hostSummary._id}`)
+          }
+        >
+          {paintIcon(state)}
+          <StateNum>{hostSummary.threadStateCount[state]}</StateNum>
+          <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
+        </Card>
+      ));
+    } else {
+      return <div>요청하신 데이터가 없습니다.</div>;
+    }
   };
 
   const handleToggleClick = (idx: number): void => {
-    // let offset: number = 200;
     setShowDetail((state): boolean[] => {
       const newState: boolean[] = [...state];
       newState[idx] = !state[idx];
-      // if (newState[idx]) {
-      //   offset = 800;
-      // }
 
       return newState;
     });
-
-    // setTimeout(() => {
-    //   const element = document.getElementById(idx.toString())!;
-    //   if (element) {
-    //     console.log("YES");
-    //     const elementPosition: number = element.getBoundingClientRect().top;
-    //     const offsetPosition: number = elementPosition + offset;
-
-    //     window.scrollTo({
-    //       top: offsetPosition,
-    //       behavior: "smooth",
-    //     });
-    //   }
-    // }, 0);
   };
 
   const paintContainers: JSX.Element[] = hostSummaryArray?.map(
@@ -236,11 +229,6 @@ export default function ThreadSummary({ selectedIds }: ThreadSummaryProps) {
             </CardContainer>
           </Section>
         </ToggleBox>
-        {/* <Boundary />
-        <SubTitle>Blocking Infos</SubTitle>
-        <Container>
-          <BlockingGraph></BlockingGraph>
-        </Container> */}
       </Container>
     )
   );

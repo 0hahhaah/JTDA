@@ -4,6 +4,7 @@ package com.ssafy.backend.api.service;
 
 import com.ssafy.backend.api.dto.response.ThreadStateListDto;
 import com.ssafy.backend.core.domain.Hosts;
+import com.ssafy.backend.core.domain.ThreadStateCount;
 import com.ssafy.backend.core.domain.ThreadStateCountList;
 import com.ssafy.backend.core.domain.ThreadStateList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service("ThreadListService")
 public class ThreadStateServiceImpl implements ThreadStateService {
@@ -24,31 +24,9 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         this.mongoTemplate = mongoTemplate;
     }
 
-//    @Override
-//    public List<ThreadStateList> getThreadList(List<String> host, String startAt, String endAt) throws Exception {
-//
-//        StringBuffer strHost = new StringBuffer();
-//        for (String str : host) {
-//            strHost.append("'" + str + "'" + ",");
-//        }
-//        strHost.setLength(strHost.length() - 1);
-//        BasicQuery query;
-//        if (startAt.equals(endAt))
-//            query = new BasicQuery("{logTime: {$regex : '" + startAt.substring(0, 16) + "'},host:{$in:[" + strHost + "]}}");
-////        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
-//        else
-//            query = new BasicQuery("{logTime: { $gte: '" + startAt.substring(0, 16) + "', $lte: '" + endAt.substring(0, 16) + "'},host:{$in:[" + strHost + "]}}");
-//        //        query.fields().exclude("_id");
-//        System.out.println(query.toString());
-//
-//        List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
-//
-//        return list;
-//    }
-
+    // host가 _id를 갖지 않게 처리
     @Override
-    public ThreadStateListDto getThreadList(List<String> host, String startAt, String endAt) throws Exception {
-
+    public ThreadStateListDto  getThreadList(List<String> host, String startAt, String endAt) throws Exception {
         StringBuffer strHost = new StringBuffer();
         for (String str : host){
             strHost.append("'"+str+"'"+",");
@@ -58,80 +36,152 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         if(startAt.equals(endAt)) query = new BasicQuery("{logTime: {$regex : '"+startAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
 //        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
         else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
-        //        query.fields().exclude("_id");
-//        System.out.println(query.toString());
+        query.fields().exclude("threadDumps").exclude("vmInfo").exclude("threadElements").exclude("_class").exclude("tags").exclude("cluster").exclude("threadCount");
+
+        //        System.out.println(query.toString());
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
-//        System.out.println(list.get(0).getHost());
-        List<Hosts> hosts = new ArrayList<>();
-        List<String> hostList = new ArrayList<>();
-        List <String> logTimeList = new ArrayList<>();
 
-
-
+        TreeMap<String, ThreadStateCount> treeMap = new TreeMap<>();
         for(ThreadStateList entity : list){
-            if(!logTimeList.contains(entity.getLogTime().substring(0,16))) logTimeList.add(entity.getLogTime().substring(0,16));
-            if(!hostList.contains(entity.getHost())) {
-                hostList.add(entity.getHost());
-//                hosts.add(new Hosts(entity.getHost()));
+            if(treeMap.containsKey(entity.getLogTime().substring(0,16))){
+                ThreadStateCount threadStateCount = treeMap.get(entity.getLogTime().substring(0,16));
+                threadStateCount.setBLOCKED(threadStateCount.getBLOCKED()+entity.getThreadStateCount().getBLOCKED());
+                threadStateCount.setRUNNABLE(threadStateCount.getRUNNABLE()+entity.getThreadStateCount().getRUNNABLE());
+                threadStateCount.setWAITING(threadStateCount.getWAITING()+entity.getThreadStateCount().getWAITING());
+                threadStateCount.setTIMED_WAITING(threadStateCount.getTIMED_WAITING()+entity.getThreadStateCount().getTIMED_WAITING());
+                treeMap.put(entity.getLogTime().substring(0,16), threadStateCount);
+            } else {
+                treeMap.put(entity.getLogTime().substring(0,16), entity.getThreadStateCount());
             }
         }
+
+        List <String> logTimeList = new ArrayList<>();
         List<Integer> RUNNABLE = new ArrayList<>();
         List<Integer> BLOCKED = new ArrayList<>();
         List<Integer> WAITING = new ArrayList<>();
         List<Integer> TIMED_WAITING = new ArrayList<>();
 
-        for(int i =0; i<logTimeList.size(); i++){
-            int runnable = 0;
-            int blocked = 0;
-            int waiting = 0;
-            int time_waiting = 0;
-
-            for(ThreadStateList entity : list){
-
-                if(logTimeList.get(i).equals(entity.getLogTime().substring(0,16))){
-                    runnable += entity.getThreadStateCount().getRUNNABLE();
-                    blocked += entity.getThreadStateCount().getBLOCKED();
-                    waiting += entity.getThreadStateCount().getWAITING();
-                    time_waiting += entity.getThreadStateCount().getTIMED_WAITING();
-                }
-                // ThreadStateCountList 리스트화
-            }
-            RUNNABLE.add(runnable);
-            BLOCKED.add(blocked);
-            WAITING.add(waiting);
-            TIMED_WAITING.add(time_waiting);
-
+        for (Map.Entry<String, ThreadStateCount> entry : treeMap.entrySet()) {
+            logTimeList.add(entry.getKey());
+            RUNNABLE.add(entry.getValue().getRUNNABLE());
+            BLOCKED.add(entry.getValue().getBLOCKED());
+            WAITING.add(entry.getValue().getWAITING());
+            TIMED_WAITING.add(entry.getValue().getTIMED_WAITING());
+//            System.out.println("[Key]:" + entry.getKey() + " [Value]:" + entry.getValue());
         }
-
         ThreadStateCountList threadStateCountList = new ThreadStateCountList(RUNNABLE,BLOCKED,WAITING,TIMED_WAITING);
-        int idSize = logTimeList.size();
-        for(int i=0; i<hostList.size(); i++){
 
-            int limit = 0;
-
-            List <String> _idList = new ArrayList<>();
-
-            for(ThreadStateList entity : list){
-
-                if(hostList.get(i).equals(entity.getHost())){
-                    // _id 리스트화
-                    _idList.add(entity.get_id());
-                    limit++;
-                }
-                if (limit >= idSize) break;
-            }
-            hosts.add(new Hosts(hostList.get(i),_idList));
-        }
-//        threadStateListDto.setHosts(hosts);
-//        threadStateListDto.setThreadStateCountList(threadStateCountList);
-//        threadStateListDto.setLogTime(logTimeList);
-//        threadStateListDto.setDataCount(logTimeList.size());
-        ThreadStateListDto threadStateListDto = new ThreadStateListDto(hosts, logTimeList.size(), logTimeList, threadStateCountList);
-
-//        System.out.println(hosts.get(0).getHost());
-
+        ThreadStateListDto threadStateListDto = new ThreadStateListDto(host, logTimeList.size(), logTimeList, threadStateCountList);
         return threadStateListDto;
     }
+
+
+//    @Override
+//    public ThreadStateListDto getThreadList(List<String> host, String startAt, String endAt) throws Exception {
+//
+//        StringBuffer strHost = new StringBuffer();
+//        for (String str : host){
+//            strHost.append("'"+str+"'"+",");
+//        }
+//        strHost.setLength(strHost.length()-1);
+//        BasicQuery query;
+//        if(startAt.equals(endAt)) query = new BasicQuery("{logTime: {$regex : '"+startAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
+////        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
+//        else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
+//        query.fields().exclude("threadDumps").exclude("vmInfo").exclude("threadElements").exclude("_class").exclude("tags").exclude("cluster").exclude("threadCount");
+//
+//        //        System.out.println(query.toString());
+//        List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
+////        System.out.println(list.get(0).getHost());
+//        List<Hosts> hosts = new ArrayList<>();
+//        List<String> hostList = new ArrayList<>();
+//        List <String> logTimeList = new ArrayList<>();
+//
+//
+//        for(ThreadStateList entity : list){
+//            if(!logTimeList.contains(entity.getLogTime().substring(0,16))) logTimeList.add(entity.getLogTime().substring(0,16));
+//            if(!hostList.contains(entity.getHost())) {
+//                hostList.add(entity.getHost());
+////                hosts.add(new Hosts(entity.getHost()));
+//            }
+//        }
+//        List<Integer> RUNNABLE = new ArrayList<>();
+//        List<Integer> BLOCKED = new ArrayList<>();
+//        List<Integer> WAITING = new ArrayList<>();
+//        List<Integer> TIMED_WAITING = new ArrayList<>();
+//
+//        for(int i =0; i<logTimeList.size(); i++){
+//            int runnable = 0;
+//            int blocked = 0;
+//            int waiting = 0;
+//            int time_waiting = 0;
+//
+//            for(ThreadStateList entity : list){
+//
+//                if(logTimeList.get(i).equals(entity.getLogTime().substring(0,16))){
+//                    runnable += entity.getThreadStateCount().getRUNNABLE();
+//                    blocked += entity.getThreadStateCount().getBLOCKED();
+//                    waiting += entity.getThreadStateCount().getWAITING();
+//                    time_waiting += entity.getThreadStateCount().getTIMED_WAITING();
+//                }
+//                // ThreadStateCountList 리스트화
+//            }
+//            RUNNABLE.add(runnable);
+//            BLOCKED.add(blocked);
+//            WAITING.add(waiting);
+//            TIMED_WAITING.add(time_waiting);
+//
+//        }
+//
+//        String [] arrId;
+//
+//        ThreadStateCountList threadStateCountList = new ThreadStateCountList(RUNNABLE,BLOCKED,WAITING,TIMED_WAITING);
+//        int timeSize = logTimeList.size();
+////        int limit;
+//
+//
+//
+//        // id
+//        // host []
+//        // logtime
+//        // statecount []
+//
+//
+//
+//        for(int i=0; i<hostList.size(); i++){
+//
+////            limit = 0;
+////            List <String> _idList = new ArrayList<>();
+//            arrId = new String[logTimeList.size()];
+//
+//            for(ThreadStateList entity : list){
+//
+//                for (int j=0; j<timeSize; j++) {
+//
+//                    if (hostList.get(i).equals(entity.getHost()) && logTimeList.get(j).equals(entity.getLogTime().substring(0, 16))) {
+//                        // _id 리스트화
+////                    _idList.add(entity.get_id());
+//
+//                        arrId[j] = entity.get_id();
+//                        continue;
+////                    limit++;
+//                    }
+//                }
+////                if (limit >= timeSize) break;
+//            }
+////            hosts.add(new Hosts(hostList.get(i),_idList));
+//            hosts.add(new Hosts(hostList.get(i),arrId));
+//        }
+////        threadStateListDto.setHosts(hosts);
+////        threadStateListDto.setThreadStateCountList(threadStateCountList);
+////        threadStateListDto.setLogTime(logTimeList);
+////        threadStateListDto.setDataCount(logTimeList.size());
+//        ThreadStateListDto threadStateListDto = new ThreadStateListDto(hosts, logTimeList.size(), logTimeList, threadStateCountList);
+//
+////        System.out.println(hosts.get(0).getHost());
+//
+//        return threadStateListDto;
+//    }
 
 
 

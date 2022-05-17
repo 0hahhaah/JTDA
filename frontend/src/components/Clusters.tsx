@@ -23,7 +23,7 @@ interface Props {
 const Clusters: React.FunctionComponent<Props> = ({
   cluster,
   selectedHostNames,
-  setSelectedHostNames
+  setSelectedHostNames,
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
@@ -53,7 +53,7 @@ const Clusters: React.FunctionComponent<Props> = ({
     if(setSelectedHostNames){
       setSelectedHostNames([]);
     }
-  }
+  };
 
   return (
     <>

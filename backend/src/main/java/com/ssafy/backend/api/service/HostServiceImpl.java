@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -29,37 +29,47 @@ public class HostServiceImpl implements HostService {
         this.mongoTemplate = mongoTemplate;
     }
 
-//    @Override
-//    public List<HostList> getHostList(String startAt, String endAt) {
-//        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}}");
-//        query.fields().exclude("_id");
-//
-//        return mongoTemplate.find(query, HostList.class, "json_log");
-//    }
-
     @Override
     public HostSearchRes getHostSearch(String startAt, String endAt, String query) {
         boolean isRegexFlag = isRegex(query);
         boolean isStartDate = isDateTime(startAt);
         boolean isEndDate = isDateTime(endAt);
+        boolean areDatesEqual = startAt.equals(endAt);
 
         // startAt, endAt, query 모두 입력
-        if(isRegexFlag && !query.isEmpty() && isStartDate && isEndDate) {
+        if(isRegexFlag && !query.isEmpty() && isStartDate && isEndDate && !areDatesEqual) {
             Query queryRegex = new Query();
             queryRegex.addCriteria(Criteria.where("host").regex(query))
-                    .addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
+                    .addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
+            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
+        } else if(isRegexFlag && !query.isEmpty() && isStartDate && isEndDate && areDatesEqual) {
+            Query queryRegex = new Query();
+            queryRegex.addCriteria(Criteria.where("host").regex(query))
+                    .addCriteria(Criteria.where("logTime").regex(endAt))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
+            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
+        } else if(isRegexFlag && query.isEmpty() && isStartDate && isEndDate && !areDatesEqual) {
+            // startAt, endAt 입력
+            Query queryRegex = new Query();
+            queryRegex.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
+            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
+        } else if(isRegexFlag && query.isEmpty() && isStartDate && isEndDate && areDatesEqual) {
+            // startAt, endAt 입력
+            Query queryRegex = new Query();
+            queryRegex.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
+            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
 
-            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
-            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
-        // startAt, endAt 입력
-        } else if(isRegexFlag && query.isEmpty() && isStartDate && isEndDate) {
-            Query queryRegex = new Query();
-            queryRegex.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
-            List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
-            return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
-        // 입력 Param 없음
         } else if(isRegexFlag && query.isEmpty() && !isStartDate && !isEndDate) {
+            // 입력 Param 없음
             Query queryRegex = new Query();
+            queryRegex.fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
 //            queryRegex.with(Sort.by(Sort.Order.desc("logTime")));
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
@@ -72,7 +82,8 @@ public class HostServiceImpl implements HostService {
 
             Query queryRegex = new Query();
             queryRegex.addCriteria(Criteria.where("logTime").gte(tempStartDate).lte(endAt))
-                    .with(Sort.by(Sort.Order.desc("logTime")));
+                    .with(Sort.by(Sort.Order.desc("logTime")))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
         // endAt, query 입력
@@ -84,13 +95,15 @@ public class HostServiceImpl implements HostService {
             Query queryRegex = new Query();
             queryRegex.addCriteria(Criteria.where("logTime").gte(tempStartDate).lte(endAt))
                     .addCriteria(Criteria.where("host").regex(query))
-                    .with(Sort.by(Sort.Order.desc("logTime")));
+                    .with(Sort.by(Sort.Order.desc("logTime")))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
         // query 입력
         } else if(isRegexFlag && !query.isEmpty() && !isStartDate && !isEndDate) {
             Query queryRegex = new Query();
-            queryRegex.addCriteria(Criteria.where("host").regex(query));
+            queryRegex.addCriteria(Criteria.where("host").regex(query))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
             return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
         }
@@ -103,6 +116,7 @@ public class HostServiceImpl implements HostService {
     public HostListRes getHostList(String startAt, String endAt, String cluster, String tags) {
         boolean isStartDate = isDateTime(startAt);
         boolean isEndDate = isDateTime(endAt);
+        boolean areDatesEqual = startAt.equals(endAt);
 
         boolean isRegexFlag = false;
         if(!cluster.isEmpty()) {
@@ -122,30 +136,150 @@ public class HostServiceImpl implements HostService {
             }
         }
 
-        if(isStartDate && isEndDate && !isRegexFlag && !isTag) {
-            Query query = new Query();
-            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
-            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
-            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), queryResult);
-        } else if(isStartDate && isEndDate && isRegexFlag && !isTag) {
+        if(isStartDate && isEndDate && !areDatesEqual && !isRegexFlag && !isTag) {
             Query query = new Query();
             query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
-                    .addCriteria(Criteria.where("cluster").regex(cluster));
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
-            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), queryResult);
-        } else if(isStartDate && isEndDate && !isRegexFlag && isTag) {
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for (HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for (HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for (String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && areDatesEqual && !isRegexFlag && !isTag) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
-                    .addCriteria(Criteria.where("tags").in(tagList));
+            query.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
-            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), queryResult);
-        } else if(isStartDate && isEndDate && isRegexFlag && isTag) {
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for (HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for (HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for (String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && !areDatesEqual && isRegexFlag && !isTag) {
             Query query = new Query();
             query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
                     .addCriteria(Criteria.where("cluster").regex(cluster))
-                    .addCriteria(Criteria.where("tags").in(tagList));
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
             List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
-            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), queryResult);
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && areDatesEqual && isRegexFlag && !isTag) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .addCriteria(Criteria.where("cluster").regex(cluster))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && !areDatesEqual && !isRegexFlag && isTag) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
+                    .addCriteria(Criteria.where("tags").in(tagList))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && areDatesEqual && !isRegexFlag && isTag) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .addCriteria(Criteria.where("tags").in(tagList))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && !areDatesEqual && isRegexFlag && isTag) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
+                    .addCriteria(Criteria.where("cluster").regex(cluster))
+                    .addCriteria(Criteria.where("tags").in(tagList))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
+        } else if(isStartDate && isEndDate && areDatesEqual && isRegexFlag && isTag) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .addCriteria(Criteria.where("cluster").regex(cluster))
+                    .addCriteria(Criteria.where("tags").in(tagList))
+                    .fields().exclude("logTime").exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
+            List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+            List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
+            Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.put(hostList.getCluster(), new ArrayList<>());
+            }
+            for(HostList hostList : queryResult) {
+                hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
+            }
+            for(String eachCluster : hostListResultsResMap.keySet()) {
+                hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
+            }
+            return new HostListRes(startAt, endAt, new hostListSearchInputRes(cluster, tagList), queryResult.size(), hostListResultsResList);
         } else {
             return new HostListRes("", "", new hostListSearchInputRes("", new ArrayList<>()), 0, new ArrayList<>());
         }
@@ -153,17 +287,19 @@ public class HostServiceImpl implements HostService {
 
 
     @Override
-    public HostStateRes getHostState(String _id) {
-        List<String> _ids = new ArrayList<>();
-        if(!_id.isEmpty()) {
-            _ids = Arrays.asList(_id.split(","));
+    public HostStateRes getHostState(String host, String time) {
+        List<String> hosts = new ArrayList<>();
+        if(!host.isEmpty()) {
+            hosts = Arrays.asList(host.split(","));
         }
-        Set<String> _idsNoDuplicate = new HashSet<>(_ids);
+        Set<String> hostsNoDuplicate = new HashSet<>(hosts);
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("_id").in(_idsNoDuplicate))
-                .with(Sort.by(Sort.Direction.ASC, "host"));
-        List<HostState> queryResult = mongoTemplate.find(query, HostState.class, "threaddump");
+        query.addCriteria(Criteria.where("host").in(hostsNoDuplicate))
+                .addCriteria(Criteria.where("logTime").regex(time))
+                .with(Sort.by(Sort.Direction.ASC, "host"))
+                .fields().exclude("cluster").exclude("tags").exclude("vmInfo").exclude("threadElements").exclude("_class");
+        List<HostState> queryResult = removeDuplicateHostState(mongoTemplate.find(query, HostState.class, "threaddump"));
         List<HostStateWithDaemonCountRes> returnHosts = new ArrayList<>();
 
         for(HostState hostState : queryResult) {
@@ -188,10 +324,24 @@ public class HostServiceImpl implements HostService {
     public HostTagRes getHostTag(String startAt, String endAt) {
         boolean isStartDate = isDateTime(startAt);
         boolean isEndDate = isDateTime(endAt);
+        boolean areDatesEqual = startAt.equals(endAt);
 
-        if(isStartDate && isEndDate) {
+        if(isStartDate && isEndDate && !areDatesEqual) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt));
+            query.addCriteria(Criteria.where("logTime").gte(startAt).lte(endAt))
+                    .fields().exclude("cluster").exclude("host").exclude("logTime").exclude("threadCount")
+                    .exclude("vmInfo").exclude("threadElements").exclude("threadDumps")
+                    .exclude("threadStateCount").exclude("_class");
+            List<HostTag> queryResult = mongoTemplate.findDistinct(query, "tags", "threaddump", HostTag.class);
+            Set<HostTag> returnTag = new HashSet<>(queryResult);
+
+            return new HostTagRes(new ArrayList<>(returnTag));
+        } else if(isStartDate && isEndDate && areDatesEqual) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("logTime").regex(endAt))
+                    .fields().exclude("cluster").exclude("host").exclude("logTime").exclude("threadCount")
+                    .exclude("vmInfo").exclude("threadElements").exclude("threadDumps")
+                    .exclude("threadStateCount").exclude("_class");
             List<HostTag> queryResult = mongoTemplate.findDistinct(query, "tags", "threaddump", HostTag.class);
             Set<HostTag> returnTag = new HashSet<>(queryResult);
 
@@ -203,13 +353,14 @@ public class HostServiceImpl implements HostService {
 
 
     private boolean isDateTime(String input) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        simpleDateFormat.setLenient(false);
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        simpleDateFormat.setLenient(false);
 
         try {
-            simpleDateFormat.parse(input.trim());
+//            simpleDateFormat.parse(input.trim());
+            LocalDateTime.parse(input.replace(" ", "T"));
             return true;
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -233,27 +384,17 @@ public class HostServiceImpl implements HostService {
         Set<HostSearch> setInput = new HashSet<>(input);
 
         return new ArrayList<>(setInput);
-//        List<HostSearch> hostSearchWithoutDuplicate = new ArrayList<>();
-//
-//        for(HostSearch hostSearchEach : input) {
-//            if(hostSearchWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostSearchEach.getHost()))) {
-//                hostSearchWithoutDuplicate.add(hostSearchEach);
-//            }
-//        }
-//
-//        return hostSearchWithoutDuplicate;
+    }
+
+    private List<HostState> removeDuplicateHostState(List<HostState> input) {
+        TreeSet<HostState> setInput = new TreeSet<>(input);
+
+        return new ArrayList<>(setInput);
     }
 
     private List<HostList> removeDuplicateHostList(List<HostList> input) {
         Set<HostList> setInput = new HashSet<>(input);
 
         return new ArrayList<>(setInput);
-//        for(HostList hostListEach : input) {
-//            if(hostListWithoutDuplicate.stream().noneMatch(o -> o.getHost().equals(hostListEach.getHost()))) {
-//                hostListWithoutDuplicate.add(hostListEach);
-//            }
-//        }
-//
-//        return hostListWithoutDuplicate;
     }
 }

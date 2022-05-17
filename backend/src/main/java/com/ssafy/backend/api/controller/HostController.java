@@ -71,9 +71,11 @@ public class HostController {
             @ApiResponse(responseCode = "404", description = "Page Not Found"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    @Operation(summary = "각 Host 정보 반환", description = "Collection threaddump 내 Host정보를 _id별로 반환")
-    public ResponseEntity<HostStateRes> showHostState( @RequestParam String _id ) {
-        HostStateRes hostStateRes = hostService.getHostState(_id);
+    @Operation(summary = "각 Host 정보 반환", description = "Collection threaddump 내 Host정보를 Host이름 & 시각 별로 반환")
+    public ResponseEntity<HostStateRes> showHostState(
+            @RequestParam String host,
+            @RequestParam String time ) {
+        HostStateRes hostStateRes = hostService.getHostState(host, time);
 
         return ResponseEntity.ok(hostStateRes);
     }
