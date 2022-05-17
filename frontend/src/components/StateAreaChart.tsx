@@ -21,6 +21,7 @@ import {
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
+import CircularProgress from "@mui/material/CircularProgress";
 
 ChartJS.register(
   CategoryScale,
@@ -38,6 +39,10 @@ ChartJS.register(
 const Box = styled.div`
   padding: 40px 20px;
   width: 80%;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default function StateAreaChart(props: PropsType) {
@@ -47,37 +52,30 @@ export default function StateAreaChart(props: PropsType) {
   const [blocked, setBlocked] = React.useState<any[]>([]);
   const [waiting, setWaiting] = React.useState<any[]>([]);
   const [timed, setTimed] = React.useState<any[]>([]);
-
-  // const changeTime = (value: Date | null) => {
-  //   if (value !== null) {
-  //     const koreaTime = new Date(
-  //       value.getTime() - value.getTimezoneOffset() * 60000
-  //     )
-  //       .toISOString()
-  //       .replace("T", " ")
-  //       .substring(0, 19);
-  //     return koreaTime;
-  //   }
-  // };
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
     if (startAt !== null && endAt !== null) {
+      setLoading(true);
       const startStr = changeTime(startAt);
       const endStr = changeTime(endAt);
 
+      // 메인에서 data 받아오면 수정할 부분
       const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
+
       const hostParam = {
         host: hosts.join(","),
       };
-      console.log();
+
       await axios
         .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
           params: hostParam,
         })
         .then((res) => {
+          setLoading(false);
           const info = res.data.hostList;
-          console.log(res.data);
+          console.log("차트 api 요청 결과입니다.", res.data);
 
           if (startStr === endStr) {
             setLogTime([info.logTime[0], info.logTime[0]]);
@@ -123,24 +121,10 @@ export default function StateAreaChart(props: PropsType) {
     }
   };
 
+  // 시간 바뀔때마다 다시!
   React.useEffect(() => {
     searchCategory();
   }, [props.pointAt, props.startAt, props.endAt]);
-
-  // const dummyDateTimes: string[] = getDatesInRange(
-  //   new Date("2022-05-09 00:00:00"),
-  //   new Date("2022-05-10 00:00:00")
-  // );
-
-  // const dummyDatas: number[][] = [];
-  // for (let i = 0; i < 4; i++) {
-  //   dummyDatas.push(
-  //     Array.from({ length: dummyDateTimes.length }, () =>
-  //       Math.floor(Math.random() * 20 + 40)
-  //     )
-  //   );
-  // }
-  // console.log("여기다", all.hosts[0]._ids);
 
   const data = {
     labels: logTime,
@@ -239,10 +223,14 @@ export default function StateAreaChart(props: PropsType) {
       // },
     },
   };
-
+  console.log(hosts);
   return (
     <Box>
-      <Line data={data} options={options} />
+      {loading ? (
+        <CircularProgress size={80} />
+      ) : (
+        <Line data={data} options={options} />
+      )}
     </Box>
   );
 }
