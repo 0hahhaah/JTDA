@@ -1,7 +1,5 @@
 package com.ssafy.backend.api.dto.response;
 
-import com.ssafy.backend.core.domain.Hosts;
-import com.ssafy.backend.core.domain.ThreadStateCount;
 import com.ssafy.backend.core.domain.ThreadStateCountList;
 import com.ssafy.backend.core.domain.ThreadStateList;
 import io.swagger.annotations.ApiModel;
@@ -16,7 +14,7 @@ import java.util.List;
 public class ThreadStateListDto {
 
 
-    private List<Hosts> hosts;
+    private List<String> hosts;
 
     private int dataCount;
     private List<String> logTime;
@@ -34,7 +32,7 @@ public class ThreadStateListDto {
 
     public ThreadStateListDto() { }
 
-    public ThreadStateListDto(List<Hosts> hosts, int dataCount, List<String> logTime, ThreadStateCountList threadStateCountList) {
+    public ThreadStateListDto(List<String> hosts, int dataCount, List<String> logTime, ThreadStateCountList threadStateCountList) {
         this.hosts = hosts;
         this.dataCount = dataCount;
         this.logTime = logTime;
