@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { hostInfo, Cluster } from "../interfaces/HostInfo.interface";
+import { Cluster } from "../interfaces/HostInfo.interface";
 import { URL } from "../api";
 import axios from "axios";
 import styled from "styled-components";
@@ -86,7 +86,6 @@ export default function SidebarList({
   selectedHostNames,
   setSelectedHostNames,
 }: Props) {
-  const [hostsList, setHostsList] = useState<Array<string>>([]);
   const [query, setQuery] = useState(searchInput);
   const [tags, setTags] = useState<Array<string>>([]);
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
@@ -94,11 +93,6 @@ export default function SidebarList({
   const [checkedCluster, setCheckedCluster] = useState<string>("");
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
-  const [checkedClusterTagsList, setCheckedClusterTagsList] = useState<Cluster[]>([]);
-  //encodeURIComponent(query); 유니코드 변환 함수
-  //searchCategory 값에 따라 (host, cluster)
-  //host면 getHosts(); xx searchHost();
-  //cluster면 getAPI();
 
   const setTime = () => {
     if (category === "point" && pointAt) {
@@ -113,31 +107,26 @@ export default function SidebarList({
   const getAPI = async() => {
     await axios({
       url:
-        baseUrl +
-        `/host/list?startAt=${startStr}&endAt=${endStr}&tags=${checkedTags}`,
+        URL +
+        `/api/host/list?startAt=${startStr}&endAt=${endStr}&tags=${checkedTags}`,
       method: "get",
     })
       .then((res) => {
-        console.log('.',res.data.results);
         setClusterList(res.data.results);
       })
       .catch((err) => {
-        console.log(err);
       });
   };
 
-
-
   const getTags = async () => {
     await axios({
-      url: baseUrl + `/host/tag?startAt=${startStr}&endAt=${endStr}`,
+      url: URL + `/api/host/tag?startAt=${startStr}&endAt=${endStr}`,
       method: "get",
     })
       .then((res) => {
         removeTagBlank(res.data.tags);
       })
       .catch((err) => {
-        console.log(err);
       });
   };
 
@@ -146,25 +135,29 @@ export default function SidebarList({
     setTags(tagList.filter((e) => e));
   };
 
-  const searchAPI = async () => {
-    //검색창 사용. 근데 이제 클러스터 검색이 잘될지 모르겠네
-    let searchUrl = "";
+  const searchAPI = async () => { //검색창 사용
     if (searchCategory === "cluster") {
-      searchUrl = `/host/list?startAt=${startStr}&endAt=${endStr}&query=${query}`; //cluster 검색때는 host/list
+      await axios({
+        url: URL + `/api/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${query}`,
+        method: "get"
+      })
+      .then((res) =>{
+        setClusterList(res.data.results);
+      })
+      .catch((err) =>{
+      })
     } else if (searchCategory === "host") {
-      searchUrl = `/host/search?startAt=${startStr}&endAt=${endStr}&query=${query}`; //host 검색때는 search
+      await axios({
+        url: URL + `/api/host/search?startAt=${startStr}&endAt=${endStr}&query=${encodeURIComponent(query)}`,
+        method: "get"
+      })
+      .then((res) =>{
+        if(setSelectedHostNames)
+          setSelectedHostNames(res.data.hosts.map((host: { host: any; }) => host.host));
+      })
+      .catch((err) =>{
+      })
     }
-    await axios({
-      url: baseUrl + searchUrl,
-      method: "get",
-    })
-    .then((res) => {
-      console.log('검색', res.data.results);
-      // setClusterList(res.data.results);
-    })
-    .catch((err) => {
-      console.log(err);
-    })
   }  
 
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
@@ -188,13 +181,15 @@ export default function SidebarList({
 
   useEffect(() => {
     getAPI();
-    // getClusterTag();
   }, [startStr, endStr, checkedCluster, checkedTags]);
 
   useEffect(() => {
     setQuery(searchInput);
-    searchAPI();
   }, [searchInput]);
+
+  useEffect(() =>{
+    searchAPI();
+  },[query]);
 
   return (
     <>
