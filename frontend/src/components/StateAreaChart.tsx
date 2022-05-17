@@ -21,6 +21,7 @@ import {
 // import { getDatesInRange } from "../utils/formatter";
 import { PointElementProp } from "../interfaces/ChartJS.interface";
 import { PropsType } from "../interfaces/ChartJS.interface";
+import CircularProgress from "@mui/material/CircularProgress";
 
 ChartJS.register(
   CategoryScale,
@@ -38,6 +39,10 @@ ChartJS.register(
 const Box = styled.div`
   padding: 40px 20px;
   width: 80%;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default function StateAreaChart(props: PropsType) {
@@ -47,39 +52,35 @@ export default function StateAreaChart(props: PropsType) {
   const [blocked, setBlocked] = React.useState<any[]>([]);
   const [waiting, setWaiting] = React.useState<any[]>([]);
   const [timed, setTimed] = React.useState<any[]>([]);
-
-  // const changeTime = (value: Date | null) => {
-  //   if (value !== null) {
-  //     const koreaTime = new Date(
-  //       value.getTime() - value.getTimezoneOffset() * 60000
-  //     )
-  //       .toISOString()
-  //       .replace("T", " ")
-  //       .substring(0, 19);
-  //     return koreaTime;
-  //   }
-  // };
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [noData, setNoData] = React.useState<boolean>(false);
 
   //조회하기 위해 시간형식 변환 후 -> axios 요청
   const search = async (startAt: Date | null, endAt: Date | null) => {
-    if (startAt !== null && endAt !== null) {
+    if (
+      startAt !== null &&
+      endAt !== null &&
+      props.selectedHostNames.length > 0
+    ) {
+      setLoading(true);
       const startStr = changeTime(startAt);
       const endStr = changeTime(endAt);
-
-      const hosts = ["k6s10211.p.ssafy.io", "k6s10212.p.ssafy.io"];
       const hostParam = {
-        host: hosts.join(","),
+        host: props.selectedHostNames.join(","),
       };
-      console.log();
+      console.log("ostParam", hostParam);
       await axios
         .get(`${URL}/api/thread/states?startAt=${startStr}&endAt=${endStr}`, {
           params: hostParam,
         })
         .then((res) => {
+          setLoading(false);
           const info = res.data.hostList;
-          console.log(res.data);
-
-          if (startStr === endStr) {
+          console.log("차트 api 요청 결과입니다.", res.data);
+          if (info.dataCount === 0) {
+            setNoData(true);
+          } else if (startStr === endStr) {
+            setNoData(false);
             setLogTime([info.logTime[0], info.logTime[0]]);
             setHosts([info.hosts[0], info.hosts[0]]);
             setRunnable([
@@ -99,6 +100,7 @@ export default function StateAreaChart(props: PropsType) {
               info.threadStateCountList.timed_WAITING[0],
             ]);
           } else {
+            setNoData(false);
             setLogTime(info.logTime);
             setHosts(info.hosts);
             setRunnable(info.threadStateCountList.runnable);
@@ -123,24 +125,16 @@ export default function StateAreaChart(props: PropsType) {
     }
   };
 
+  // 시간 바뀔때마다 다시!
   React.useEffect(() => {
     searchCategory();
-  }, [props.pointAt, props.startAt, props.endAt]);
-
-  // const dummyDateTimes: string[] = getDatesInRange(
-  //   new Date("2022-05-09 00:00:00"),
-  //   new Date("2022-05-10 00:00:00")
-  // );
-
-  // const dummyDatas: number[][] = [];
-  // for (let i = 0; i < 4; i++) {
-  //   dummyDatas.push(
-  //     Array.from({ length: dummyDateTimes.length }, () =>
-  //       Math.floor(Math.random() * 20 + 40)
-  //     )
-  //   );
-  // }
-  // console.log("여기다", all.hosts[0]._ids);
+  }, [
+    props.pointAt,
+    props.startAt,
+    props.endAt,
+    props.category,
+    props.selectedHostNames,
+  ]);
 
   const data = {
     labels: logTime,
@@ -178,12 +172,10 @@ export default function StateAreaChart(props: PropsType) {
 
   const pointOnClick = (event: object, element: PointElementProp[]): void => {
     const idx: number = element[0].index;
-
     const ids: string[] = [];
     for (let i = 0; i < hosts.length; i++) {
       ids.push(hosts[i]._ids[idx]);
     }
-
     props.setSelectedIds(ids);
   };
 
@@ -240,9 +232,27 @@ export default function StateAreaChart(props: PropsType) {
     },
   };
 
-  return (
-    <Box>
-      <Line data={data} options={options} />
-    </Box>
-  );
+  // 로딩중 + 데이터 유무에 따라 출력 다르게
+  const byLoading = (): JSX.Element => {
+    if (loading && props.selectedHostNames[0]) {
+      return <CircularProgress size={80} />;
+    } else {
+      if (noData) {
+        return <>"데이터가 없습니다."</>;
+      } else {
+        return <Line data={data} options={options} />;
+      }
+    }
+  };
+
+  // 호스트 선택 유무에 따라 출력 다르게
+  const output = () => {
+    if (props.selectedHostNames.length <= 0) {
+      return "검색할 Host를 선택하세요";
+    } else {
+      return byLoading();
+    }
+  };
+
+  return <Box>{output()}</Box>;
 }
