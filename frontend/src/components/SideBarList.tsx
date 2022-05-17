@@ -19,6 +19,7 @@ const TagBox = styled(Center)`
 const TagList = styled.div`
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 5px;
 `;
 
 const HostBox = styled(Center)`
@@ -59,7 +60,7 @@ const ListTitle = styled.div`
 
 //--------------------------------
 const ClusterList = styled(HostList)`
-  max-height: 60%;
+  height: 75%;
 `;
 
 const baseUrl = "https://k6s102.p.ssafy.io/api";
@@ -91,8 +92,7 @@ export default function SidebarList({
   const [checkedTags, setCheckedTags] = useState<Array<string>>([]);
   const [clusterList, setClusterList] = useState<Cluster[]>([]);
   const [checkedCluster, setCheckedCluster] = useState<string>("");
-  const [checkedHosts, setCheckedHosts] = useState<Array<string>>([]);
-
+  const [clusterTemp, setClusterTemp] = useState<Cluster[]>([]);
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
 
@@ -184,6 +184,12 @@ export default function SidebarList({
     getAPI();
   }, [startStr, endStr, checkedCluster, checkedTags])
 
+  useEffect(() =>{
+    // setClusterTemp(clusterList.map(cluster => cluster.cluster));
+    setClusterTemp(clusterList);
+    setCheckedCluster("");
+  }, [startStr, endStr]);
+
   useEffect(() => {
     // searchHosts();
   }, [startAt, endAt, query]);
@@ -192,13 +198,15 @@ export default function SidebarList({
     setQuery(searchInput);
   }, [searchInput]);
 
+  console.log('..',clusterTemp);
+
   return (
     <>
       <TagBox>
         <ListTitle>Tags</ListTitle>
         <TagList>
           {tags.length === 0
-            ? "조회시점을 선택해주세요"
+            ? "조회기간을 선택해주세요"
             : tags.map((tag) => {
                 return (
                   <TagCard
