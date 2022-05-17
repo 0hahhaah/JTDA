@@ -37,4 +37,19 @@ public class HostState {
         this.threadStateCount = threadStateCount;
         this.threadDumps = threadDumps;
     }
+
+    // HashSet 중복 제거
+    @Override
+    public int hashCode() {
+        return host.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof HostState)) {
+            return false;
+        }
+        HostState hostState = (HostState) obj;
+        return host.equals(hostState.host);
+    }
 }

@@ -200,18 +200,19 @@ public class HostServiceImpl implements HostService {
 
 
     @Override
-    public HostStateRes getHostState(String _id) {
-        List<String> _ids = new ArrayList<>();
-        if(!_id.isEmpty()) {
-            _ids = Arrays.asList(_id.split(","));
+    public HostStateRes getHostState(String host, String time) {
+        List<String> hosts = new ArrayList<>();
+        if(!host.isEmpty()) {
+            hosts = Arrays.asList(host.split(","));
         }
-        Set<String> _idsNoDuplicate = new HashSet<>(_ids);
+        Set<String> hostsNoDuplicate = new HashSet<>(hosts);
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("_id").in(_idsNoDuplicate))
+        query.addCriteria(Criteria.where("host").in(hostsNoDuplicate))
+                .addCriteria(Criteria.where("logTime").regex(time))
                 .with(Sort.by(Sort.Direction.ASC, "host"))
-                .fields().exclude("cluster").exclude("tags").exclude("vmInfo").exclude("threadElements").exclude("threadStateCount").exclude("_class");
-        List<HostState> queryResult = mongoTemplate.find(query, HostState.class, "threaddump");
+                .fields().exclude("cluster").exclude("tags").exclude("vmInfo").exclude("threadElements").exclude("_class");
+        List<HostState> queryResult = removeDuplicateHostState(mongoTemplate.find(query, HostState.class, "threaddump"));
         List<HostStateWithDaemonCountRes> returnHosts = new ArrayList<>();
 
         for(HostState hostState : queryResult) {
@@ -283,6 +284,11 @@ public class HostServiceImpl implements HostService {
     private List<HostSearch> removeDuplicateHostSearch(List<HostSearch> input) {
         Set<HostSearch> setInput = new HashSet<>(input);
 
+        return new ArrayList<>(setInput);
+    }
+
+    private List<HostState> removeDuplicateHostState(List<HostState> input) {
+        Set<HostState> setInput = new HashSet<>(input);
         return new ArrayList<>(setInput);
     }
 
