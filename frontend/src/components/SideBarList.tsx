@@ -212,21 +212,6 @@ export default function SidebarList({
         </TagList>
       </TagBox>
 
-      {/* <SelectedHost>
-        <ListTitle>선택한 Host</ListTitle>
-        <ListBox>
-          {checkedItems.length === 0 ? (
-            <InfoText>조회할 host를 선택해주세요</InfoText>
-          ) : (
-            <ul>
-              {checkedItems.map((e, i) => {
-                return <li key={i}>{e}</li>;
-              })}
-            </ul>
-          )}
-        </ListBox>
-      </SelectedHost> */}
-
       <ClusterList>
         <ListTitle>Clusters</ListTitle>
         <ListBox>

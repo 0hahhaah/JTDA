@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Cluster } from "../interfaces/HostInfo.interface";
 import styled from "styled-components";
+import id from "date-fns/esm/locale/id/index.js";
 
 const ClusterBox = styled.p<{ ftWeight: string }>`
   margin: 0 0 5px 0;
@@ -13,7 +14,7 @@ const HostUl = styled.ul`
   margin: 5px 0 10px 0;
 `;
 const HostList = styled.li`
-  list-style: none;
+  margin: 3px 0;
   cursor: pointer;
 `;
 
@@ -32,17 +33,21 @@ const Clusters: React.FunctionComponent<Props> = ({
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
-  const checkedClusterHosts = () => {};
-
   const onClusterHandler = () => {
     setIsToggled(!isToggled);
-    // setCheckedCluster(cluster.cluster);
-    setCheckedCluster('CLUSTER-ONE');
+    setCheckedCluster(cluster.cluster);
   };
 
-  const onSelectedHostsHandler = (id: string) => {
+  const onSelectedHostsHandler = async(host: string) => {
+    if(selectedHostNames && setSelectedHostNames){
+      setSelectedHostNames([...selectedHostNames, host]);
+      if(selectedHostNames.includes(host)) {
+        setSelectedHostNames(selectedHostNames.filter(e => e!== host));
+      }
+    }
   }
 
+  //필터로 걸러낸다.. 있는애는 bold 없는애는 normal
   return (
     <>
       <ClusterBox ftWeight={`${isToggled}`} onClick={onClusterHandler}>
@@ -53,7 +58,8 @@ const Clusters: React.FunctionComponent<Props> = ({
           {cluster.hosts.map((host, i) => {
             return (
             <HostList 
-              key={i}>{host.host}
+              key={i}
+              onClick={() => {onSelectedHostsHandler(host.host)}}>{host.host}
             </HostList>) ; 
           })}
         </HostUl>
