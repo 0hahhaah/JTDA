@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Cluster } from "../interfaces/HostInfo.interface";
 import CheckHost from "./CheckHost";
 import styled from "styled-components";
@@ -19,17 +19,20 @@ interface Props {
   cluster: Cluster;
   selectedHostNames?: string[];
   setSelectedHostNames?: React.Dispatch<React.SetStateAction<string[]>>;
+  setCheckedCluster:React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Clusters: React.FunctionComponent<Props> = ({
   cluster,
   selectedHostNames,
   setSelectedHostNames,
+  setCheckedCluster
 }: Props) => {
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
   const onClusterHandler = () => { //클러스터 내 호스트 전체 선택
     setIsToggled(!isToggled);
+    setCheckedCluster(cluster.cluster);
     if(!isToggled && selectedHostNames && setSelectedHostNames) {
       setSelectedHostNames([...selectedHostNames,...cluster.hosts.map((hosts) => hosts.host)]);
     } else if(isToggled && selectedHostNames && setSelectedHostNames) {
@@ -48,8 +51,13 @@ const Clusters: React.FunctionComponent<Props> = ({
         const filter = selectedHostNames.filter((one) => one !== code);
         setSelectedHostNames([...filter]);
       }
+    }
   }
-  }
+
+  useEffect(() =>{
+    if(selectedHostNames && selectedHostNames.length === 0) setIsToggled(false);
+    console.log(selectedHostNames, isToggled);
+  }, [selectedHostNames]);
 
   return (
     <>

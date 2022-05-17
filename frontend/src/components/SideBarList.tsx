@@ -94,7 +94,7 @@ export default function SidebarList({
   const [checkedCluster, setCheckedCluster] = useState<string>("");
   const [startStr, setStartStr] = useState<string>("");
   const [endStr, setEndStr] = useState<string>("");
-
+  const [checkedClusterTagsList, setCheckedClusterTagsList] = useState<Cluster[]>([]);
   //encodeURIComponent(query); 유니코드 변환 함수
   //searchCategory 값에 따라 (host, cluster)
   //host면 getHosts(); xx searchHost();
@@ -110,11 +110,11 @@ export default function SidebarList({
     }
   };
 
-  const getAPI = async () => {
+  const getAPI = async() => {
     await axios({
       url:
         baseUrl +
-        `/host/list?startAt=${startStr}&endAt=${endStr}&cluster=${checkedCluster}&tags=${checkedTags}`,
+        `/host/list?startAt=${startStr}&endAt=${endStr}&tags=${checkedTags}`,
       method: "get",
     })
       .then((res) => {
@@ -125,6 +125,8 @@ export default function SidebarList({
         console.log(err);
       });
   };
+
+
 
   const getTags = async () => {
     await axios({
@@ -158,7 +160,7 @@ export default function SidebarList({
     })
     .then((res) => {
       console.log('검색', res.data.results);
-      setClusterList(res.data.results);
+      // setClusterList(res.data.results);
     })
     .catch((err) => {
       console.log(err);
@@ -168,14 +170,12 @@ export default function SidebarList({
   const checkedTagsHandler = (code: string, isChecked: boolean) => {
     if (isChecked) {
       setCheckedTags([...checkedTags, code]);
+      if(setSelectedHostNames) setSelectedHostNames([]);
     } else if (!isChecked && checkedTags.find((one) => one === code)) {
       const filter = checkedTags.filter((one) => one !== code);
       setCheckedTags([...filter]);
+      if(setSelectedHostNames) setSelectedHostNames([]);
     }
-    // setSelectedHostNames(selectedHostNames.filter((hostName)=>{
-    //   let flag:boolean = true;
-    //   checkedTags.forEach(tag => hostName.tags)
-    // }))
   };
 
   useEffect(() => {
@@ -188,6 +188,7 @@ export default function SidebarList({
 
   useEffect(() => {
     getAPI();
+    // getClusterTag();
   }, [startStr, endStr, checkedCluster, checkedTags]);
 
   useEffect(() => {
@@ -225,6 +226,7 @@ export default function SidebarList({
                 cluster={cluster}
                 selectedHostNames={selectedHostNames}
                 setSelectedHostNames={setSelectedHostNames}
+                setCheckedCluster={setCheckedCluster}
               ></Clusters>
             );
           })}
