@@ -56,7 +56,6 @@ const Clusters: React.FunctionComponent<Props> = ({
 
   useEffect(() =>{
     if(selectedHostNames && selectedHostNames.length === 0) setIsToggled(false);
-    console.log(selectedHostNames, isToggled);
   }, [selectedHostNames]);
 
   return (
