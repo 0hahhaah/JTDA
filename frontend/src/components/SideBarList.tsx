@@ -118,6 +118,7 @@ export default function SidebarList({
       method: "get",
     })
       .then((res) => {
+        console.log('.',res.data.results);
         setClusterList(res.data.results);
       })
       .catch((err) => {
@@ -171,6 +172,10 @@ export default function SidebarList({
       const filter = checkedTags.filter((one) => one !== code);
       setCheckedTags([...filter]);
     }
+    // setSelectedHostNames(selectedHostNames.filter((hostName)=>{
+    //   let flag:boolean = true;
+    //   checkedTags.forEach(tag => hostName.tags)
+    // }))
   };
 
   useEffect(() => {
