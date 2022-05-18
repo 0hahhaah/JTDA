@@ -41,7 +41,11 @@ interface SearchBarProps {
   setSearchCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function SearchBar({ isMain, setSearchInput, setSearchCategory}: SearchBarProps) {
+export default function SearchBar({
+  isMain,
+  setSearchInput,
+  setSearchCategory,
+}: SearchBarProps) {
   const [timer, setTimer] = useState<number>(0);
 
   const handleOnChange = (value: string) => {
@@ -61,19 +65,17 @@ export default function SearchBar({ isMain, setSearchInput, setSearchCategory}: 
 
   return (
     <Search>
-      {isMain
-        ?<SearchCategory
-            onChange={(e)=> setSearchCategory(e.target.value)}>
+      {isMain ? (
+        <SearchCategory onChange={(e) => setSearchCategory(e.target.value)}>
           <option value="cluster">Cluster</option>
           <option value="host">Host</option>
         </SearchCategory>
-        : null
-      }
+      ) : null}
       <SearchInput
-        placeholder={isMain ? "" : "thread id or name"}
+        placeholder={isMain ? "" : "thread name"}
         onChange={(e) => handleOnChange(e.target.value)}
         onKeyDown={(e) => handleKeyDown(e)}
-        />
+      />
       <SearchIcon className="material-icons">search</SearchIcon>
     </Search>
   );
