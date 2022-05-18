@@ -137,7 +137,6 @@ export default function ThreadSummary({
         URL +
         `/api/host/state?host=${selectedHostNames.join()}&time=${selectedTime}`;
       const res = await axios.get(requestURL);
-      console.log("@@", res.data.hosts);
 
       setSummaryArray(res.data.hosts);
       setShowDetail(new Array(res.data.hosts.length).fill(false));
@@ -196,7 +195,7 @@ export default function ThreadSummary({
 
   const paintContainers: JSX.Element[] = hostSummaryArray?.map(
     (hostSummary, idx) => (
-      <Container>
+      <Container key={idx}>
         <Title onClick={() => handleToggleClick(idx)}>
           host {hostSummary.host}{" "}
           <ExpandMore
