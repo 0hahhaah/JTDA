@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 
 import styled from "styled-components";
 import SideBar from "../components/SideBar";
@@ -26,14 +26,12 @@ export const Boundary = styled.hr`
 `;
 
 export default function Main() {
-  const [pointAt, setPointAt] = React.useState<Date | null>(new Date());
-  const [startAt, setStartAt] = React.useState<Date | null>(null);
-  const [endAt, setEndAt] = React.useState<Date | null>(null);
-  const [category, setCategory] = React.useState<string>("point");
-  const [selectedTime, setSelectedTime] = React.useState<string>("");
-  const [selectedHostNames, setSelectedHostNames] = React.useState<string[]>(
-    []
-  );
+  const [pointAt, setPointAt] = useState<Date | null>(new Date());
+  const [startAt, setStartAt] = useState<Date | null>(null);
+  const [endAt, setEndAt] = useState<Date | null>(null);
+  const [category, setCategory] = useState<string>("point");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedHostNames, setSelectedHostNames] = useState<string[]>([]);
 
   return (
     <div>
