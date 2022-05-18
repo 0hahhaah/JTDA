@@ -6,6 +6,7 @@ import styled from "styled-components";
 import TagCard from "./TagCard";
 import Clusters from "./Clusters";
 import changeTime from "./ChangeTimeForm";
+
 const Center = styled.div`
   display: flex;
   flex-direction: column;

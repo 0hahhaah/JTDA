@@ -10,6 +10,7 @@ import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
 import { ReactComponent as ExpandMore } from "../assets/expand_more.svg";
 import { HostSummary } from "../interfaces/HostInfo.interface";
+import { URL } from '../api'; 
 
 const Shadow = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -132,10 +133,9 @@ export default function ThreadSummary({
   const [hostSummaryArray, setSummaryArray] = useState<HostSummary[]>([]);
   useEffect(() => {
     const fetchAndSetSummaryArray = async () => {
-      const BASE_URL: string = `https://k6s102.p.ssafy.io/api`;
       const requestURL: string =
-        BASE_URL +
-        `/host/state?host=${selectedHostNames.join()}&time=${selectedTime}`;
+        URL +
+        `/api/host/state?host=${selectedHostNames.join()}&time=${selectedTime}`;
       const res = await axios.get(requestURL);
       console.log("@@", res.data.hosts);
 

@@ -86,7 +86,6 @@ export default function StateAreaChart({
         })
 
         .catch((err) => {
-          console.log("err", err);
         });
     }
   };
