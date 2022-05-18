@@ -7,7 +7,7 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY . .
 RUN npm install --silent
 RUN npm install react-scripts@5.0.1 -g --silent
-
+RUN npm run build
 
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npx", "serve", "-s", "build"]
