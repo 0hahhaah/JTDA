@@ -33,14 +33,20 @@ public class ThreadStateServiceImpl implements ThreadStateService {
         }
         strHost.setLength(strHost.length()-1);
         BasicQuery query;
+        // 시점 조회
         if(startAt.equals(endAt)) query = new BasicQuery("{logTime: {$regex : '"+startAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
-//        BasicQuery query = new BasicQuery("{logTime: { $gte: '"+startAt+"', $lte: '"+endAt+"'}, host:{$in:["+strHost+"]}}");
+//
+        // 기간 조회
         else query = new BasicQuery("{logTime: { $gte: '"+startAt.substring(0,16)+"', $lte: '"+endAt.substring(0,16)+"'},host:{$in:["+strHost+"]}}");
+        // 필요없는 field 제거
         query.fields().exclude("threadDumps").exclude("vmInfo").exclude("threadElements").exclude("_class").exclude("tags").exclude("cluster").exclude("threadCount");
 
-        //        System.out.println(query.toString());
+        // List<ThreadStateList> 형태로 받기
         List<ThreadStateList> list = mongoTemplate.find(query, ThreadStateList.class, "threaddump");
 
+
+        // <logTime, ThreadStateCount> key, value로 넣어준다.
+        // TreeMap을 사용하여 자동정렬
         TreeMap<String, ThreadStateCount> treeMap = new TreeMap<>();
         for(ThreadStateList entity : list){
             if(treeMap.containsKey(entity.getLogTime().substring(0,16))){
@@ -55,6 +61,7 @@ public class ThreadStateServiceImpl implements ThreadStateService {
             }
         }
 
+        // 결과값을 ThreadStateListDto 형태로 만들어준다.
         List <String> logTimeList = new ArrayList<>();
         List<Integer> RUNNABLE = new ArrayList<>();
         List<Integer> BLOCKED = new ArrayList<>();
@@ -67,7 +74,6 @@ public class ThreadStateServiceImpl implements ThreadStateService {
             BLOCKED.add(entry.getValue().getBLOCKED());
             WAITING.add(entry.getValue().getWAITING());
             TIMED_WAITING.add(entry.getValue().getTIMED_WAITING());
-//            System.out.println("[Key]:" + entry.getKey() + " [Value]:" + entry.getValue());
         }
         ThreadStateCountList threadStateCountList = new ThreadStateCountList(RUNNABLE,BLOCKED,WAITING,TIMED_WAITING);
 
