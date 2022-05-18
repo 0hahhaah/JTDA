@@ -110,6 +110,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
           </ThreadInfo>
           <ThreadInfo>{`PRIORITY: ${threadDump.priority}`}</ThreadInfo>
           <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
+          <ThreadInfo>{`LOCK OWNER: ${threadDump.lockOwner}`}</ThreadInfo>
         </ThreadInfos>
         <StackTrace>
           {`stackTrace:`}
