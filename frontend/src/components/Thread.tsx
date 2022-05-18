@@ -65,7 +65,7 @@ const StackTrace = styled.div`
 `;
 
 const LineText = styled.p`
-  margin: 0px;
+  margin: 0 0 0 10px;
   white-space: pre-wrap;
 `;
 
@@ -113,8 +113,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
           <ThreadInfo>{`LOCK OWNER: ${threadDump.lockOwner}`}</ThreadInfo>
         </ThreadInfos>
         <StackTrace>
-          {`stackTrace:`}
-          <br />
+          <ThreadInfo>{`STACKTRACES:`}</ThreadInfo>
           {`java.lang.Thread.State: ${threadDump.state}`}
           <br />
           {paintStringArray(threadDump.stackTrace)}
@@ -126,10 +125,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
 
   function paintStringArray(stringArray: string[]): JSX.Element[] {
     return stringArray.map((stringElement, idx) => (
-      <LineText key={idx}>
-        {stringElement}
-        <br></br>
-      </LineText>
+      <LineText key={idx}>{stringElement}</LineText>
     ));
   }
 
