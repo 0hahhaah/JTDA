@@ -144,7 +144,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
       <SubTitle
         fontSize={"2rem"}
         color={handleStateColor(state).replace(", 0.5", "")}
-      >{`${state}`}</SubTitle>
+      >{`${state ? state : "ALL STATES"}`}</SubTitle>
       {paintthreadDetail}
     </Container>
   );
