@@ -5,7 +5,7 @@ import { handleStateColor } from "./ThreadSummary";
 import { ThreadDetail, ThreadDump } from "../interfaces/Threadinterface";
 import axios from "axios";
 import { queryParser } from "../utils/queryParser";
-import { URL } from '../api';
+import { URL } from "../api";
 
 const Container = styled.div`
   padding: 30px;
@@ -65,7 +65,7 @@ const StackTrace = styled.div`
 `;
 
 const LineText = styled.p`
-  margin: 0px;
+  margin: 0 0 0 10px;
   white-space: pre-wrap;
 `;
 
@@ -79,10 +79,14 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
   const [threadDetail, setThreadDetail] = useState<ThreadDetail>();
   useEffect(() => {
     const fetchAndSetThreadDetail = async () => {
-      const requestURL: string =
-        URL + `/api/thread/detail?_id=${id}&state=${state}`;
-      const res = await axios.get(requestURL);
+      let requestURL: string;
+      if (state) {
+        requestURL = URL + `/api/thread/detail?_id=${id}&state=${state}`;
+      } else {
+        requestURL = URL + `/api/thread/detail?_id=${id}`;
+      }
 
+      const res = await axios.get(requestURL);
       setThreadDetail(res.data.threadStateDetails);
       setThreadDumps(res.data.threadStateDetails.threadDumps);
     };
@@ -106,10 +110,10 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
           </ThreadInfo>
           <ThreadInfo>{`PRIORITY: ${threadDump.priority}`}</ThreadInfo>
           <ThreadInfo>{`STATE: ${threadDump.state}`}</ThreadInfo>
+          <ThreadInfo>{`LOCK OWNER: ${threadDump.lockOwner}`}</ThreadInfo>
         </ThreadInfos>
         <StackTrace>
-          {`stackTrace:`}
-          <br />
+          <ThreadInfo>{`STACKTRACES:`}</ThreadInfo>
           {`java.lang.Thread.State: ${threadDump.state}`}
           <br />
           {paintStringArray(threadDump.stackTrace)}
@@ -121,10 +125,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
 
   function paintStringArray(stringArray: string[]): JSX.Element[] {
     return stringArray.map((stringElement, idx) => (
-      <LineText key={idx}>
-        {stringElement}
-        <br></br>
-      </LineText>
+      <LineText key={idx}>{stringElement}</LineText>
     ));
   }
 
@@ -140,7 +141,7 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
       <SubTitle
         fontSize={"2rem"}
         color={handleStateColor(state).replace(", 0.5", "")}
-      >{`${state}`}</SubTitle>
+      >{`${state ? state : "ALL STATES"}`}</SubTitle>
       {paintthreadDetail}
     </Container>
   );
