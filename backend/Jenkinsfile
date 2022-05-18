@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Backend Gradle Build && Test') {
+            steps {
+                dir('backend') {
+                    sh 'chmod u+x ./gradlew'
+                    sh './gradlew clean build'
+                }
+            }
+            post {
+                success {
+                    echo 'gradle build success!'
+                }
+                failure {
+                    echo 'gradle build fail!'
+                }
+            }
+        }
+
+        stage('Backend Docker build') {
+            steps {
+                sh 'docker build -t ssafy/backend ./backend'
+            }
+        }
+
+        stage('Backend Deploy') {
+            steps {
+                sh 'docker ps -aq --filter "name=backend" | grep -q . && docker stop backend && docker rm -fv backend'
+                sh 'docker run -d --name backend -p 8081:8081 --restart always ssafy/backend'
+            }
+        }
+
+        stage('Finish') {
+            steps {
+                sh 'docker image prune -f'
+            }
+        }
+    }
+}

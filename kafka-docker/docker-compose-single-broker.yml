@@ -1,0 +1,16 @@
+version: "2"
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    build: . # use wurstmeister/kafka-docker Dockerfile
+    ports:
+      - "8092:9092" # host 8092 port => docker 9092 port
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.26.11.153 # k6s102.p.ssafy.io (ip address)
+      KAFKA_CREATE_TOPICS: "json_log:1:1" # topic_name:partition:replica
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
