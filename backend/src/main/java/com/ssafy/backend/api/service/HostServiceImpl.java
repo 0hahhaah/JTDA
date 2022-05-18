@@ -185,6 +185,7 @@ public class HostServiceImpl implements HostService {
             hostListResultsResMap.get(hostList.getCluster()).add(new HostListResultsEachRes(hostList.getHost(), hostList.getTags()));
         }
         for(String eachCluster : hostListResultsResMap.keySet()) {
+            Collections.sort(hostListResultsResMap.get(eachCluster));
             hostListResultsResList.add(new HostListResultsRes(eachCluster, hostListResultsResMap.get(eachCluster)));
         }
 
