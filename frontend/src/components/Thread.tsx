@@ -5,7 +5,7 @@ import { handleStateColor } from "./ThreadSummary";
 import { ThreadDetail, ThreadDump } from "../interfaces/Threadinterface";
 import axios from "axios";
 import { queryParser } from "../utils/queryParser";
-import { URL } from '../api';
+import { URL } from "../api";
 
 const Container = styled.div`
   padding: 30px;
@@ -79,10 +79,14 @@ export default function Thread({ setThreadDumps }: ThreadProps) {
   const [threadDetail, setThreadDetail] = useState<ThreadDetail>();
   useEffect(() => {
     const fetchAndSetThreadDetail = async () => {
-      const requestURL: string =
-        URL + `/api/thread/detail?_id=${id}&state=${state}`;
-      const res = await axios.get(requestURL);
+      let requestURL: string;
+      if (state) {
+        requestURL = URL + `/api/thread/detail?_id=${id}&state=${state}`;
+      } else {
+        requestURL = URL + `/api/thread/detail?_id=${id}`;
+      }
 
+      const res = await axios.get(requestURL);
       setThreadDetail(res.data.threadStateDetails);
       setThreadDumps(res.data.threadStateDetails.threadDumps);
     };

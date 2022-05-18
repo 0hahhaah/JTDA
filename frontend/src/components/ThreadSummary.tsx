@@ -9,8 +9,13 @@ import { ReactComponent as Play } from "../assets/play.svg";
 import { ReactComponent as Pause } from "../assets/pause.svg";
 import { ReactComponent as Clock } from "../assets/clock.svg";
 import { ReactComponent as ExpandMore } from "../assets/expand_more.svg";
+import { ReactComponent as OpenInNew } from "../assets/open_in_new.svg";
 import { HostSummary } from "../interfaces/HostInfo.interface";
-import { URL } from '../api'; 
+import { URL } from "../api";
+
+const OpenInNewCustom = styled(OpenInNew)`
+  margin-top: 5px;
+`;
 
 const Shadow = styled.div`
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -33,17 +38,27 @@ const Section = styled.div`
   margin-bottom: 50px;
 `;
 
+const PreviewBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Info = styled.div``;
+const Summary = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
 const ToggleBox = styled.div<{ active?: boolean }>`
   overflow: hidden;
   transition: all 0.5s ease-in-out;
-  height: ${(props) => (props.active ? "700px" : "0px")};
+  height: ${(props) => (props.active ? "450px" : "0px")};
 
   border-radius: 10px;
   background-color: white;
 
-  @media (max-width: 1536px) {
-    height: ${(props) => (props.active ? "800px" : "0px")};
-  }
+  @media (max-width: 1760px) {
+    height: ${(props) => (props.active ? "600px" : "0px")};
 `;
 
 const Title = styled.h1`
@@ -53,6 +68,7 @@ const Title = styled.h1`
   text-align: left;
   cursor: pointer;
   display: flex;
+  width: fit-content;
 `;
 
 const SubTitle = styled.h2`
@@ -60,6 +76,7 @@ const SubTitle = styled.h2`
   font-weight: 400;
   margin: 0px;
   color: rgb(107, 114, 128);
+  display: inline-block;
 `;
 
 const CardContainer = styled.div<{ gridCol: number }>`
@@ -70,26 +87,35 @@ const CardContainer = styled.div<{ gridCol: number }>`
 `;
 
 const Card = styled(Shadow)`
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  min-width: 200px;
-  min-height: 200px;
+
   border: 2px solid #f7f7f7;
   border-radius: 10px;
+`;
+
+const DetailCard = styled(Card)`
+  cursor: pointer;
+  min-width: 200px;
+  min-height: 200px;
 
   grid-column: span 1 / span 1;
-  @media (max-width: 1536px) {
+  @media (max-width: 1760px) {
     grid-column: span 2 / span 4;
   }
 `;
 
-const ThreadState = styled.div<{ color?: string }>`
+const PreviewCard = styled(Card)`
+  min-width: 100px;
+  min-height: 100px;
+`;
+
+const ThreadState = styled.div<{ color?: string; size?: string }>`
   margin: 0;
   padding: 5px;
-  font-size: 1.2rem;
+  font-size: ${(props) => props.size || "1.2rem"};
   font-weight: 400;
   white-space: nowrap;
   color: #333333;
@@ -99,9 +125,21 @@ const ThreadState = styled.div<{ color?: string }>`
   background-color: ${(props) => props.color};
 `;
 
-const StateNum = styled.span`
-  font-size: 3.5rem;
+const StateNum = styled.span<{ size?: string }>`
+  font-size: ${(props) => props.size || "3.5rem"};
   font-weight: 400;
+`;
+
+const LinkButton = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: black;
+    text-decoration-line: underline;
+    text-underline-offset: 4px;
+  }
 `;
 
 export const handleStateColor = (state: string): string => {
@@ -164,20 +202,38 @@ export default function ThreadSummary({
 
   const threadStates = ["RUNNABLE", "BLOCKED", "WAITING", "TIMED_WAITING"];
   const paintCards = (
-    hostSummary: HostSummary
+    hostSummary: HostSummary,
+    isPreview: boolean = false
   ): JSX.Element[] | JSX.Element => {
+    if (isPreview && hostSummary.threadStateCount) {
+      return threadStates.map((state, idx) => (
+        <PreviewCard>
+          {paintIcon(state)}
+          <StateNum size="1.75rem">
+            {hostSummary.threadStateCount[state]}
+          </StateNum>
+          {/* <ThreadState size="1rem" color={handleStateColor(state)}>
+            {state}
+          </ThreadState> */}
+        </PreviewCard>
+      ));
+    }
+
     if (hostSummary.threadStateCount) {
       return threadStates.map((state, idx) => (
-        <Card
+        <DetailCard
           key={idx}
-          onClick={() =>
-            navigate(`/detail?state=${state}&id=${hostSummary._id}`)
-          }
+          onClick={() => {
+            window.open(
+              `/detail?state=${state}&id=${hostSummary._id}`,
+              "_blank"
+            );
+          }}
         >
           {paintIcon(state)}
           <StateNum>{hostSummary.threadStateCount[state]}</StateNum>
           <ThreadState color={handleStateColor(state)}>{state}</ThreadState>
-        </Card>
+        </DetailCard>
       ));
     } else {
       return <div>요청하신 데이터가 없습니다.</div>;
@@ -196,37 +252,54 @@ export default function ThreadSummary({
   const paintContainers: JSX.Element[] = hostSummaryArray?.map(
     (hostSummary, idx) => (
       <Container key={idx}>
-        <Title onClick={() => handleToggleClick(idx)}>
-          host {hostSummary.host}{" "}
-          <ExpandMore
-            style={{
-              transform: `rotate(${showDetail[idx] ? "-180" : "0"}deg)`,
-              transition: "all 500ms ease",
-            }}
-          />
-        </Title>
-        <SubTitle>{hostSummary.logTime}</SubTitle>
+        <PreviewBox>
+          <Info>
+            <Title onClick={() => handleToggleClick(idx)}>
+              host {hostSummary.host}{" "}
+              <ExpandMore
+                style={{
+                  transform: `rotate(${showDetail[idx] ? "-180" : "0"}deg)`,
+                  transition: "all 500ms ease",
+                }}
+              />
+            </Title>
+            <SubTitle>{hostSummary.logTime}</SubTitle>
+          </Info>
+          {!showDetail[idx] && (
+            <Summary>{paintCards(hostSummary, true)}</Summary>
+          )}
+        </PreviewBox>
         <ToggleBox id={idx.toString()} active={showDetail[idx]}>
-          <SubTitle>Total Thread Count: {hostSummary.threadCount}</SubTitle>
+          <SubTitle>
+            <LinkButton
+              onClick={() => {
+                window.open(`/detail?id=${hostSummary._id}`, "_blank");
+              }}
+            >
+              <OpenInNewCustom></OpenInNewCustom>
+              Total Thread Count: {hostSummary.threadCount}
+            </LinkButton>
+            {`daemon: ${hostSummary.daemonCount} / non-damon: ${hostSummary.nonDaemonCount}`}
+          </SubTitle>
           <Section>
             <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
             <StatePieChart threadStateCount={hostSummary.threadStateCount} />
           </Section>
           <Boundary />
-          <Section>
+          {/* <Section>
             <CardContainer gridCol={6}>
-              <Card>
+              <DetailCard>
                 <StateNum>{hostSummary.daemonCount}</StateNum>
                 <ThreadState color="rgba(95, 0, 128, 0.5)">Daemon</ThreadState>
-              </Card>
-              <Card>
+              </DetailCard>
+              <DetailCard>
                 <StateNum>{hostSummary.nonDaemonCount}</StateNum>
                 <ThreadState color="rgba(95, 0, 128, 0.2)">
                   non-Daemon
                 </ThreadState>
-              </Card>
+              </DetailCard>
             </CardContainer>
-          </Section>
+          </Section> */}
         </ToggleBox>
       </Container>
     )
