@@ -26,27 +26,10 @@ public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
     @Override
     public ThreadStateDetailDto getThreadStateDetailList(String _id, String state) throws Exception {
 
-//        BasicQuery query = new BasicQuery("{_id : ObjectId('"+_id+"')}");
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(_id));
 
-//        query.addCriteria(Criteria.where("threadDumps").elemMatch(Criteria.where("state").is(state)));
-//        List<Criteria> criteriaList = new ArrayList<>();
-//        criteriaList.add(Criteria.where("threadDumps").elemMatch(Criteria.where("state").is(state)));
-//        query.addCriteria(new Criteria().andOperator(Criteria.where("_id").is(_id),Criteria.where("threadDumps.state").is(state)));
-//
-//        Criteria criteria = new Criteria().where("_id").in(_id);
-//        MatchOperation matchOperation = Aggregation.match(criteria);
-//        ProjectionOperation projectionOperation = Aggregation.project().and("hostName").as("hostName");
-//        Aggregation aggregation = Aggregation.newAggregation(matchOperation,projectionOperation);
-
         ThreadStateDetail detail = mongoTemplate.findOne(query, ThreadStateDetail.class, "threaddump");
-//          AggregationResults<ThreadStateDetail> aggregate =  mongoTemplate.aggregate(aggregation, "threaddump",ThreadStateDetail.class);
-//          List<ThreadStateDetail> listDetail = aggregate.getMappedResults();
-//          ThreadStateDetail detail = new ThreadStateDetail();
-//          for (ThreadStateDetail threadStateDetail : listDetail) {
-//              detail = threadStateDetail;
-//          }
 
         // 나중에 mongotemplate으로 처리하자..
         int threadSize = detail.getThreadDumps().size();

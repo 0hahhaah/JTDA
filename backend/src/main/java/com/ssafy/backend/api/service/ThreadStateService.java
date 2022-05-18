@@ -12,5 +12,4 @@ import java.util.TreeMap;
 public interface ThreadStateService {
 
     ThreadStateListDto getThreadList(List<String> host, String startAt, String endAt) throws Exception;
-//    TreeMap<String, ThreadStateCount> getThreadList2(List<String> host, String startAt, String endAt) throws Exception;
 }
