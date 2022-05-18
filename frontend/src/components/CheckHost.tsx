@@ -39,7 +39,6 @@ const CheckHost = ({
             }
         }
     }, []);
-    console.log('선택됨', selectedHostNames);
 
     return (
         <List>

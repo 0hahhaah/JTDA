@@ -77,7 +77,7 @@ export default function SideBar({
   const isMain: boolean = pathname === "/" ? true : false;
 
   const [searchInput, setSearchInput] = useState<string>("");
-  const [searchCategory, setSearchCategory] = useState<string>("");
+  const [searchCategory, setSearchCategory] = useState<string>("cluster");
 
   return (
     <Layout>

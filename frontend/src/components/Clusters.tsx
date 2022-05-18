@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Cluster } from "../interfaces/HostInfo.interface";
 import CheckHost from "./CheckHost";
 import styled from "styled-components";
+import { hostname } from "os";
 
 const ClusterBox = styled.p<{ ftWeight: string }>`
   margin: 0 0 5px 0;
@@ -33,7 +34,9 @@ const Clusters: React.FunctionComponent<Props> = ({
       setSelectedHostNames([...selectedHostNames,...cluster.hosts.map((hosts) => hosts.host)]);
     } else if(isToggled && selectedHostNames && setSelectedHostNames) {
       //다시 누르면(토글 닫으면) 해당 클러스터 내의 호스트들 전부 선택 해제
-      // console.log(cluster.hosts.map((host) => host.host));
+      const clusterHas = cluster.hosts.map((host) => host.host);
+      setSelectedHostNames(selectedHostNames.filter((hostname) => !clusterHas.includes(hostname)))
+
     }
   };
 
@@ -45,15 +48,12 @@ const Clusters: React.FunctionComponent<Props> = ({
         const filter = selectedHostNames.filter((one) => one !== code);
         setSelectedHostNames([...filter]);
       }
-  }
+    }
   }
 
-  //테스트용입니다
-  const reset = () =>{
-    if(setSelectedHostNames){
-      setSelectedHostNames([]);
-    }
-  };
+  useEffect(() =>{
+    if(selectedHostNames && selectedHostNames.length === 0) setIsToggled(false);
+  }, [selectedHostNames]);
 
   return (
     <>
@@ -73,7 +73,6 @@ const Clusters: React.FunctionComponent<Props> = ({
           })}
         </HostUl>
       ) : null}
-      <button onClick={reset}>oo</button>
     </>
   );
 };
