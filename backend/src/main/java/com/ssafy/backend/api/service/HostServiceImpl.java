@@ -31,6 +31,14 @@ public class HostServiceImpl implements HostService {
     private static final String stringCluster = "cluster";
     private static final String stringTags = "tags";
     private static final String stringHost = "host";
+    private static final String stringThreadCount = "threadCount";
+    private static final String stringVmInfo = "vmInfo";
+    private static final String stringThreadElements = "threadElements";
+    private static final String stringThreadDumps = "threadDumps";
+    private static final String stringThreadStateCount = "threadStateCount";
+    private static final String stringClass = "_class";
+    private static final String stringCollectionName = "threaddump";
+
 
     @Override
     public HostSearchRes getHostSearch(String startAt, String endAt, String query) {
@@ -57,6 +65,7 @@ public class HostServiceImpl implements HostService {
                             queryRegex.addCriteria(Criteria.where(stringHost).regex(query))
                                     .addCriteria(Criteria.where(stringLogTime).gte(startAt).lte(endAt));
                         } else {
+
                             // startAt, endAt, query 모두 입력, 시간 같음
                             queryRegex.addCriteria(Criteria.where(stringHost).regex(query))
                                     .addCriteria(Criteria.where(stringLogTime).regex(endAt));
@@ -88,8 +97,10 @@ public class HostServiceImpl implements HostService {
         } else {
             return new HostSearchRes("", "", 0, new ArrayList<>(), "");
         }
-        queryRegex.fields().exclude(stringLogTime).exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
-        List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, "threaddump"));
+        queryRegex.fields().exclude(stringLogTime).exclude(stringThreadCount).exclude(stringVmInfo)
+                .exclude(stringThreadElements).exclude(stringThreadDumps).exclude(stringThreadStateCount)
+                .exclude(stringClass);
+        List<HostSearch> queryResult = removeDuplicateHostSearch(mongoTemplate.find(queryRegex, HostSearch.class, stringCollectionName));
 
         return new HostSearchRes(startAt, endAt, queryResult.size(), queryResult, query);
     }
@@ -161,8 +172,10 @@ public class HostServiceImpl implements HostService {
         } else {
             return new HostListRes("", "", new hostListSearchInputRes("", new ArrayList<>()), 0, new ArrayList<>());
         }
-        query.fields().exclude(stringLogTime).exclude("threadCount").exclude("vmInfo").exclude("threadElements").exclude("threadDumps").exclude("threadStateCount").exclude("_class");
-        List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, "threaddump"));
+        query.fields().exclude(stringLogTime).exclude(stringThreadCount).exclude(stringVmInfo)
+                .exclude(stringThreadElements).exclude(stringThreadDumps).exclude(stringThreadStateCount)
+                .exclude(stringClass);
+        List<HostList> queryResult = removeDuplicateHostList(mongoTemplate.find(query, HostList.class, stringCollectionName));
         List<HostListResultsRes> hostListResultsResList = new ArrayList<>();
         Map<String, List<HostListResultsEachRes>> hostListResultsResMap = new HashMap<>();
         for(HostList hostList : queryResult) {
@@ -191,8 +204,9 @@ public class HostServiceImpl implements HostService {
         query.addCriteria(Criteria.where(stringHost).in(hostsNoDuplicate))
                 .addCriteria(Criteria.where(stringLogTime).regex(time))
                 .with(Sort.by(Sort.Direction.ASC, stringHost))
-                .fields().exclude(stringCluster).exclude(stringTags).exclude("vmInfo").exclude("threadElements").exclude("_class");
-        List<HostState> queryResult = removeDuplicateHostState(mongoTemplate.find(query, HostState.class, "threaddump"));
+                .fields().exclude(stringCluster).exclude(stringTags).exclude(stringVmInfo)
+                .exclude(stringThreadElements).exclude(stringClass);
+        List<HostState> queryResult = removeDuplicateHostState(mongoTemplate.find(query, HostState.class, stringCollectionName));
         List<HostStateWithDaemonCountRes> returnHosts = new ArrayList<>();
 
         for(HostState hostState : queryResult) {
@@ -230,10 +244,10 @@ public class HostServiceImpl implements HostService {
             return new HostTagRes(new ArrayList<>());
         }
 
-        query.fields().exclude(stringCluster).exclude(stringHost).exclude(stringLogTime).exclude("threadCount")
-                .exclude("vmInfo").exclude("threadElements").exclude("threadDumps")
-                .exclude("threadStateCount").exclude("_class");
-        List<HostTag> queryResult = mongoTemplate.findDistinct(query, stringTags, "threaddump", HostTag.class);
+        query.fields().exclude(stringCluster).exclude(stringHost).exclude(stringLogTime).exclude(stringThreadCount)
+                .exclude(stringVmInfo).exclude(stringThreadElements).exclude(stringThreadDumps)
+                .exclude(stringThreadStateCount).exclude(stringClass);
+        List<HostTag> queryResult = mongoTemplate.findDistinct(query, stringTags, stringCollectionName, HostTag.class);
         Set<HostTag> returnTag = new HashSet<>(queryResult);
 
         return new HostTagRes(new ArrayList<>(returnTag));
