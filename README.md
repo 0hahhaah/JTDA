@@ -1,11 +1,10 @@
 # JTDA - SSAFY X Kurly 기업연계 프로젝트
-
+## JTDA (자바 프로세스 Thread Dump 수집/분석기)
 ![logo](./README.assets/LOGO.png)
-자바 프로세스 Thread Dump 수집/분석기
 
 ### JTDA 소개 영상 📺
 
-![UCC](./README.assets/JTDA_UCC.mp4)
+![](./README.assets/JTDA_UCC.mp4)
 
 ## 목차
 
@@ -26,8 +25,6 @@
 - 특정 순간 혹은 기간의 Thread 상황 경향 그래프로 시각화
 
 ## 🖥️ 빌드 및 배포 매뉴얼
-
-Gitlab 소스 클론 이후 빌드 및 배포할 수 있도록 정리한 문서입니다.
 
 ### 1. 버전
 
@@ -94,8 +91,6 @@ Gitlab 소스 클론 이후 빌드 및 배포할 수 있도록 정리한 문서�
 - etc.. (`/frontend/package.json` 확인)
 
 ### 2. 빌드 시 주요 내용
-
-빌드 시 사용되는 환경 변수 들의 주요 내용 상세 기재
 
 #### 1. Java Agent
 
@@ -212,7 +207,7 @@ Gitlab 소스 클론 이후 빌드 및 배포할 수 있도록 정리한 문서�
 
 ## 팀 E1I4
 
-| 구분 | 이름   | 개발 파트 |
+| 구분 | 이름   | 역할 |
 | ---- | ------ | :-------: |
 | 팀장 | 박지후 |           |
 | 팀원 | 김종범 |           |
