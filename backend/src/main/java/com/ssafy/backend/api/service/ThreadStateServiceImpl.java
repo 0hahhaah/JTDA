@@ -3,7 +3,6 @@ package com.ssafy.backend.api.service;
 
 
 import com.ssafy.backend.api.dto.response.ThreadStateListDto;
-import com.ssafy.backend.core.domain.Hosts;
 import com.ssafy.backend.core.domain.ThreadStateCount;
 import com.ssafy.backend.core.domain.ThreadStateCountList;
 import com.ssafy.backend.core.domain.ThreadStateList;
@@ -27,7 +26,7 @@ public class ThreadStateServiceImpl implements ThreadStateService {
     // host가 _id를 갖지 않게 처리
     @Override
     public ThreadStateListDto  getThreadList(List<String> host, String startAt, String endAt) throws Exception {
-        StringBuffer strHost = new StringBuffer();
+        StringBuilder strHost = new StringBuilder();
         for (String str : host){
             strHost.append("'"+str+"'"+",");
         }
