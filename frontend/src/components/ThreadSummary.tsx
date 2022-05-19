@@ -207,7 +207,7 @@ export default function ThreadSummary({
   ): JSX.Element[] | JSX.Element => {
     if (isPreview && hostSummary.threadStateCount) {
       return threadStates.map((state, idx) => (
-        <PreviewCard>
+        <PreviewCard key={idx}>
           {paintIcon(state)}
           <StateNum size="1.75rem">
             {hostSummary.threadStateCount[state]}
