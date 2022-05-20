@@ -1,14 +1,14 @@
 package com.ssafy.backend.api.service;
 
-import com.ssafy.backend.api.dto.response.HostListRes;
-import org.junit.jupiter.api.Test;
+//import com.ssafy.backend.api.dto.response.HostListRes;
+//import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 //import java.time.LocalDateTime;
 //import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+//import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 public class HostServiceTest {
@@ -29,10 +29,10 @@ public class HostServiceTest {
 //        }
 //    }
 
-    @Test
-    public void HostSearch_GET() {
+//    @Test
+//    public void HostSearch_GET() {
 //        HostListRes hostListRes = hostService.getHostSearch("2022-05-09 12:00:00", "2022-05-10 12:00:00", "cc");
 //
 //        assertThat(hostListRes.getHosts()).isNotEmpty();
-    }
+//    }
 }

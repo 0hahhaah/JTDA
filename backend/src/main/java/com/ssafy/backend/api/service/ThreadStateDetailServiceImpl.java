@@ -28,18 +28,20 @@ public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
 
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(_id));
-
         ThreadStateDetail detail = mongoTemplate.findOne(query, ThreadStateDetail.class, "threaddump");
 
-        // 나중에 mongotemplate으로 처리하자..
-        int threadSize = detail.getThreadDumps().size();
-        for (int i=0; i<threadSize; i++){
-            if(!state.equals(detail.getThreadDumps().get(i).getState())) {
-                detail.getThreadDumps().remove(i);
-                i--;
-                threadSize--;
+        List<ThreadDumps> threadDumps = new ArrayList<ThreadDumps>();
+
+        if (!state.equals("")) {
+            int threadSize = detail.getThreadDumps().size();
+            for (int i = 0; i < threadSize; i++) {
+                if (state.equals(detail.getThreadDumps().get(i).getState())) {
+                    threadDumps.add(detail.getThreadDumps().get(i));
+                }
             }
+            detail.setThreadDumps(threadDumps);
         }
+
 
         Collections.sort(detail.getThreadDumps(), new Comparator<ThreadDumps>() {
             @Override
@@ -49,4 +51,5 @@ public class ThreadStateDetailServiceImpl implements ThreadStateDetailService{
         });
         return new ThreadStateDetailDto(detail);
     }
+
 }

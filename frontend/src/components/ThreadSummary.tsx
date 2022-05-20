@@ -207,7 +207,7 @@ export default function ThreadSummary({
   ): JSX.Element[] | JSX.Element => {
     if (isPreview && hostSummary.threadStateCount) {
       return threadStates.map((state, idx) => (
-        <PreviewCard>
+        <PreviewCard key={idx}>
           {paintIcon(state)}
           <StateNum size="1.75rem">
             {hostSummary.threadStateCount[state]}
@@ -255,7 +255,7 @@ export default function ThreadSummary({
         <PreviewBox>
           <Info>
             <Title onClick={() => handleToggleClick(idx)}>
-              host {hostSummary.host}{" "}
+              {hostSummary.host}{" "}
               <ExpandMore
                 style={{
                   transform: `rotate(${showDetail[idx] ? "-180" : "0"}deg)`,
@@ -285,21 +285,6 @@ export default function ThreadSummary({
             <CardContainer gridCol={4}>{paintCards(hostSummary)}</CardContainer>
             <StatePieChart threadStateCount={hostSummary.threadStateCount} />
           </Section>
-          <Boundary />
-          {/* <Section>
-            <CardContainer gridCol={6}>
-              <DetailCard>
-                <StateNum>{hostSummary.daemonCount}</StateNum>
-                <ThreadState color="rgba(95, 0, 128, 0.5)">Daemon</ThreadState>
-              </DetailCard>
-              <DetailCard>
-                <StateNum>{hostSummary.nonDaemonCount}</StateNum>
-                <ThreadState color="rgba(95, 0, 128, 0.2)">
-                  non-Daemon
-                </ThreadState>
-              </DetailCard>
-            </CardContainer>
-          </Section> */}
         </ToggleBox>
       </Container>
     )
