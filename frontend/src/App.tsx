@@ -4,6 +4,7 @@ import './App.css';
 import Main from './page/main';
 import Detail from "./page/detail";
 import ScrollToTop from './components/ScrollToTop';
+import TopButton from './components/TopButton';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Main />}/>
         <Route path="/detail" element={<Detail />}/>
       </Routes>
+        <TopButton></TopButton>
     </BrowserRouter>
   );
 }
