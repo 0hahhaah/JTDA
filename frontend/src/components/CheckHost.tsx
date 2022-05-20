@@ -38,7 +38,7 @@ const CheckHost = ({
                 setIsChecked(false);
             }
         }
-    }, []);
+    }, [selectedHostNames]);
 
     return (
         <List>
