@@ -1,10 +1,9 @@
-# JTDA - SSAFY X Kurly 기업연계 프로젝트
+# JTDA - SSAFY x Kurly 기업연계 프로젝트
 ## JTDA (자바 프로세스 Thread Dump 수집/분석기)
 ![logo](./README.assets/LOGO.png)
 
 ### JTDA 소개 영상 📺
-
-![](./README.assets/JTDA_UCC.mp4)
+[UCC](./README.assets/JTDA_UCC.mp4)
 
 ## 목차
 
